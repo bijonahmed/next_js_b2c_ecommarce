@@ -5,7 +5,7 @@ import ClientFooter from "../components/frontend/ClientFooter";
 import { AuthProvider } from "../context/AuthContext";
 import FrontendAssets from "../components/frontend/FrontendAssets";
 
-export const metadata = { title: "Welcome to Vogexi Ecommarce" };
+export const metadata = { title: "Welcome to Bir E-commerce" };
 
 export default function PublicLayout({ children }) {
   return (

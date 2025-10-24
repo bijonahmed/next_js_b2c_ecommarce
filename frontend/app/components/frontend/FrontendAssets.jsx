@@ -1,4 +1,4 @@
-// app/components/admin/AdminAssets.jsx
+// app/components/frontend/FrontendAssets.jsx
 "use client";
 
 import Script from "next/script";
@@ -6,71 +6,128 @@ import Script from "next/script";
 export default function FrontendAssets() {
   return (
     <>
-      {/* CSS files */}
-      <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossOrigin="anonymous"
-      />
-      <link
-        href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700&family=Fira+Sans:wght@400;500&display=swap"
-        rel="stylesheet"
-      />
+      <div>
+        <link rel="dns-prefetch" href="http://fonts.googleapis.com/" />
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="author" content="Martfury Template" />
+        <meta
+          name="keywords"
+          content="ecommerce, marketplace, shopping, html template, bootstrap"
+        />
+        <meta
+          name="description"
+          content="Martfury - Modern Multipurpose Marketplace HTML5 Template with Bootstrap 5"
+        />
+        <title>Martfury</title>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link rel="stylesheet" href="/frontend_theme/plugins/font-awesome/css/all.min.css" />
+        <link
+          rel="stylesheet"
+          href="/frontend_theme/fonts/Linearicons/Linearicons/Font/demo-files/demo.css"
+        />
+        <link rel="stylesheet" href="/frontend_theme/plugins/bootstrap/css/bootstrap.min.css" />
+        <link
+          rel="stylesheet"
+          href="/frontend_theme/plugins/owl-carousel/assets/owl.carousel.min.css"
+        />
+        <link
+          rel="stylesheet"
+          href="/frontend_theme/plugins/owl-carousel/assets/owl.theme.default.min.css"
+        />
+        <link rel="stylesheet" href="/frontend_theme/plugins/slick/slick/slick.css" />
+        <link rel="stylesheet" href="/frontend_theme/plugins/nouislider/nouislider.min.css" />
+        <link
+          rel="stylesheet"
+          href="/frontend_theme/plugins/lightGallery-master/dist/css/lightgallery.min.css"
+        />
+        <link
+          rel="stylesheet"
+          href="/frontend_theme/plugins/jquery-bar-rating/dist/themes/fontawesome-stars.css"
+        />
+        <link
+          rel="stylesheet"
+          href="/frontend_theme/plugins/select2/dist/css/select2.min.css"
+        />
+        <link rel="preload" href="/frontend_theme/css/style.css" as="style" />
+        <link rel="stylesheet" href="/frontend_theme/css/style.css" />
+        <link rel="stylesheet" href="/frontend_theme/css/market-place-1.css" />
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              "\n        /* Always keep the menu content visible */\n        .menu--product-categories .menu__content {\n            display: block !important;\n            opacity: 1 !important;\n            visibility: visible !important;\n            transform: none !important;\n        }\n\n        /*# sourceMappingURL=style.css.map */\n    ",
+          }}
+        />
 
-      {/* Bootstrap CSS */}
-      <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-        crossOrigin="anonymous"
-      />
+        <Script
+          src="/frontend_theme/plugins/jquery-3.7.1.min.js"
+          strategy="beforeInteractive"
+        />
 
-      {/* Local CSS (store these inside /public/frontend_theme/css/) */}
-      <link
-        rel="stylesheet"
-        href="/frontend_theme/assets/css/bootstrap.min.css"
-      />
-      <link
-        rel="stylesheet"
-        href="/frontend_theme/assets/css/fontawesome.min.css"
-      />
-      <link
-        rel="stylesheet"
-        href="/frontend_theme/assets/css/layerslider.min.css"
-      />
-      <link
-        rel="stylesheet"
-        href="/frontend_theme/assets/css/magnific-popup.min.css"
-      />
-      <link rel="stylesheet" href="/frontend_theme/assets/css/slick.min.css" />
-      <link rel="stylesheet" href="/frontend_theme/assets/css/style.css" />
+        {/* ✅ Then load jQuery-dependent plugins */}
+        <Script
+          src="/frontend_theme/plugins/popper.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/bootstrap/js/bootstrap.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/owl-carousel/owl.carousel.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/nouislider/nouislider.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/imagesloaded.pkgd.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/masonry.pkgd.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/isotope.pkgd.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/jquery.matchHeight-min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/slick/slick/slick.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/jquery-bar-rating/dist/jquery.barrating.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/lightGallery-master/dist/js/lightgallery-all.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/select2/dist/js/select2.full.min.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/frontend_theme/plugins/gmap3.min.js"
+          strategy="afterInteractive"
+        />
 
-      {/* Add your other external CSS files here */}
-
-      {/* JS files */}
-      <Script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        strategy="afterInteractive"
-        crossOrigin="anonymous"
-      />
-      <Script
-        src="https://cdn.jsdelivr.net/npm/jquery@3.7.0/dist/jquery.min.js"
-        strategy="afterInteractive"
-        crossOrigin="anonymous"
-      />
-      {/* Add your other external JS files here */}
-      {/* JS Files (use Next.js Script for performance) */}
-      <Script
-        src="/frontend_theme/assets/js/vendor/jquery-3.6.0.min.js"
-        strategy="beforeInteractive"
-      />
-    
-      <Script
-        src="/frontend_theme/assets/js/bootstrap.min.js"
-        strategy="afterInteractive"
-      />
-      
-     
+        {/* ✅ Finally your main.js (depends on all above) */}
+        <Script
+          src="/frontend_theme/js/main.js"
+          strategy="afterInteractive"
+        />
+      </div>
     </>
   );
 }

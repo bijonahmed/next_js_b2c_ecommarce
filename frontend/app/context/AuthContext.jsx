@@ -104,7 +104,8 @@ export function AuthProvider({ children }) {
         hasPermission,
       }}
     >
-      {loading ? <div>Loading...</div> : children}
+      {/* {loading ? <div>Loading...</div> : children} */}
+       {children}
     </AuthContext.Provider>
   );
 }
