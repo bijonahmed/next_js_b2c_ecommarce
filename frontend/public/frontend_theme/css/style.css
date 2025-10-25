@@ -12553,7 +12553,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .ps-section--gray {
-  padding: 70px 0;
+  padding: 30px 0;
   background-color: #f4f5f5;
 }
 
@@ -12950,7 +12950,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .ps-shopping .ps-shopping__header {
-  margin-bottom: 40px;
+  margin-bottom: 2px;
   width: 100%;
   display: flex;
   flex-flow: row nowrap;

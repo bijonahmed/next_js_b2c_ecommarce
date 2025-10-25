@@ -5,6 +5,8 @@ import Link from "next/link";
 
 export default function ClientFooter() {
   return (
+
+
     <footer className="ps-footer">
       <div className="container">
         <div className="ps-footer__widgets">
@@ -181,5 +183,8 @@ export default function ClientFooter() {
         </div>
       </div>
     </footer>
+
+
+   
   );
 }

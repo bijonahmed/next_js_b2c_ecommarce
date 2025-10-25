@@ -12,7 +12,7 @@ import ProductCategories from "../components/frontend/ProductCategories";
 export default function Home() {
   return (
     <>
-      <div id="homepage-3">
+      <div id="homepage-3" className="bg-white">
         <div className="ps-home-banner">
           <Slider />
         </div>

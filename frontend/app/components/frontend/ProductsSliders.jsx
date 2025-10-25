@@ -101,7 +101,7 @@ const products = [
 export default function ProductsSliders() {
   return (
     <div className="ps-deal-of-day">
-      <div className="ps-container">
+      <div className="container">
         <div className="ps-section__content">
           <Carousel
             responsive={responsive}
@@ -116,7 +116,7 @@ export default function ProductsSliders() {
             {products.map((product) => (
               <div key={product.id} className="ps-product ps-product--inner">
                 <div className="ps-product__thumbnail">
-                  <a href="product-default.html">
+                  <a href="#">
                     <img
                       loading="lazy"
                       src={product.img}
@@ -163,7 +163,7 @@ export default function ProductsSliders() {
                     {product.vendor}
                   </a>
                   <div className="ps-product__content">
-                    <a className="ps-product__title" href="product-default.html">
+                    <a className="ps-product__title" href="#">
                       {product.title}
                     </a>
                    
