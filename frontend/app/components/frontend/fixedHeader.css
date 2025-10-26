@@ -1,0 +1,14 @@
+.header {
+  width: 100%;
+  background-color: #fff;
+ 
+  transition: all 0.3s ease;
+  position: fixed; /* <-- always fixed on top */
+  top: 0;
+  left: 0;
+}
+
+.header.sticky {
+  padding: 10px 0; /* shrink header when scrolling */
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}

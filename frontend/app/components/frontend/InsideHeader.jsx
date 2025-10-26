@@ -17,108 +17,19 @@ export default function InsideHeader() {
   //console.log("Current pathname:", pathname);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
-
+  const [selectedCategory, setSelectedCategory] = useState("0");
   // Toggle menu on button click
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
   };
 
-  // Hide menu on scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      setMenuOpen(false);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Optional: hide menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setMenuOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
   return (
     <div>
       {/* Header */}
-      <header className="header header--1" data-sticky="true">
+      <header className="header header--1 sticky-top" data-sticky="true">
         <div className="header__top">
           <div className="ps-container">
             <div className="header__left">
-              <div className="menu--product-categories">
-                <div className="menu__toggle">
-                  <i className="icon-menu" />
-                  <span> Shop by Department</span>
-                </div>
-                <div className="menu__content">
-                  <ul className="menu--dropdown">
-                    <li>
-                      <a href="#.html">Hot Promotions</a>
-                    </li>
-                    <li className="menu-item-has-children has-mega-menu">
-                      <a href="#">Consumer Electronic</a>
-                      <span className="sub-toggle" />
-                      <div className="mega-menu">
-                        <div className="mega-menu__column">
-                          <h4>
-                            Electronic
-                            <span className="sub-toggle" />
-                          </h4>
-                          <ul className="mega-menu__list">
-                            <li>
-                              <a href="#.html">Home Audio &amp; Theathers</a>
-                            </li>
-                            <li>
-                              <a href="#.html">TV &amp; Videos</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Camera, Photos &amp; Videos</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Cellphones &amp; Accessories</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Headphones</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Videosgames</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Wireless Speakers</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Office Electronic</a>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="mega-menu__column">
-                          <h4>
-                            Accessories &amp; Parts
-                            <span className="sub-toggle" />
-                          </h4>
-                          <ul className="mega-menu__list">
-                            <li>
-                              <a href="#.html">Digital Cables</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Audio &amp; Video Cables</a>
-                            </li>
-                            <li>
-                              <a href="#.html">Batteries</a>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
               <Link className="ps-logo" href="/">
                 <img
                   loading="lazy"
@@ -132,10 +43,12 @@ export default function InsideHeader() {
               <form className="ps-form--quick-search" action="#" method="get">
                 <div className="form-group--icon">
                   <i className="icon-chevron-down" />
-                  <select className="form-control">
-                    <option value={0} selected="selected" defaultValue="0">
-                      All
-                    </option>
+                  <select
+                    className="form-control"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    <option value="0">All</option>
                     <option className="level-0" value="babies-moms">
                       Babies &amp; Moms
                     </option>
@@ -179,7 +92,7 @@ export default function InsideHeader() {
                             <img
                               loading="lazy"
                               src="/frontend_theme/img/products/clothing/7.jpg"
-                              alt
+                              alt="Img"
                             />
                           </a>
                         </div>
@@ -293,7 +206,23 @@ export default function InsideHeader() {
             <div className="navigation__right">
               <ul className="menu">
                 <li>
-                  <a href="index.html">Home</a>
+                  <Link href="/">Home</Link>
+                  <span className="sub-toggle" />
+                </li>
+                <li>
+                  <Link href="/shop">Shop</Link>
+                  <span className="sub-toggle" />
+                </li>
+                <li>
+                  <Link href="/about-us">About Bir Group</Link>
+                  <span className="sub-toggle" />
+                </li>
+                <li>
+                  <Link href="/faq">Faq</Link>
+                  <span className="sub-toggle" />
+                </li>
+                <li>
+                  <Link href="/contact">Contact</Link>
                   <span className="sub-toggle" />
                 </li>
               </ul>
@@ -312,7 +241,7 @@ export default function InsideHeader() {
                       <img
                         loading="lazy"
                         src="/frontend_theme/img/flag/en.png"
-                        alt
+                        alt="English"
                       />
                       English
                     </a>

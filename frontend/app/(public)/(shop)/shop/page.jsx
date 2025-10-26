@@ -7,10 +7,6 @@ export default function AboutPage() {
   const [activeTab, setActiveTab] = useState("grid"); // default view
   return (
     <div>
-
-
-
-
       {/* Start */}
       <div className="bg-white">
         <div className="ps-breadcrumb">

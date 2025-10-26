@@ -1,181 +1,84 @@
 import Link from "next/link";
 
 export const metadata = {
-  title: "About Us - My Website",
-  description: "Learn more about our company, mission, and values.",
-  keywords: ["about us", "company info", "our team"],
+  title: "About Us - Birgroup",
+  description:
+    "Learn more about Birgroup, our mission, vision, and core values.",
+  keywords: ["Birgroup", "about us", "company info", "our team", "mission"],
   openGraph: {
-    title: "About Us - My Website",
-    description: "Learn more about our company, mission, and values.",
-    url: "https://mywebsite.com/about",
-    siteName: "My Website",
-    images: [
-      {
-        url: "/og-image-about.jpg",
-        width: 1200,
-        height: 630,
-        alt: "About Us Preview",
-      },
-    ],
+    title: "About Us - Birgroup",
+    description:
+      "Learn more about Birgroup, our mission, vision, and core values.",
+    url: "https://bir-ecommerce.com/about",
+    siteName: "Birgroup",
     type: "website",
   },
   alternates: {
-    canonical: "https://mywebsite.com/about",
+    canonical: "https://bir-ecommerce.com/about",
   },
 };
 
 export default function AboutPage() {
   return (
     <div>
-      <div
-        className="breadcumb-wrapper "
-        style={{
-          backgroundImage: `url('/frontend_theme/assets/img/bg/appoin-bg-1-1.jpg')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          width: "100%",
-          height: "200px", // adjust as needed
-        }}
-      >
-        <div className="container z-index-common">
-          <div className="breadcumb-content">
-            <h1 className="breadcumb-title">About Us</h1>
-            <div className="breadcumb-menu-wrap">
-              <ul className="breadcumb-menu">
-                <li>
-                  <Link href="/">Home</Link>
-                </li>
-                <li>About Us</li>
-              </ul>
+      <div className="ps-breadcrumb">
+        <div className="container">
+          <ul className="breadcrumb">
+            <li>
+              <Link href="/">Home</Link>
+            </li>
+            <li>About us</li>
+          </ul>
+        </div>
+      </div>
+      <div className="ps-page--single" id="about-us">
+        <img
+          loading="lazy"
+          src="/frontend_theme/img/bg/about-us.jpg"
+          alt="image"
+        />
+        <div className="ps-about-intro">
+          <div className="container">
+            <div className="container ps-section__header">
+              <h3>About Bir Group Holdings</h3>
+              <p style={{ textAlign: "justify" }}>
+                <strong>Vision Statement:</strong> Our vision is to become one
+                of Bangladesh’s major diversified distribution and manufacturing
+                companies. We plan on reaching our vision by selling quality
+                products nationally and taking full responsibility for the
+                products that we distribute and manufacture to our retailers and
+                customers. Our goal in that process is also to treat all
+                retailers and customers fairly and equally so that they continue
+                to purchase our products.
+              </p>
+
+              <p style={{ textAlign: "justify" }}>
+                <strong>Mission Statement:</strong> Our mission is to become a
+                major diversified distribution & manufacturing company. The
+                company pursues this mission by utilizing the following
+                approaches: capitalizing on the considerable growth potential of
+                the company’s existing brands and products in the ever-growing
+                market; introducing new products into the existing networks and
+                markets; and expanding the distribution of Bir Group’s existing
+                brands into the domestic markets. These are the approaches we
+                utilize to continue growing every year.
+              </p>
+
+              <p style={{ textAlign: "justify" }}>
+                <span style={{ fontSize: "19px" }}>
+                  <strong>Corporate Objectives:</strong>
+                </span>
+                <ul style={{ fontSize: "18px" }}>
+                  <li>Maintaining equality in a competitive workspace</li>
+                  <li>Being open-minded to concepts and advice</li>
+                  <li>Taking calculated risks in order to grow and prosper</li>
+                  <li>Ethically conducting any and all business activities</li>
+                </ul>
+              </p>
             </div>
           </div>
         </div>
       </div>
-      {/*==============================
-    Service Area
-    ==============================*/}
-      <section className=" space-top space-extra-bottom">
-        <div className="container   wow fadeInUp" data-wow-delay="0.2s">
-          <div
-            className="row vs-carousel"
-            data-slide-show={3}
-            data-md-slide-show={2}
-          >
-            <div className="col-md-6 col-lg-4">
-              <div className="service-style1 layout3">
-                <div
-                  className="service-bg"
-                  data-bg-src="/frontend_theme/assets/img/bg/sr-box-bg-1.jpg"
-                />
-                <div className="service-top">
-                  <div className="service-icon">
-                    <img
-                      src="/frontend_theme/assets/img/icon/sr-icon-1-1.png"
-                      alt="Features"
-                    />
-                  </div>
-                  <span className="service-number">01</span>
-                </div>
-                <h3 className="service-title h5">
-                  <a href="#">Cloud Services</a>
-                </h3>
-                <p className="service-text">
-                  Cardinate premier technology without sustainable leadership
-                  work...
-                </p>
-                <a href="#" className="link-btn">
-                  Read More
-                  <i className="far fa-long-arrow-right" />
-                </a>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="service-style1 layout3">
-                <div
-                  className="service-bg"
-                  data-bg-src="/frontend_theme/assets/img/bg/sr-box-bg-1.jpg"
-                />
-                <div className="service-top">
-                  <div className="service-icon">
-                    <img
-                      src="/frontend_theme/assets/img/icon/sr-icon-1-2.png"
-                      alt="Features"
-                    />
-                  </div>
-                  <span className="service-number">02</span>
-                </div>
-                <h3 className="service-title h5">
-                  <a href="#">Software Services</a>
-                </h3>
-                <p className="service-text">
-                  Cardinate premier technology without sustainable leadership
-                  work...
-                </p>
-                <a href="#" className="link-btn">
-                  Read More
-                  <i className="far fa-long-arrow-right" />
-                </a>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="service-style1 layout3">
-                <div
-                  className="service-bg"
-                  data-bg-src="/frontend_theme/assets/img/bg/sr-box-bg-1.jpg"
-                />
-                <div className="service-top">
-                  <div className="service-icon">
-                    <img
-                      src="/frontend_theme/assets/img/icon/sr-icon-1-3.png"
-                      alt="Features"
-                    />
-                  </div>
-                  <span className="service-number">03</span>
-                </div>
-                <h3 className="service-title h5">
-                  <a href="#">Machine Learning</a>
-                </h3>
-                <p className="service-text">
-                  Cardinate premier technology without sustainable leadership
-                  work...
-                </p>
-                <a href="#" className="link-btn">
-                  Read More
-                  <i className="far fa-long-arrow-right" />
-                </a>
-              </div>
-            </div>
-            <div className="col-md-6 col-lg-4">
-              <div className="service-style1 layout3">
-                <div
-                  className="service-bg"
-                  data-bg-src="/frontend_theme/assets/img/bg/sr-box-bg-1.jpg"
-                />
-                <div className="service-top">
-                  <div className="service-icon">
-                    <img
-                      src="/frontend_theme/assets/img/icon/sr-icon-1-4.png"
-                      alt="Features"
-                    />
-                  </div>
-                  <span className="service-number">04</span>
-                </div>
-                <h3 className="service-title h5">
-                  <a href="#">Business Analycis</a>
-                </h3>
-                <p className="service-text">
-                  Cardinate premier technology without sustainable leadership
-                  work...
-                </p>
-                <a href="#" className="link-btn">
-                  Read More
-                  <i className="far fa-long-arrow-right" />
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

@@ -249,10 +249,10 @@ export default function TopNavbar() {
               <Link href="/about-us">About Bir Group</Link>
             </li>
             <li>
-              <Link href="#">Faq</Link>
+              <Link href="/faq">Faq</Link>
             </li>
             <li>
-              <Link href="#">Contact</Link>
+              <Link href="/contact">Contact</Link>
             </li>
           </ul>
         </div>
