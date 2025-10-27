@@ -2,6 +2,38 @@
 
 import { useState } from "react";
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+export const metadata = {
+  title: "Faq- Bir E-Commerce",
+  description: "Securely complete your order and payment on Bir E-Commerce.",
+  keywords: [
+    "checkout",
+    "payment",
+    "online shopping",
+    "bir e-commerce",
+    "order summary",
+    "secure checkout",
+  ],
+  openGraph: {
+    title: "Faq - Bir E-Commerce",
+    description: "Securely complete your order and payment on Bir E-Commerce.",
+    url: `${baseUrl}/faq`,
+    siteName: "Bir E-Commerce",
+    images: [
+      {
+        url: "/og-image-checkout.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Checkout Page Preview - Bir E-Commerce",
+      },
+    ],
+    type: "website",
+  },
+  alternates: {
+    canonical: `${baseUrl}/faq`,
+  },
+};
+
 export default function FAQAccordion() {
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -74,7 +106,9 @@ export default function FAQAccordion() {
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "20px" }}>
-      <h1 style={{ fontSize: "28px", marginBottom: "20px", textAlign: "center" }}>
+      <h1
+        style={{ fontSize: "28px", marginBottom: "20px", textAlign: "center" }}
+      >
         Frequently Asked Questions
       </h1>
       <div>
@@ -97,7 +131,8 @@ export default function FAQAccordion() {
                 padding: "15px 20px",
                 fontSize: "16px",
                 fontWeight: "600",
-                backgroundColor: activeIndex === index ? "rgb(252, 184, 0)" : "#f8f9fa",
+                backgroundColor:
+                  activeIndex === index ? "rgb(252, 184, 0)" : "#f8f9fa",
                 color: activeIndex === index ? "#fff" : "#333",
                 border: "none",
                 cursor: "pointer",

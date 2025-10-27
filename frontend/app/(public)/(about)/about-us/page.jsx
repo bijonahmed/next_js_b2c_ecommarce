@@ -1,23 +1,36 @@
 import Link from "next/link";
 
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 export const metadata = {
-  title: "About Us - Birgroup",
-  description:
-    "Learn more about Birgroup, our mission, vision, and core values.",
-  keywords: ["Birgroup", "about us", "company info", "our team", "mission"],
+  title: "About us - Bir E-Commerce",
+  description: "Securely complete your order and payment on Bir E-Commerce.",
+  keywords: [
+    "checkout",
+    "payment",
+    "online shopping",
+    "bir e-commerce",
+    "order summary",
+    "secure checkout",
+  ],
   openGraph: {
-    title: "About Us - Birgroup",
-    description:
-      "Learn more about Birgroup, our mission, vision, and core values.",
-    url: "https://bir-ecommerce.com/about",
-    siteName: "Birgroup",
+    title: "Checkout - Bir E-Commerce",
+    description: "Securely complete your order and payment on Bir E-Commerce.",
+    url: `${baseUrl}/about-us`,
+    siteName: "Bir E-Commerce",
+    images: [
+      {
+        url: "/og-image-checkout.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Checkout Page Preview - Bir E-Commerce",
+      },
+    ],
     type: "website",
   },
   alternates: {
-    canonical: "https://bir-ecommerce.com/about",
+    canonical: `${baseUrl}/about-us`,
   },
 };
-
 export default function AboutPage() {
   return (
     <div>
@@ -64,17 +77,17 @@ export default function AboutPage() {
                 utilize to continue growing every year.
               </p>
 
-              <p style={{ textAlign: "justify" }}>
+             
                 <span style={{ fontSize: "19px" }}>
                   <strong>Corporate Objectives:</strong>
                 </span>
-                <ul style={{ fontSize: "18px" }}>
+                <ul>
                   <li>Maintaining equality in a competitive workspace</li>
                   <li>Being open-minded to concepts and advice</li>
                   <li>Taking calculated risks in order to grow and prosper</li>
                   <li>Ethically conducting any and all business activities</li>
                 </ul>
-              </p>
+              
             </div>
           </div>
         </div>

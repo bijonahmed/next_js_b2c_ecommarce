@@ -12627,12 +12627,12 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .ps-section--shopping {
-  padding: 100px 0;
+  padding: 20px 0;
 }
 
 .ps-section--shopping .ps-section__header {
   text-align: center;
-  padding-bottom: 100px;
+  padding-bottom: 30px;
 }
 
 .ps-section--shopping .ps-section__header h1 {
@@ -13979,7 +13979,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 .ps-shopping-cart .ps-section__cart-actions {
   padding-top: 30px;
-  padding-bottom: 90px;
+  padding-bottom: 40px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;

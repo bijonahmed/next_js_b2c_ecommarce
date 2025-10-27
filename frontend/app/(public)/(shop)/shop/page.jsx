@@ -2,7 +2,41 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import Slider from "../../../components/frontend/Slider";
-import PromotionProducts from "../../../components/frontend/PromotionProducts";
+
+/*
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+export const metadata = {
+  title: "Cart - Bir E-Commerce",
+  description: "Securely complete your order and payment on Bir E-Commerce.",
+  keywords: [
+    "checkout",
+    "payment",
+    "online shopping",
+    "bir e-commerce",
+    "order summary",
+    "secure checkout",
+  ],
+  openGraph: {
+    title: "Checkout - Bir E-Commerce",
+    description: "Securely complete your order and payment on Bir E-Commerce.",
+    url: `${baseUrl}/cart`,
+    siteName: "Bir E-Commerce",
+    images: [
+      {
+        url: "/og-image-checkout.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Checkout Page Preview - Bir E-Commerce",
+      },
+    ],
+    type: "website",
+  },
+  alternates: {
+    canonical: `${baseUrl}/cart`,
+  },
+};
+*/
+
 export default function AboutPage() {
   const [activeTab, setActiveTab] = useState("grid"); // default view
   return (

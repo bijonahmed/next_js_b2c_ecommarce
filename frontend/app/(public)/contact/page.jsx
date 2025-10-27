@@ -1,28 +1,35 @@
 import Link from "next/link";
+const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 export const metadata = {
-  title: "Contact",
-  description: "Get in touch with us via email or phone.",
-  keywords: ["contact", "email", "support"],
+  title: "Contact- Bir E-Commerce",
+  description: "Securely complete your order and payment on Bir E-Commerce.",
+  keywords: [
+    "checkout",
+    "payment",
+    "online shopping",
+    "bir e-commerce",
+    "order summary",
+    "secure checkout",
+  ],
   openGraph: {
-    title: "Contact - My Website",
-    description: "Get in touch with us via email or phone.",
-    url: "https://bir-ecommerce.com/contact",
-    siteName: "My Website",
+    title: "contact - Bir E-Commerce",
+    description: "Securely complete your order and payment on Bir E-Commerce.",
+    url: `${baseUrl}/contact`,
+    siteName: "Bir E-Commerce",
     images: [
       {
-        url: "/og-image-contact.jpg",
+        url: "/og-image-checkout.jpg",
         width: 1200,
         height: 630,
-        alt: "Contact Preview",
+        alt: "Checkout Page Preview - Bir E-Commerce",
       },
     ],
     type: "website",
   },
   alternates: {
-    canonical: "https://bir-ecommerce.com/contact",
+    canonical: `${baseUrl}/contact`,
   },
 };
-
 
 export default function ContactPage() {
   return (
