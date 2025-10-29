@@ -3,10 +3,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext"; // Adjust the path as necessary
 import Sidebar from "../customer-dashboard/sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function InvoicePage() {
   const router = useRouter(); // ✅ Next.js Router
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // get your token
+    console.log("Token: " + token);
+    if (!token) {
+      router.replace("/"); // redirect home
+    } else {
+      setLoading(false); // token exists, show dashboard
+    }
+  }, [router]);
+
+  if (loading) {
+    return <p>Redirecting...</p>; // optional loading state
+  }
 
   return (
     <main className="ps-page--my-account">
@@ -82,7 +96,6 @@ export default function InvoicePage() {
           </div>
         </div>
       </section>
-    
     </main>
   );
 }

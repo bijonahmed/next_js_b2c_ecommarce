@@ -2,22 +2,57 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import TopNavbar from "./TopNavbar";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function InsideHeader() {
-  const { isLoggedIn, logout, username } = useAuth();
+  const [token, setToken] = useState(null);
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [activeSubmenu, setActiveSubmenu] = useState(null);
-  const pathname = usePathname();
-  //console.log("Current pathname:", pathname);
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef(null);
   const [selectedCategory, setSelectedCategory] = useState("0");
+
+useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []); 
+
+   const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Logout",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setToken(null);
+
+        Swal.fire({
+          title: "Logged out!",
+          text: "You have been logged out successfully.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        // ✅ redirect to login page after short delay
+        setTimeout(() => {
+          router.push("/my-account");
+        }, 1500);
+      }
+    });
+  };
+
   // Toggle menu on button click
   const toggleMenu = () => {
     setMenuOpen((prev) => !prev);
@@ -120,12 +155,25 @@ export default function InsideHeader() {
                   </div>
                 </div>
                 <div className="ps-block--user-header">
+
                   <div className="ps-block__left">
                     <i className="icon-user" />
+                    
                   </div>
                   <div className="ps-block__right">
-                    <Link href="/my-account">Login</Link>
-                    <Link href="/register">Register</Link>
+                    {token ? (
+                      <>
+                        <Link href="/customer-dashboard">My Dashboard</Link>
+                        <Link href="#" onClick={handleLogout}>
+                          Logout
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/my-account">Login</Link>
+                        <Link href="/register">Register</Link>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

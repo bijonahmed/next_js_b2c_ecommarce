@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext"; // Adjust the path as necessary
 import Sidebar from "../customer-dashboard/sidebar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter(); // ✅ Next.js Router
@@ -12,13 +12,27 @@ export default function LoginPage() {
   const [success, setSuccess] = useState("");
   const { login } = useAuth();
 
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // get your token
+    console.log("Token: " + token);
+    if (!token) {
+      router.replace("/"); // redirect home
+    } else {
+      setLoading(false); // token exists, show dashboard
+    }
+  }, [router]);
+
+  if (loading) {
+    return <p>Redirecting...</p>; // optional loading state
+  }
+
   return (
     <main className="ps-page--my-account">
       <div className="ps-breadcrumb">
         <div className="container">
           <ul className="breadcrumb">
             <li>
-              <a href="index.html">Home</a>
+              <Link href="/">Home</Link>
             </li>
             <li>User Information</li>
           </ul>

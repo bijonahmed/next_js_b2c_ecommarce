@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext"; // Adjust the path as necessary
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter(); // ✅ Next.js Router
@@ -22,51 +22,37 @@ export default function LoginPage() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/login`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        // Save token
-        if (data.token) {
-          localStorage.setItem("token", data.token);
+        if (data.token) localStorage.setItem("token", data.token);
+        if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+
+        // ✅ Correct role check
+        if (data.user && data.user.role_type == 4) {
+          setSuccess("Login successful!");
+          login(data.token, data.user.name);
+          window.location.href = "/customer-dashboard";
+          //router.replace("/customer-dashboard");
+        } else {
+          setError("Invalid login — not allowed.");
         }
-
-        // Save user info
-        if (data.user) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-        }
-
-        // Save roles
-        if (data.roles) {
-          localStorage.setItem("roles", JSON.stringify(data.roles));
-        }
-
-        // Save permissions
-        if (data.permissions) {
-          localStorage.setItem("permissions", JSON.stringify(data.permissions));
-        }
-
-        setSuccess("Login successful!");
-
-        // Optionally, you can also set a global state or context
-        login(data.token, data.user.name, data.roles, data.permissions);
-
-        // Redirect to dashboard
-        router.replace("/dashboard");
       } else {
-        setError(data.message || "Invalid login credentials");
+        setError(data.message || "Invalid login credentials.");
       }
     } catch (err) {
+      console.error("Login Error:", err);
       setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+
+  
 
   return (
     <div className="ps-page--my-account">
@@ -133,16 +119,19 @@ export default function LoginPage() {
                     </button>
                   </div>
                   <br />
-                    <div className="mt-3 text-center">
+                  <div className="mt-3 text-center">
                     Already have an account?{" "}
-                    <Link href="/register" className="text-primary">Register</Link>
+                    <Link href="/register" className="text-primary">
+                      Register
+                    </Link>
                   </div>
-                  <br/>
+                  <br />
                   {/* Status Messages */}
-                  {error && <p className="text-danger mt-3">{error}</p>}
-                  {success && <p className="text-success mt-3">{success}</p>}
+                  <center>
+                    {error && <p className="text-danger mt-3">{error}</p>}
+                    {success && <p className="text-success mt-3">{success}</p>}
+                  </center>
                 </div>
-                
               </div>
             </div>
           </form>

@@ -2,18 +2,99 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import TopNavbar from "./TopNavbar";
 import { usePathname } from "next/navigation";
 import InsideHeader from "../frontend/InsideHeader";
+import Swal from "sweetalert2";
+
 
 export default function ClientNavbar() {
-  const { isLoggedIn, logout, username } = useAuth();
+  const [token, setToken] = useState(null);
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [activeSubmenu, setActiveSubmenu] = useState(null);
+  const [categoryData, setCategoryData] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchCategories = async () => {
+    setLoading(true);
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/public/getCategory`;
+
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      let result;
+      try {
+        result = await res.json();
+      } catch (e) {
+        result = null;
+      }
+
+      if (!res.ok) {
+        if (result && result.message) {
+          throw new Error(result.message);
+        } else {
+          throw new Error(`HTTP Error: ${res.status}`);
+        }
+      }
+
+      setCategoryData(result?.data || []);
+    } catch (err) {
+      console.error("Fetch categories failed:", err.message);
+      toast.error(err.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Logout",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setToken(null);
+
+        Swal.fire({
+          title: "Logged out!",
+          text: "You have been logged out successfully.",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        // ✅ redirect to login page after short delay
+        setTimeout(() => {
+          router.push("/my-account");
+        }, 1500);
+      }
+    });
+  };
+
   const pathname = usePathname();
   console.log("Current pathname:", pathname);
 
@@ -22,18 +103,15 @@ export default function ClientNavbar() {
       <div>
         {pathname === "/" ? (
           <>
-           <div
-  className="ps-block--promotion-header bg--cover"
-  style={{
-    backgroundImage: `url('/frontend_theme/img/promotions/header-promotion.jpg')`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    width: '100%',
-    
-  }}
->
-
-
+            <div
+              className="ps-block--promotion-header bg--cover"
+              style={{
+                backgroundImage: `url('/frontend_theme/img/promotions/header-promotion.jpg')`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                width: "100%",
+              }}
+            >
               <div className="container">
                 <div className="ps-block__left">
                   <h3>Our Products</h3>
@@ -209,8 +287,21 @@ export default function ClientNavbar() {
                           <i className="icon-user" />
                         </div>
                         <div className="ps-block__right">
-                          <a href="/my-account">Login</a>
-                          <a href="/register">Register</a>
+                          {token ? (
+                            <>
+                              <Link href="/customer-dashboard">
+                                My Dashboard
+                              </Link>
+                              <Link href="#" onClick={handleLogout}>
+                                Logout
+                              </Link>
+                            </>
+                          ) : (
+                            <>
+                              <Link href="/my-account">Login</Link>
+                              <Link href="/register">Register</Link>
+                            </>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -323,25 +414,36 @@ export default function ClientNavbar() {
                         Sub Total:<strong>$59.99</strong>
                       </h3>
                       <figure>
-                        <a className="ps-btn" href="shopping-cart.html">
+                        <Link className="ps-btn" href="/cart">
                           View Cart
-                        </a>
-                        <a className="ps-btn" href="checkout.html">
+                        </Link>
+                        <Link className="ps-btn" href="/checkout">
                           Checkout
-                        </a>
+                        </Link>
                       </figure>
                     </div>
                   </div>
                 </div>
                 <div className="ps-block--user-header">
                   <div className="ps-block__left">
-                    <a href="my-account.html">
+                    <Link href="/my-account/">
                       <i className="icon-user" />
-                    </a>
+                    </Link>
                   </div>
                   <div className="ps-block__right">
-                    <a href="my-account.html">Login</a>
-                    <a href="my-account.html">Register</a>
+                    {token ? (
+                      <>
+                        <Link href="/customer-dashboard">My Dashboard</Link>
+                        <Link href="#" onClick={handleLogout}>
+                          Logout
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link href="/my-account">Login</Link>
+                        <Link href="/register">Register</Link>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

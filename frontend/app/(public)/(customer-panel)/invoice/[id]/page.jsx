@@ -3,11 +3,26 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import Sidebar from "../../customer-dashboard/sidebar";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 
 export default function InvoiceDetailPage() {
-const { id } = useParams(); // Get invoice ID from URL
-const [invoice, setInvoice] = useState(null);
+  const { id } = useParams(); // Get invoice ID from URL
+  const [invoice, setInvoice] = useState(null);
+  const router = useRouter(); // ✅ Next.js Router
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token"); // get your token
+    console.log("Token: " + token);
+    if (!token) {
+      router.replace("/"); // redirect home
+    } else {
+      setLoading(false); // token exists, show dashboard
+    }
+  }, [router]);
+
+  if (loading) {
+    return <p>Redirecting...</p>; // optional loading state
+  }
 
   /*
   useEffect(() => {

@@ -1,20 +1,17 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
+import useCategories from "../../hooks/useCategories";
+
 export default function SidebarSystem() {
   const [activePanel, setActivePanel] = useState(null);
-
+  const { categoryData, loading } = useCategories();
   //const [categoriesItems, setCategoriesItems] = useState([]);
-  const categoriesItems = [
-    { name: "Foldable Clothes Drying Racks", link: "#" },
-    { name: "Vikars Ladder", link: "#" },
-    { name: "WD-40 Anti Rust Spray", link: "#" },
-    { name: "Bir Tools", link: "#" },
-    { name: "Makita Power Tools", link: "#" },
-    { name: "Home & Utility Essentials", link: "#" },
-    { name: "Cleaning & Maintenance Products", link: "#" },
-    { name: "Hand Tools & Hardware", link: "#" },
-  ];
+  const [openParentId, setOpenParentId] = useState(null);
+
+  const toggleParent = (id) => {
+    setOpenParentId(openParentId === id ? null : id);
+  };
 
   const menuItems = [
     { name: "Home", link: "/" },
@@ -71,11 +68,66 @@ export default function SidebarSystem() {
                 <i className="icon-menu" />
                 <span> Shop by Categories</span>
               </div>
-              <div className="menu__content">
-                <ul className="menu--mobile">
-                  {categoriesItems.map((item, index) => (
-                    <li key={index}>
-                      <a href={item.link}>{item.name}</a>
+              <div className="menu__content mt-5">
+                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+                  {categoryData.map((parent) => (
+                    <li key={parent.id} style={{ marginBottom: "5px" }}>
+                      {/* Parent category */}
+                      <div
+                        onClick={() => toggleParent(parent.id)}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "10px 15px",
+                          backgroundColor: "rgb(28, 23, 12)",
+                          color: "#fff",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <span>{parent.name}</span>
+                        {parent.children && parent.children.length > 0 && (
+                          <span style={{ fontWeight: "bold" }}>
+                            {openParentId === parent.id ? "▼" : "▶"}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Child categories */}
+                      {parent.children &&
+                        parent.children.length > 0 &&
+                        openParentId === parent.id && (
+                          <ul
+                            style={{
+                              marginLeft: "15px",
+                              listStyle: "none",
+                              paddingLeft: "0",
+                              marginTop: "2px",
+                            }}
+                          >
+                            {parent.children.map((child) => (
+                              <li
+                                key={child.id}
+                                style={{ marginBottom: "3px" }}
+                              >
+                                <a
+                                  href={`/shop/${child.slug}`}
+                                  style={{
+                                    display: "block",
+                                    padding: "8px 12px",
+                                    backgroundColor: "#f0f0f0",
+                                    color: "#333",
+                                    textDecoration: "none",
+                                    borderRadius: "4px",
+                                  }}
+                                >
+                                  {child.name}
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                     </li>
                   ))}
                 </ul>

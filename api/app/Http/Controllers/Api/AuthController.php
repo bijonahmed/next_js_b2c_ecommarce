@@ -14,13 +14,47 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        //dd($request->all());
+        $validator = Validator::make($request->all(), [
+            'name'          => 'required|max:100',
+            'email'         => 'required|email|unique:users,email',
+            'phone_number'  => 'required|max:20|unique:users,phone_number',
+            'password'      => 'required|string|min:6|confirmed', // uses password_confirmation
+        ], [
+            // Custom error messages
+            'name.required'          => 'Full name is required.',
+            'email.required'         => 'Email address is required.',
+            'email.email'            => 'Please provide a valid email address.',
+            'email.unique'           => 'This email is already registered.',
+            'phone_number.required'  => 'Phone number is required.',
+            'phone_number.unique'    => 'This phone number is already in use.',
+            'password.required'      => 'Password is required.',
+            'password.min'           => 'Password must be at least 6 characters.',
+            'password.confirmed'     => 'Passwords do not match.',
+        ]);
+
+        // If validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        // Create user
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'         => $request->name,
+            'email'        => $request->email,
+            'phone_number' => $request->phone_number,
+            'role_type'    => 4,
             'password' => Hash::make($request->password),
         ]);
 
-        return response()->json(['message' => 'User created successfully']);
+        return response()->json([
+            'success' => true,
+            'message' => 'User created successfully.',
+            'user' => $user,
+        ], 201);
     }
 
     public function login(Request $request)
@@ -97,6 +131,4 @@ class AuthController extends Controller
 
         return response()->json($response);
     }
-
-    
 }

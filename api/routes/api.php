@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Categories\CategoryController;
 use App\Http\Controllers\Api\Post\PostCategoryController;
 use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\User\UserController;
@@ -15,6 +16,14 @@ Route::middleware('api')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('api.register');
     Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 });
+
+Route::prefix('public')->group(function () {
+    // Example: Authentication routes
+    Route::get('/getCategory', [CategoryController::class, 'index']);
+    
+});
+
+
 Route::middleware(['auth:api'])->group(function () {
     // User
     Route::get('/profile', [AuthController::class, 'profile']);
@@ -44,9 +53,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/check-permissions/{id}', [PermissionsController::class, 'checkpermissions']);
     });
 
-
-
-
     Route::prefix('users')->group(function () {
         Route::get('/index', [UserController::class, 'index']);
         Route::post('/create', [UserController::class, 'store']);
@@ -71,6 +77,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/postCategorysearch', [PostController::class, 'postCategorysearch']);
     });
 });
+
+
 Route::fallback(function () {
     return redirect('/');
 });
