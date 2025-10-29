@@ -1,5 +1,5 @@
 "use client"; // required for client components
-
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext"; // Adjust the path as necessary
 import { useState } from "react";
@@ -12,42 +12,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { login } = useAuth();
-
-  /*
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
-        setSuccess("");
-
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
-
-            const data = await res.json();
-
-            if (res.ok) {
-                setSuccess("Login successful!");
-                login(data.access_token, data.user.name);
-                if (data.access_token) {
-                    localStorage.setItem("token", data.access_token);
-                }
-                router.replace("/dashboard");
-            } else {
-                setError(data.message || "Invalid login credentials");
-            }
-        } catch (err) {
-            setError("Something went wrong. Please try again.");
-        }
-
-        setLoading(false);
-    };
-    */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -105,63 +69,62 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center">
-        <div className="col-md-6 col-lg-4">
-          <div className="card shadow-sm">
-            <div className="card-body">
-         
-              <form onSubmit={handleSubmit}>
-                {/* email */}
-                <div className="mb-3">
-                  <label htmlFor="email" className="form-label">
-                    Email
-                  </label>
+    <div className="ps-my-account">
+      <div className="container">
+        <form className="ps-form--account ps-tab-root" onSubmit={handleSubmit}>
+          <ul className="ps-tab-list">
+            <li className="active">
+              <a href="#sign-in">Administrator Login</a>
+            </li>
+          </ul>
+
+          <div className="ps-tabs">
+            <div className="ps-tab active" id="sign-in">
+              <div className="ps-form__content">
+                <h5>Log In Your Account</h5>
+
+                {/* Email */}
+                <div className="form-group">
                   <input
-                    type="email"
                     className="form-control"
-                    id="email"
+                    type="email"
+                    placeholder="Username or email address"
                     value={email}
                     onChange={(e) => setemail(e.target.value)}
-                    placeholder="Enter your email"
+                    required
                   />
                 </div>
 
                 {/* Password */}
-                <div className="mb-3">
-                  <label htmlFor="password" className="form-label">
-                    Password
-                  </label>
+                <div className="form-group form-forgot">
                   <input
-                    type="password"
                     className="form-control"
-                    id="password"
+                    type="password"
+                    placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    required
                   />
                 </div>
 
                 {/* Submit */}
-                <div className="d-grid">
+                <div className="form-group submtit">
                   <button
                     type="submit"
-                    className="btn btn-primary"
+                    className="ps-btn ps-btn--fullwidth"
                     disabled={loading}
                   >
                     {loading ? "Logging in..." : "Login"}
                   </button>
                 </div>
-
+                <br />
                 {/* Status Messages */}
                 {error && <p className="text-danger mt-3">{error}</p>}
                 {success && <p className="text-success mt-3">{success}</p>}
-
-                {/* Forgot Password */}
-              </form>
+              </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );

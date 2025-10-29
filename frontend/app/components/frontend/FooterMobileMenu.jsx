@@ -143,7 +143,7 @@ export default function SidebarSystem() {
                     Sub Total:<strong>$59.99</strong>
                   </h3>
                   <figure>
-                    <a className="ps-btn" href="shopping-cart.html">
+                    <a className="ps-btn" href="/cart">
                       View Cart
                     </a>
                     <a className="ps-btn" href="checkout.html">

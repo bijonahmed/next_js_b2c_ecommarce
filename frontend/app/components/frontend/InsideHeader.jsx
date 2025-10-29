@@ -65,18 +65,12 @@ export default function InsideHeader() {
             </div>
             <div className="header__right">
               <div className="header__actions">
-                <a className="header__extra" href="#">
-                  <i className="icon-chart-bars" />
-                  <span>
-                    <i>0</i>
-                  </span>
-                </a>
-                <a className="header__extra" href="#">
+                <Link className="header__extra" href="/whishlist">
                   <i className="icon-heart" />
                   <span>
                     <i>0</i>
                   </span>
-                </a>
+                </Link>
                 <div className="ps-cart--mini">
                   <a className="header__extra" href="#">
                     <i className="icon-bag2" />
@@ -115,12 +109,12 @@ export default function InsideHeader() {
                         Sub Total:<strong>$59.99</strong>
                       </h3>
                       <figure>
-                        <a className="ps-btn" href="shopping-cart.html">
+                        <Link className="ps-btn" href="/cart">
                           View Cart
-                        </a>
-                        <a className="ps-btn" href="checkout.html">
+                        </Link>
+                        <Link className="ps-btn" href="/checkout">
                           Checkout
-                        </a>
+                        </Link>
                       </figure>
                     </div>
                   </div>
@@ -130,8 +124,8 @@ export default function InsideHeader() {
                     <i className="icon-user" />
                   </div>
                   <div className="ps-block__right">
-                    <a href="my-account.html">Login</a>
-                    <a href="my-account.html">Register</a>
+                    <Link href="/my-account">Login</Link>
+                    <Link href="/register">Register</Link>
                   </div>
                 </div>
               </div>

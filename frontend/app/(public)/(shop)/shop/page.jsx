@@ -134,58 +134,37 @@ export default function AboutPage() {
                       <div className="ps-shopping-product">
                         <div className="row">
                           {/* Example product */}
-
                           <div className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-6 ">
                             <div className="ps-product">
                               <div className="ps-product__thumbnail">
-                                <a href="#">
+                                <Link href="/shop/details/iphone-15">
                                   <img
                                     loading="lazy"
                                     src="/frontend_theme/img/products/home/1.jpg"
                                     alt="image"
                                   />
-                                </a>
+                                </Link>
                                 <ul className="ps-product__actions">
                                   <li>
-                                    <a
-                                      href="#"
+                                    <Link
+                                      href="/shop/details/iphone-15"
                                       data-bs-toggle="tooltip"
                                       data-placement="top"
                                       title="Add To Cart"
                                     >
                                       <i className="icon-bag2" />
-                                    </a>
+                                    </Link>
                                   </li>
+
                                   <li>
-                                    <a
-                                      href="#"
-                                      data-placement="top"
-                                      title="Quick View"
-                                      data-bs-toggle="modal"
-                                      data-bs-target="#product-quickview"
-                                    >
-                                      <i className="icon-eye" />
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a
-                                      href="#"
+                                    <Link
+                                      href="/whishlist"
                                       data-bs-toggle="tooltip"
                                       data-placement="top"
                                       title="Add to Whishlist"
                                     >
                                       <i className="icon-heart" />
-                                    </a>
-                                  </li>
-                                  <li>
-                                    <a
-                                      href="#"
-                                      data-bs-toggle="tooltip"
-                                      data-placement="top"
-                                      title="Compare"
-                                    >
-                                      <i className="icon-chart-bars" />
-                                    </a>
+                                    </Link>
                                   </li>
                                 </ul>
                               </div>
@@ -219,13 +198,13 @@ export default function AboutPage() {
                       <div className="ps-shopping-product">
                         <div className="ps-product ps-product--wide">
                           <div className="ps-product__thumbnail">
-                            <a href="#">
+                            <Link href="/shop/details/iphone-15">
                               <img
                                 loading="lazy"
                                 src="/frontend_theme/img/products/shop/1.jpg"
                                 alt="imge"
                               />
-                            </a>
+                            </Link>
                           </div>
                           <div className="ps-product__container">
                             <div className="ps-product__content">
@@ -260,14 +239,9 @@ export default function AboutPage() {
                               </a>
                               <ul className="ps-product__actions">
                                 <li>
-                                  <a href="#">
+                                  <Link href="/whishlist">
                                     <i className="icon-heart" /> Wishlist
-                                  </a>
-                                </li>
-                                <li>
-                                  <a href="#">
-                                    <i className="icon-chart-bars" /> Compare
-                                  </a>
+                                  </Link>
                                 </li>
                               </ul>
                             </div>

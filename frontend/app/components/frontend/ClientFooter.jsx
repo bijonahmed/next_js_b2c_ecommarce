@@ -58,6 +58,9 @@ export default function ClientFooter() {
               <li>
                 <Link href="/contact">Contact</Link>
               </li>
+              <li>
+                <Link href="/login">Admistrator</Link>
+              </li>
             </ul>
           </aside>
           <aside className="widget widget_footer">
@@ -73,7 +76,7 @@ export default function ClientFooter() {
                 <Link href="/checkout">Checkout</Link>
               </li>
               <li>
-                <Link href="/login">My account</Link>
+                <Link href="/customer-dashboard">My account</Link>
               </li>
               <li>
                 <Link href="/shop">Shop</Link>

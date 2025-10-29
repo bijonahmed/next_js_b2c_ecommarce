@@ -124,12 +124,7 @@ export default function ProductsSliders() {
                       className="w-full h-[300px] object-cover"
                     />
                   </a>
-                  {product.discount && (
-                    <div className="ps-product__badge">{product.discount}</div>
-                  )}
-                  {!product.stock && (
-                    <div className="ps-product__badge out-stock">Out Of Stock</div>
-                  )}
+                  
                   <ul className="ps-product__actions">
                     <li>
                       <a href="#" title="Read More">

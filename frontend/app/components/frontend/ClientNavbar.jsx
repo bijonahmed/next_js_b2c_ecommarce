@@ -22,10 +22,18 @@ export default function ClientNavbar() {
       <div>
         {pathname === "/" ? (
           <>
-            <div
-              className="ps-block--promotion-header bg--cover"
-              data-background="/frontend_theme/img/promotions/header-promotion.jpg"
-            >
+           <div
+  className="ps-block--promotion-header bg--cover"
+  style={{
+    backgroundImage: `url('/frontend_theme/img/promotions/header-promotion.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    width: '100%',
+    
+  }}
+>
+
+
               <div className="container">
                 <div className="ps-block__left">
                   <h3>Our Products</h3>
@@ -119,12 +127,12 @@ export default function ClientNavbar() {
                   </div>
                   <div className="header__content-right">
                     <div className="header__actions">
-                      <a className="header__extra" href="#">
+                      <Link className="header__extra" href="/whishlist">
                         <i className="icon-heart" />
                         <span>
                           <i>0</i>
                         </span>
-                      </a>
+                      </Link>
                       <div className="ps-cart--mini">
                         <a className="header__extra" href="#">
                           <i className="icon-bag2" />
@@ -186,12 +194,12 @@ export default function ClientNavbar() {
                               Sub Total:<strong>$59.99</strong>
                             </h3>
                             <figure>
-                              <a className="ps-btn" href="shopping-cart.html">
+                              <Link className="ps-btn" href="/cart">
                                 View Cart
-                              </a>
-                              <a className="ps-btn" href="checkout.html">
+                              </Link>
+                              <Link className="ps-btn" href="/checkout">
                                 Checkout
-                              </a>
+                              </Link>
                             </figure>
                           </div>
                         </div>
@@ -201,8 +209,8 @@ export default function ClientNavbar() {
                           <i className="icon-user" />
                         </div>
                         <div className="ps-block__right">
-                          <a href="my-account.html">Login</a>
-                          <a href="my-account.html">Register</a>
+                          <a href="/my-account">Login</a>
+                          <a href="/register">Register</a>
                         </div>
                       </div>
                     </div>

@@ -11,16 +11,13 @@ export default function FrontendAssets() {
       <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="author" content="Martfury Template" />
+        <meta name="author" content="Bir Group" />
         <meta
           name="keywords"
           content="ecommerce, marketplace, shopping, html template, bootstrap"
         />
-        <meta
-          name="description"
-          content="Martfury - Modern Multipurpose Marketplace HTML5 Template with Bootstrap 5"
-        />
-        <title>Martfury</title>
+       
+        <title>Welcome to Bir E-commerce</title>
         <link
           href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700&display=swap"
           rel="stylesheet"

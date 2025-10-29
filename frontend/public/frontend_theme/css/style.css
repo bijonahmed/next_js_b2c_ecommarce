@@ -9442,14 +9442,23 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .ps-product--detail .ps-product__thumbnail {
+	/*
   width: 100%;
   display: flex;
   flex-flow: row-reverse nowrap;
   align-content: flex-start;
+  */
 }
 
 .ps-product--detail .ps-product__thumbnail > * {
-  width: 100%;
+  width: 80%;
+}
+
+/* Mobile view */
+@media (max-width: 768px) {
+  .ps-product--detail .ps-product__thumbnail > * {
+    width: 100%;
+  }
 }
 
 .ps-product--detail .ps-product__thumbnail .ps-product__badge {
@@ -9573,7 +9582,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .ps-product--detail > .ps-product__content {
-  padding-top: 100px;
+  padding-top: 50px;
 }
 
 .ps-product--detail .ps-tab-list {
@@ -12021,7 +12030,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 .ps-form--account {
   max-width: 430px;
   margin: 0 auto;
-  padding-top: 130px;
+  padding-top: 30px;
 }
 
 .ps-form--account .ps-tab-list {
