@@ -7,10 +7,12 @@ export default function AdminNavbar() {
   const { logout, username, roles } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false); // track dropdown
+
   const handleLogout = (e) => {
     e.preventDefault();
     logout();
-    router.push("/login");
+   // router.push("/login");
+    window.location.href = "/login";
   };
   
 const capitalizeFirst = (value) => {

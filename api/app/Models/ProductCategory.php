@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use AuthorizesRequests;
 use DB;
-class Category extends Authenticatable
+class ProductCategory extends Authenticatable
 {
     use HasFactory, Notifiable;
     public $table = "categorys";

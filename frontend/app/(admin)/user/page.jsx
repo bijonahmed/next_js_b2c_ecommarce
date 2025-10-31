@@ -151,6 +151,12 @@ export default function UserPage() {
   ];
   const handlePageChange = (newPage) => setPage(newPage);
   const handlePerRowsChange = (newPerPage) => setPerPage(newPerPage);
+
+  if (!perms.includes("view users")) {
+    router.replace("/dashboard");
+    return false;
+  }
+
   return (
     <main className="app-main" id="main" tabIndex={-1}>
       {/*begin::App Content Header*/}

@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Roles\RolesController;
 use App\Http\Controllers\Api\Permissions\PermissionsController;
+use App\Http\Controllers\Api\ProductCategories\ProductCategoryController;
+use App\Http\Controllers\Api\Public\PublicController;
 use App\Http\Controllers\Api\Settings\SettingsController;
 
 
@@ -18,9 +20,7 @@ Route::middleware('api')->group(function () {
 });
 
 Route::prefix('public')->group(function () {
-    // Example: Authentication routes
-    Route::get('/getCategory', [CategoryController::class, 'index']);
-    
+    Route::get('/getCategory', [PublicController::class, 'index']);
 });
 
 
@@ -34,6 +34,18 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/settingrow', [SettingsController::class, 'settingrow']);
         Route::post('/upateSetting', [SettingsController::class, 'upateSetting']);
     });
+
+    Route::prefix('product-category')->group(function () {
+        Route::get('/index', [ProductCategoryController::class, 'index']);
+        Route::post('/create', [ProductCategoryController::class, 'store']);
+        Route::post('/create-subcategory', [ProductCategoryController::class, 'createSubcategory']);
+        Route::post('/update/{id}', [ProductCategoryController::class, 'update']);
+        Route::post('/uploadCategoryImage', [ProductCategoryController::class, 'uploadCategoryImage']);
+        // Route::DELETE('/delete/{id}', [PostCategoryController::class, 'destroy']);
+        // Route::get('/postrow/{id}', [PostCategoryController::class, 'postrow']);
+    });
+
+
 
 
     Route::prefix('roles')->group(function () {
@@ -68,6 +80,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::DELETE('/delete/{id}', [PostCategoryController::class, 'destroy']);
         Route::get('/postrow/{id}', [PostCategoryController::class, 'postrow']);
     });
+
+
+
     Route::prefix('posts')->group(function () {
         Route::get('/index', [PostController::class, 'index']);
         Route::post('/create', [PostController::class, 'store']);

@@ -7,8 +7,7 @@ import useCategories from "../../hooks/useCategories";
 
 export default function TopNavbar() {
   const { categoryData, loading } = useCategories();
-
-  if (loading) return <p>Loading categories...</p>;
+  
 
   return (
     <nav className="navigation">
@@ -16,7 +15,7 @@ export default function TopNavbar() {
         <div className="navigation__left">
           <div className="menu--product-categories">
             <div className="menu__toggle">
-              <span>Shop by Categories</span>
+              <i className="icon-menu"></i><span>Shop by Categories</span>
             </div>
             <div className="menu__content">
               <ul className="menu--dropdown">
@@ -45,58 +44,57 @@ export default function TopNavbar() {
                     {/* Mega Menu */}
                     {parent.children && parent.children.length > 0 && (
                       <div
-  className="mega-menu"
-  style={{
-    display: "flex",
-    flexWrap: "wrap",
-    backgroundColor: "#f9f9f9",
-    padding: "10px",
-    borderRadius: "6px",
-    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-    maxWidth: "500px", // adjust as needed
-  }}
->
-  {parent.children && parent.children.length > 0 && (
-    <ul
-      className="mega-menu__list"
-      style={{
-        display: "flex",
-        flexWrap: "wrap",
-        padding: 0,
-        margin: 0,
-        listStyle: "none",
-        width: "100%",
-      }}
-    >
-      {parent.children.map((subItem, index) => (
-        <li
-          key={subItem.id}
-          style={{
-            width: "50%", // two columns
-            padding: "5px 10px",
-            boxSizing: "border-box",
-          }}
-        >
-          <Link
-            href={`/shop/${subItem.slug}`}
-            style={{
-              textDecoration: "none",
-              color: "#333",
-              display: "block",
-              padding: "5px",
-              borderRadius: "4px",
-              backgroundColor: "#fff",
-              marginBottom: "3px",
-            }}
-          >
-            {subItem.name}
-          </Link>
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
-
+                        className="mega-menu"
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          backgroundColor: "#f9f9f9",
+                          padding: "10px",
+                          borderRadius: "6px",
+                          boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                          maxWidth: "500px", // adjust as needed
+                        }}
+                      >
+                        {parent.children && parent.children.length > 0 && (
+                          <ul
+                            className="mega-menu__list"
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              padding: 0,
+                              margin: 0,
+                              listStyle: "none",
+                              width: "100%",
+                            }}
+                          >
+                            {parent.children.map((subItem, index) => (
+                              <li
+                                key={subItem.id}
+                                style={{
+                                  width: "50%", // two columns
+                                  padding: "5px 10px",
+                                  boxSizing: "border-box",
+                                }}
+                              >
+                                <Link
+                                  href={`/shop/${subItem.slug}`}
+                                  style={{
+                                    textDecoration: "none",
+                                    color: "#333",
+                                    display: "block",
+                                    padding: "5px",
+                                    borderRadius: "4px",
+                                    backgroundColor: "#fff",
+                                    marginBottom: "3px",
+                                  }}
+                                >
+                                  {subItem.name}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
                     )}
                   </li>
                 ))}

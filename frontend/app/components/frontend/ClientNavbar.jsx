@@ -10,7 +10,6 @@ import { usePathname } from "next/navigation";
 import InsideHeader from "../frontend/InsideHeader";
 import Swal from "sweetalert2";
 
-
 export default function ClientNavbar() {
   const [token, setToken] = useState(null);
   const router = useRouter();

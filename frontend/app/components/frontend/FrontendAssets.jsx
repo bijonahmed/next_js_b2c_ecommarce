@@ -54,10 +54,10 @@ export default function FrontendAssets() {
         <link rel="stylesheet" href="/frontend_theme/css/style.css" />
         <link rel="stylesheet" href="/frontend_theme/css/market-place-1.css" />
         <style
-          dangerouslySetInnerHTML={{
-            __html:
-              "\n        /* Always keep the menu content visible */\n        .menu--product-categories .menu__content {\n            display: block !important;\n            opacity: 1 !important;\n            visibility: visible !important;\n            transform: none !important;\n        }\n\n        /*# sourceMappingURL=style.css.map */\n    ",
-          }}
+          // dangerouslySetInnerHTML={{
+          //   __html:
+          //     "\n        /* Always keep the menu content visible */\n        .menu--product-categories .menu__content {\n            display: block !important;\n            opacity: 1 !important;\n            visibility: visible !important;\n            transform: none !important;\n        }\n\n        /*# sourceMappingURL=style.css.map */\n    ",
+          // }}
         />
 
         <Script
