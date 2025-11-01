@@ -8,7 +8,6 @@ import useCategories from "../../hooks/useCategories";
 export default function TopNavbar() {
   const { categoryData, loading } = useCategories();
   
-
   return (
     <nav className="navigation">
       <div className="container">

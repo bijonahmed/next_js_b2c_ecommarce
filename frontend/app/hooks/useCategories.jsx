@@ -4,14 +4,20 @@ import { useEffect, useState } from "react";
 
 export default function useCategories() {
   const [categoryData, setCategoryData] = useState([]);
+  const [sliderData, setSlidersData] = useState([]);
+  const [topBannerData, setTopBannerData] = useState("");
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/public/getCategory`);
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE}/public/getCategory`
+        );
         const result = await res.json();
         setCategoryData(result.data || []);
+        setTopBannerData(result.topBanner || []);
+        setSlidersData(result.sliders || []);
       } catch (err) {
         console.error("Fetch failed:", err);
       } finally {
@@ -21,5 +27,5 @@ export default function useCategories() {
     fetchCategories();
   }, []);
 
-  return { categoryData, loading };
+  return { categoryData, topBannerData, sliderData, loading };
 }

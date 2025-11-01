@@ -9,59 +9,12 @@ import TopNavbar from "./TopNavbar";
 import { usePathname } from "next/navigation";
 import InsideHeader from "../frontend/InsideHeader";
 import Swal from "sweetalert2";
+import useCategories from "../../hooks/useCategories";
 
 export default function ClientNavbar() {
   const [token, setToken] = useState(null);
   const router = useRouter();
-  const [categoryData, setCategoryData] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const fetchCategories = async () => {
-    setLoading(true);
-    try {
-      const url = `${process.env.NEXT_PUBLIC_API_BASE}/public/getCategory`;
-
-      const res = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      let result;
-      try {
-        result = await res.json();
-      } catch (e) {
-        result = null;
-      }
-
-      if (!res.ok) {
-        if (result && result.message) {
-          throw new Error(result.message);
-        } else {
-          throw new Error(`HTTP Error: ${res.status}`);
-        }
-      }
-
-      setCategoryData(result?.data || []);
-    } catch (err) {
-      console.error("Fetch categories failed:", err.message);
-      toast.error(err.message || "Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken(storedToken);
-    }
-  }, []);
+  const { topBannerData, loading } = useCategories();
 
   const handleLogout = () => {
     Swal.fire({
@@ -105,7 +58,7 @@ export default function ClientNavbar() {
             <div
               className="ps-block--promotion-header bg--cover"
               style={{
-                backgroundImage: `url('/frontend_theme/img/promotions/header-promotion.jpg')`,
+                backgroundImage: `url(${topBannerData})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 width: "100%",

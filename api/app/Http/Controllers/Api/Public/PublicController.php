@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\Roles;
 use App\Models\ProductCategory;
 use App\Models\User;
@@ -30,12 +31,32 @@ class PublicController extends Controller
                     ];
                 });
             };
+
+            $chkBanner = Banner::where('type', 'top_banner')->first();
+            $topBanner = !empty($chkBanner) ? url($chkBanner->banner_image) : "";
+
+
+
+            $sliderBanner = Banner::where('type', 'slider')->get();
+
+            $sliders = $sliderBanner->map(function ($item) {
+                if (!empty($item->home_slider)) {
+                    $item->home_slider = url($item->home_slider);
+                }
+                return $item;
+            });
+
+
             // Start with parent_id = 0 (top-level)
             $nestedCategories = $buildTree(0);
 
             return response()->json([
-                'success' => true,
-                'data' => $nestedCategories,
+                'success'   => true,
+                'data'      => $nestedCategories,
+                'topBanner' => $topBanner,
+                'sliders' => $sliders,
+
+
             ], 200);
         } catch (\Exception $e) {
             \Log::error('Category fetch failed: ' . $e->getMessage(), [
