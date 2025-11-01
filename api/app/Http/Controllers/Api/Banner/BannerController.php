@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\ProductCategories;
+namespace App\Http\Controllers\Api\Banner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Banner;
 use App\Models\PostCategory;
 use App\Models\ProductCategory;
 use Exception;
@@ -13,21 +14,21 @@ use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Str;
 use Validator;
 
-class ProductCategoryController extends Controller
+class BannerController extends Controller
 {
     public function index(Request $request)
     {
         $user = Auth::user();
-        if (! $user->can('view product category')) {
+        if (! $user->can('view banner')) {
             return response()->json([
-                'message' => 'Unauthorized: You do not have permission to view posts category',
+                'message' => 'Unauthorized: You do not have permission to view banner',
             ], 403);
         }
 
         try {
-            $query = ProductCategory::orderBy('id', 'desc')->get()->map(function ($item) {
-                if ($item->thumbnail_image) {
-                    $item->thumbnail_image = url($item->thumbnail_image); // full URL
+            $query = Banner::orderBy('id', 'desc')->get()->map(function ($item) {
+                if ($item->home_slider) {
+                    $item->home_slider = url($item->home_slider); // full URL
                 }
                 if ($item->banner_image) {
                     $item->banner_image = url($item->banner_image); // full URL
@@ -46,66 +47,92 @@ class ProductCategoryController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function SliderStore(Request $request)
     {
+        // dd($request->all());
+
         $user = Auth::user();
-        if (! $user->can('create product category')) {
+        if (! $user->can('create banner')) {
             return response()->json([
-                'message' => 'Unauthorized: You do not have permission to create product category',
+                'message' => 'Unauthorized: You do not have permission to create banner',
             ], 403);
         }
-        // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'home_slider' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // max 2MB
         ]);
-        if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 422);
-        }
-        $user_id = $user->id;
 
-        $data = [
-            'name'          => $request->name,
-            'slug'          => Str::slug($request->name),
-            'parent_id'     => 0,
-            'status'        => 1, // !empty($request->status) ? $request->status : "",
-        ];
-
-        $resdata = ProductCategory::insertGetId($data);
-        return response()->json($resdata);
-    }
-
-
-
-    public function createSubcategory(Request $request)
-    {
-        //dd($request->all());
-        $user = Auth::user();
-        if (! $user->can('create product category')) {
-            return response()->json([
-                'message' => 'Unauthorized: You do not have permission to create product category',
-            ], 403);
-        }
-        // dd($request->all());
-        $validator = Validator::make($request->all(), [
-            'name'      => 'required',
-            'parent_id' => 'required',
-            'status'    => 'required',
-        ]);
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $data = [
-            'name'          => $request->name,
-            'slug'          => Str::slug($request->name),
-            'parent_id'     => $request->parent_id,
-            'status'        => $request->status,
-        ];
-        //dd($data);
+        // Find the category
+        $checkData = new Banner();
+        $checkData->name = 'For Slider'; //$request->input('name');
+        $checkData->type = 'slider';
 
-        $resdata = ProductCategory::insertGetId($data);
-        return response()->json($resdata);
+
+        // Handle thumbnail upload
+        if ($request->hasFile('home_slider')) {
+            $thumbnail = $request->file('home_slider');
+            $thumbnailName = 'thumb_' . time() . '.' . $thumbnail->getClientOriginalExtension();
+            $thumbnail->move(public_path('uploads/banner'), $thumbnailName);
+            $checkData->home_slider = 'uploads/banner/' . $thumbnailName;
+        }
+
+        $checkData->save();
+
+        return response()->json([
+            'message' => 'Images uploaded successfully',
+            'category' => $checkData,
+        ]);
     }
+
+
+
+    public function bannerStore(Request $request)
+    {
+        $user = Auth::user();
+        if (! $user->can('create banner')) {
+            return response()->json([
+                'message' => 'Unauthorized: You do not have permission to create banner',
+            ], 403);
+        }
+        $validator = Validator::make($request->all(), [
+            'banner_image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048', // required and max 2MB
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        $existingBanner = Banner::where('type', 'top_banner')->first();
+
+        if ($existingBanner) {
+            if ($existingBanner->banner_image && file_exists(public_path($existingBanner->banner_image))) {
+                unlink(public_path($existingBanner->banner_image));
+            }
+            $existingBanner->delete();
+        }
+
+        $banner = new Banner();
+        $banner->name = 'For Banner';
+        $banner->type = 'top_banner';
+
+        if ($request->hasFile('banner_image')) {
+            $file = $request->file('banner_image');
+            $fileName = 'thumb_' . time() . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('uploads/banner'), $fileName);
+            $banner->banner_image = 'uploads/banner/' . $fileName;
+        }
+        $banner->save();
+
+        return response()->json([
+            'message' => 'Top banner replaced successfully',
+            'banner' => $banner,
+        ]);
+    }
+
+
+
 
     public function postrow($id)
     {
@@ -115,28 +142,36 @@ class ProductCategoryController extends Controller
         return response()->json($responseData);
     }
 
-    public function destroy($id)
+    public function destroyHomeSlider(Request $request)
     {
         $user = Auth::user();
 
-        if (! $user->can('delete posts category')) {
+        if (! $user->can('delete banner')) {
             return response()->json([
                 'message' => 'Unauthorized: You do not have permission to delete',
             ], 403);
         }
+        $id = (int) $request->id;
+        $banner = Banner::find($id);
 
-        $post = PostCategory::find($id);
-        if (! $post) {
+        if (! $banner) {
             return response()->json([
                 'message' => 'Data not found',
             ], 404);
         }
-        //$post->delete();
+        // ✅ Delete image file from server (if exists)
+        if ($banner->home_slider && file_exists(public_path($banner->home_slider))) {
+            unlink(public_path($banner->home_slider));
+        }
+
+        if ($banner->banner_image && file_exists(public_path($banner->banner_image))) {
+            unlink(public_path($banner->banner_image));
+        }
+        $banner->delete();
 
         return response()->json([
-            'message' => 'Deleted successfully',
-            'id' => $id,
-        ], 200);
+            'message' => 'Banner deleted successfully',
+        ]);
     }
 
     public function update(Request $request, $id)

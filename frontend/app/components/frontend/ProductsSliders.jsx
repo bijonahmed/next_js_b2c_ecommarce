@@ -100,15 +100,25 @@ const products = [
 
 export default function ProductsSliders() {
   return (
-    <div className="ps-deal-of-day">
+    <div className="ps-deal-of-day mt-5">
       <div className="container">
+        <div className="ps-section__header">
+          <div className="ps-block--countdown-deal">
+            <div className="ps-block__left">
+              <h3>Deal of the day</h3>
+            </div>
+            <div className="ps-block__right"></div>
+          </div>
+          <a href="shop-default.html">View all</a>
+        </div>
+
         <div className="ps-section__content">
           <Carousel
             responsive={responsive}
             infinite
             autoPlay
+            arrows={false}
             autoPlaySpeed={5000}
-            arrows
             showDots
             swipeable
             containerClass="ps-carousel--nav owl-slider"
@@ -124,7 +134,7 @@ export default function ProductsSliders() {
                       className="w-full h-[300px] object-cover"
                     />
                   </a>
-                  
+
                   <ul className="ps-product__actions">
                     <li>
                       <a href="#" title="Read More">
@@ -161,12 +171,11 @@ export default function ProductsSliders() {
                     <a className="ps-product__title" href="#">
                       {product.title}
                     </a>
-                   
+
                     <p className="ps-product__price sale">
                       ${product.price.toFixed(2)}{" "}
                       {product.oldPrice && <del>${product.oldPrice}</del>}
                     </p>
-                 
                   </div>
                 </div>
               </div>

@@ -67,6 +67,18 @@ export default function AdminSidebar() {
             ],
           },
           {
+            label: "Banner Management",
+            href: "#",
+            icon: "bi-clipboard-fill",
+            children: [
+              {
+                label: "Banner",
+                href: "/banner",
+                icon: "bi-circle",
+              },
+            ],
+          },
+          {
             label: "System Management",
             href: "#",
             icon: "bi-clipboard-fill",

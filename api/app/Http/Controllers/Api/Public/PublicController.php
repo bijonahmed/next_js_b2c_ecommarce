@@ -26,7 +26,7 @@ class PublicController extends Controller
                         'name'       => $category->name,
                         'slug'       => $category->slug,
                         'parent_id'  => $category->parent_id,
-                        'children'   => $buildTree($category->id), 
+                        'children'   => $buildTree($category->id),
                     ];
                 });
             };
@@ -46,7 +46,70 @@ class PublicController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch categories. Please try again later.',
-                'error' => $e->getMessage(),  
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+    public function getCategoryParent()
+    {
+        $categories = ProductCategory::where('status', 1)
+            ->where('parent_id', 0)
+            ->whereNotNull('thumbnail_image')
+            ->get();
+        // Map through categories
+        $mappedCategories = $categories->map(function ($category) {
+            return [
+                'id'              => $category->id,
+                'name'            => $category->name,
+                'slug'            => $category->slug,
+                'parent_id'       => $category->parent_id,
+                'thumbnail_image' => $category->thumbnail_image ? url($category->thumbnail_image) : null,
+                'banner_image'    => $category->banner_image ? url($category->banner_image) : null,
+            ];
+        });
+        return response()->json([
+            'success' => true,
+            'data' => $mappedCategories,
+        ], 200);
+    }
+
+    public function productsCategory(Request $request)
+    {
+        try {
+            $categories = ProductCategory::where('status', 1)->get();
+            $grouped    = $categories->groupBy('parent_id');
+            $buildTree  = function ($parentId) use (&$buildTree, $grouped) {
+                return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
+                    return [
+                        'id'         => $category->id,
+                        'name'       => $category->name,
+                        'slug'       => $category->slug,
+                        'parent_id'  => $category->parent_id,
+                        'children'   => $buildTree($category->id),
+                        'thumbnail_image' => $category->thumbnail_image ? url($category->thumbnail_image) : null,
+                        'banner_image'    => $category->banner_image ? url($category->banner_image) : null,
+                    ];
+                });
+            };
+            // Start with parent_id = 0 (top-level)
+            $nestedCategories = $buildTree(0);
+
+            return response()->json([
+                'success' => true,
+                'data' => $nestedCategories,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Category fetch failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch categories. Please try again later.',
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

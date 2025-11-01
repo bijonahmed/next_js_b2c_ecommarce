@@ -1,42 +1,43 @@
-// EditUserForm.jsx
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../../../../context/AuthContext"; // adjust path
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useAuth } from "../../../context/AuthContext"; // adjust path
+import toast, { Toaster } from "react-hot-toast";
 
-export default function EditUserForm({ id }) {
-  console.log("EditUserForm id:", id);
-  const { token, permissions } = useAuth(); // client-side token
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState({});
+import Link from "next/link";
+
+export default function postcategoriesAddCategoriesPage() {
+  const { token, permissions } = useAuth();
+  const pathname = usePathname();
   const router = useRouter();
+  const [errors, setErrors] = useState({});
+  const title = "Product Category Add"; //pathname ? pathname.replace("/", "").charAt(0).toUpperCase() + pathname.slice(2) : "";
+  // update document title
+  useEffect(() => {
+    if (title) {
+      document.title = title;
+    }
+  }, [title]);
 
   const [formData, setFormData] = useState({
-    id: id || "",
-    name: user?.name || "",
-    status: user?.status || "",
+    name: "",
+    status: 1,
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/posts-category/update`,
-        {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/product-category/create`,{
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ pass token
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ ...formData }),
         }
@@ -44,11 +45,15 @@ export default function EditUserForm({ id }) {
 
       const data = await res.json();
       if (res.ok) {
-        setUser(data);
-        toast.success("Post category updated successfully ✅"); // ✅ success toast
-        router.push("/postcategories");
+        //setUser(data);
+        toast.success("Add successfully ✅");
+        router.push("/product-categories-manage");
       } else if (data.errors) {
-        toast.error(Object.values(data.errors).flat().join(" ")); // show backend validation errors
+        toast.error(Object.values(data.errors).flat().join("\n"), {
+          style: { whiteSpace: "pre-line" },
+        });
+
+        setErrors(data.errors);
       } else {
         toast.error(data.message || "Something went wrong!");
       }
@@ -58,37 +63,7 @@ export default function EditUserForm({ id }) {
     }
   };
 
-  useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE}/posts-category/postrow/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const user = data?.data || {};
-        setFormData({
-          id: user.id, // ✅ now id will be included
-          name: user.name ?? "",
-          status: user.status ?? "",
-        });
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
-
-  const pathname = usePathname();
-  const title = "Post Category Edit";
-  //const title = pathname ? pathname.replace("/", "").charAt(0).toUpperCase() + pathname.slice(2) : "";
-  // update document title
-  useEffect(() => {
-    if (title) {
-      document.title = title;
-    }
-  }, [title]);
-
-  if (!permissions.includes("edit posts category")) {
+  if (!permissions.includes("create product category")) {
     router.replace("/dashboard");
     return false;
   }
@@ -142,53 +117,33 @@ export default function EditUserForm({ id }) {
                 {/*begin::Form*/}
                 <Toaster position="top-right" />
                 <form onSubmit={handleSubmit}>
+                  {/*begin::Body*/}
                   <div className="card-body">
                     <div className="mb-3">
                       <label className="form-label">Name</label>
                       <input
                         type="text"
-                        name="name"
                         className={`form-control ${
                           errors.name ? "is-invalid" : ""
                         }`}
+                        name="name"
                         value={formData.name}
                         onChange={handleChange}
                       />
-                      {errors.name?.length > 0 && (
+                      {errors.name && errors.name.length > 0 && (
                         <div className="invalid-feedback">{errors.name[0]}</div>
                       )}
                     </div>
-
-                    <div className="mb-3">
-                      <label className="form-label">Status</label>
-                      <select
-                        className={`form-control ${
-                          errors.status ? "is-invalid" : ""
-                        }`}
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                      >
-                        <option value="">-- Select Status --</option>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                      </select>
-
-                      {errors.status && errors.status.length > 0 && (
-                        <div className="invalid-feedback">
-                          {errors.status[0]}
-                        </div>
-                      )}
-                    </div>
                   </div>
-
+                  {/*end::Body*/}
+                  {/*begin::Footer*/}
                   <div className="card-footer text-end">
                     <button type="submit" className="btn btn-primary">
                       Submit
                     </button>
                   </div>
+                  {/*end::Footer*/}
                 </form>
-
                 {/*end::Form*/}
               </div>
               {/*end::Quick Example*/}

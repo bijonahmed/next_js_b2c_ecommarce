@@ -41,6 +41,11 @@ const capitalizeFirst = (value) => {
               Refresh
             </a>
           </li>
+           <li className="nav-item d-none d-md-block">
+            <a href="/" className="nav-link" target="_blank">
+              e-Commerce 
+            </a>
+          </li>
         </ul>
         {/* Right side */}
         <ul className="navbar-nav ms-auto">

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Banner\BannerController;
 use App\Http\Controllers\Api\Categories\CategoryController;
 use App\Http\Controllers\Api\Post\PostCategoryController;
 use App\Http\Controllers\Api\Post\PostController;
@@ -21,6 +22,8 @@ Route::middleware('api')->group(function () {
 
 Route::prefix('public')->group(function () {
     Route::get('/getCategory', [PublicController::class, 'index']);
+    Route::get('/getCategoryParent', [PublicController::class, 'getCategoryParent']);
+    Route::get('/productsCategory', [PublicController::class, 'productsCategory']);
 });
 
 
@@ -35,12 +38,24 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/upateSetting', [SettingsController::class, 'upateSetting']);
     });
 
+
+    Route::prefix('banner')->group(function () {
+        Route::get('/index', [BannerController::class, 'index']);
+        Route::post('/SliderStore', [BannerController::class, 'SliderStore']);
+        Route::post('/bannerStore', [BannerController::class, 'bannerStore']);
+        Route::post('/deleteHomeSlider', [BannerController::class, 'destroyHomeSlider']);
+
+    });
+
+
+
     Route::prefix('product-category')->group(function () {
         Route::get('/index', [ProductCategoryController::class, 'index']);
         Route::post('/create', [ProductCategoryController::class, 'store']);
         Route::post('/create-subcategory', [ProductCategoryController::class, 'createSubcategory']);
         Route::post('/update/{id}', [ProductCategoryController::class, 'update']);
         Route::post('/uploadCategoryImage', [ProductCategoryController::class, 'uploadCategoryImage']);
+        Route::post('/uploadBannerImage', [ProductCategoryController::class, 'uploadBannerImage']);
         // Route::DELETE('/delete/{id}', [PostCategoryController::class, 'destroy']);
         // Route::get('/postrow/{id}', [PostCategoryController::class, 'postrow']);
     });

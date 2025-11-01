@@ -31,33 +31,35 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
-        // Save token
         if (data.token) {
           localStorage.setItem("token", data.token);
         }
-
-        // Save user info
         if (data.user) {
           localStorage.setItem("user", JSON.stringify(data.user));
         }
-
-        // Save roles
         if (data.roles) {
           localStorage.setItem("roles", JSON.stringify(data.roles));
         }
-
-        // Save permissions
         if (data.permissions) {
           localStorage.setItem("permissions", JSON.stringify(data.permissions));
         }
-
         setSuccess("Login successful!");
-
-        // Optionally, you can also set a global state or context
         login(data.token, data.user.name, data.roles, data.permissions);
 
-        // Redirect to dashboard
-        router.replace("/dashboard");
+        // ✅ role_type condition
+        const roleType = data.user?.role_type || "";
+
+        if (roleType === "") {
+          // Allowed: go to dashboard
+          setSuccess("Login successful!");
+          login(data.token, data.user.name, data.roles, data.permissions);
+          router.replace("/dashboard");
+        } else {
+          // Not allowed: logout + redirect
+          setError("Access denied for this role.");
+          localStorage.clear();
+          router.replace("/login");
+        }
       } else {
         setError(data.message || "Invalid login credentials");
       }
