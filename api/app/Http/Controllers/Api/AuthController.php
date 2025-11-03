@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Api;
-
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Setting;
@@ -9,7 +7,6 @@ use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -32,7 +29,6 @@ class AuthController extends Controller
             'password.min'           => 'Password must be at least 6 characters.',
             'password.confirmed'     => 'Passwords do not match.',
         ]);
-
         // If validation fails
         if ($validator->fails()) {
             return response()->json([
@@ -40,7 +36,6 @@ class AuthController extends Controller
                 'errors' => $validator->errors(),
             ], 422);
         }
-
         // Create user
         $user = User::create([
             'name'         => $request->name,
@@ -49,62 +44,50 @@ class AuthController extends Controller
             'role_type'    => 4,
             'password' => Hash::make($request->password),
         ]);
-
         return response()->json([
             'success' => true,
             'message' => 'User created successfully.',
             'user' => $user,
         ], 201);
     }
-
     public function login(Request $request)
     {
         try {
-        $credentials = $request->only('email', 'password');
-
-        if (!$token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Invalid Credentials'], 401);
+            $credentials = $request->only('email', 'password');
+            if (!$token = auth()->attempt($credentials)) {
+                return response()->json(['error' => 'Invalid Credentials'], 401);
+            }
+            $user = Auth::user();
+            // if (!empty($user->role_type)) {
+            //     return response()->json(['error' => 'Access denied for this role.'], 403);
+            // }
+            return response()->json([
+                'token' => $token,
+                'user' => $user,
+                'roles' => $user->getRoleNames(),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ], 500);
         }
-
-        $user = Auth::user();
-
-        if (!empty($user->role_type)) {
-            return response()->json(['error' => 'Access denied for this role.'], 403);
-        }
-
-        return response()->json([
-            'token' => $token,
-            'user' => $user,
-            'roles' => $user->getRoleNames(),
-            'permissions' => $user->getAllPermissions()->pluck('name'),
-        ]);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ], 500);
     }
-    }
-
-
     public function profile()
     {
-
         $user = Auth::user();
-
         return response()->json([
             'user' => $user,
             'roles' => $user->getRoleNames(),   // Spatie Roles
             'permissions' => $user->getAllPermissions()->pluck('name'),  // Spatie Permissions
         ]);
     }
-
     public function updateProfile(Request $request)
     {
         // dd($request->all());
         $user = Auth::user();
         $authId = $user->id;
-
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required',
@@ -142,7 +125,6 @@ class AuthController extends Controller
             'imagelink' => ! empty($user) ? url($user->image) : '',
             'message' => 'User successfully update',
         ];
-
         return response()->json($response);
     }
 }

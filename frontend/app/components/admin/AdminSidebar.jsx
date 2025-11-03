@@ -79,6 +79,31 @@ export default function AdminSidebar() {
             ],
           },
           {
+            label: "Supplier Management",
+            href: "#",
+            icon: "bi-clipboard-fill",
+            children: [
+              {
+                label: "Supplier List",
+                href: "/supplier",
+                icon: "bi-circle",
+              },
+            ],
+          },
+          {
+            label: "Purchase Management",
+            href: "#",
+            icon: "bi-clipboard-fill",
+            children: [
+              {
+                label: "Purchase List",
+                href: "/purchase",
+                icon: "bi-circle",
+              },
+            ],
+          },
+
+          {
             label: "System Management",
             href: "#",
             icon: "bi-clipboard-fill",

@@ -21,6 +21,14 @@ export default function SidebarSystem() {
     { name: "Contact", link: "#" },
   ];
 
+  const [openMenuIds, setOpenMenuIds] = useState([]);
+
+  const toggleMenu = (id) => {
+    setOpenMenuIds((prev) =>
+      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div>
       <div>
@@ -68,70 +76,83 @@ export default function SidebarSystem() {
                 <i className="icon-menu" />
                 <span> Shop by Categories</span>
               </div>
-              <div className="menu__content mt-5">
-                <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                  {categoryData.map((parent) => (
-                    <li key={parent.id} style={{ marginBottom: "5px" }}>
-                      {/* Parent category */}
+              {/* <pre>{JSON.stringify(categoryData, null, 2)}</pre> */}
+
+              <ul
+                className="list-unstyled m-0 p-0"
+                style={{
+                  paddingLeft: "15px",
+                  paddingRight: "15px",
+                }}
+              >
+                {categoryData
+                  .filter((item) => item.parent_id === 0)
+                  .map((parent) => (
+                    <li
+                      key={parent.id}
+                      className="mb-2"
+                      style={{
+                        padding: "8px 10px",
+                        borderBottom: "1px solid #e0e0e0",
+                      }}
+                    >
                       <div
-                        onClick={() => toggleParent(parent.id)}
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          padding: "10px 15px",
-                          backgroundColor: "rgb(28, 23, 12)",
-                          color: "#fff",
-                          borderRadius: "4px",
-                          cursor: "pointer",
-                        }}
+                        className="d-flex justify-content-between align-items-center"
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          parent.children && parent.children.length > 0
+                            ? toggleMenu(parent.id)
+                            : null
+                        }
                       >
-                        <span>{parent.name}</span>
+                        <a
+                          href={`/${parent.slug}`}
+                          className="text-decoration-none text-dark fw-semibold"
+                        >
+                          {parent.name}
+                        </a>
                         {parent.children && parent.children.length > 0 && (
-                          <span style={{ fontWeight: "bold" }}>
-                            {openParentId === parent.id ? "▼" : "▶"}
+                          <span style={{ fontSize: "12px" }}>
+                            {openMenuIds.includes(parent.id) ? "▲" : "▼"}
                           </span>
                         )}
                       </div>
 
-                      {/* Child categories */}
-                      {parent.children &&
-                        parent.children.length > 0 &&
-                        openParentId === parent.id && (
-                          <ul
-                            style={{
-                              marginLeft: "15px",
-                              listStyle: "none",
-                              paddingLeft: "0",
-                              marginTop: "2px",
-                            }}
-                          >
-                            {parent.children.map((child) => (
-                              <li
-                                key={child.id}
-                                style={{ marginBottom: "3px" }}
+                      {parent.children && parent.children.length > 0 && (
+                        <ul
+                          className="list-unstyled mt-2"
+                          style={{
+                            paddingLeft: "25px",
+                            paddingRight: "25px",
+                            maxHeight: openMenuIds.includes(parent.id)
+                              ? "500px"
+                              : "0px",
+                            overflow: "hidden",
+                            transition: "max-height 0.3s ease-in-out",
+                          }}
+                        >
+                          {parent.children.map((child) => (
+                            <li
+                              key={child.id}
+                              className="mb-1"
+                              style={{
+                                padding: "5px 8px",
+                                borderBottom: "1px dotted #ccc",
+                              }}
+                            >
+                              <a
+                                href={`/${child.slug}`}
+                                className="text-decoration-none text-secondary"
                               >
-                                <a
-                                  href={`/shop/${child.slug}`}
-                                  style={{
-                                    display: "block",
-                                    padding: "8px 12px",
-                                    backgroundColor: "#f0f0f0",
-                                    color: "#333",
-                                    textDecoration: "none",
-                                    borderRadius: "4px",
-                                  }}
-                                >
-                                  {child.name}
-                                </a>
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                                {child.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))}
-                </ul>
-              </div>
+              </ul>
             </div>
           </div>
         </div>

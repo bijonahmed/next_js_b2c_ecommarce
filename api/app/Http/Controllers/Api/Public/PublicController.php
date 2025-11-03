@@ -32,11 +32,8 @@ class PublicController extends Controller
                 });
             };
 
-            $chkBanner = Banner::where('type', 'top_banner')->first();
-            $topBanner = !empty($chkBanner) ? url($chkBanner->banner_image) : "";
-
-
-
+            $chkBanner    = Banner::where('type', 'top_banner')->first();
+            $topBanner    = !empty($chkBanner) ? url($chkBanner->banner_image) : "";
             $sliderBanner = Banner::where('type', 'slider')->get();
 
             $sliders = $sliderBanner->map(function ($item) {
