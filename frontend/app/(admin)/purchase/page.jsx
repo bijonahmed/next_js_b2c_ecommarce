@@ -15,7 +15,7 @@ export default function UserPage() {
     ? permissions
     : permissions?.split(",") || [];
   const pathname = usePathname();
-  const title = "Purchase List";
+  const title = "Purchase Order List";
   //const title = pathname ? pathname.replace("/", "").charAt(0).toUpperCase() + pathname.slice(2) : "";
   // update document title
   useEffect(() => {
@@ -25,22 +25,58 @@ export default function UserPage() {
   }, [title]);
   const [statusFilter, setStatusFilter] = useState("");
   const [data, setData] = useState([]);
+  const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [purchaseData, setPurchaseData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
 
+  const fetchSupplierData = async (selectedFilter = 1) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/supplier/index?selectedFilter=${selectedFilter}`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      let result;
+      try {
+        result = await res.json();
+      } catch (e) {
+        result = null;
+      }
+
+      if (!res.ok) {
+        if (result && result.message) {
+          throw new Error(result.message);
+        } else {
+          throw new Error(`HTTP Error: ${res.status}`);
+        }
+      }
+      setPurchaseData(result.data || []);
+    } catch (err) {
+      console.error("Fetch users failed:", err.message);
+      toast.error(err.message || "Something went wrong!");
+    }
+  };
+
   const fetchData = async (
     page = 1,
     pageSize = 10,
     searchQuery = "",
-    selectedFilter = statusFilter !== "" ? statusFilter : 1
+    supplierParam = ""
   ) => {
     setLoading(true);
 
+    const supplierToUse = supplierParam || selectedSupplier;
+    // console.log("Fetching data for supplier:", supplierToUse);
     try {
-      const url = `${process.env.NEXT_PUBLIC_API_BASE}/supplier/index?page=${page}&pageSize=${pageSize}&searchQuery=${searchQuery}&selectedFilter=${selectedFilter}`;
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/purchase/index?page=${page}&pageSize=${pageSize}&searchQuery=${searchQuery}&selectedSupplier=${supplierToUse}`;
       const res = await fetch(url, {
         method: "GET",
         headers: {
@@ -77,7 +113,7 @@ export default function UserPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/supplier/delete/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/purchase/delete/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -104,21 +140,28 @@ export default function UserPage() {
   };
 
   useEffect(() => {
+    fetchSupplierData();
     fetchData(page, perPage, search);
   }, [page, perPage, search]);
 
   const columns = [
-    { name: "Name", selector: (row) => row.name, sortable: true },
     {
-      name: "Status",
-      selector: (row) => (row.status),
+      name: "Invoice Number",
+      selector: (row) => row.invNumber,
       sortable: true,
     },
+    { name: "Order Date", selector: (row) => row.orderDate, sortable: true },
+    {
+      name: "Supplier Name",
+      selector: (row) => row.supplier_name,
+      sortable: true,
+    },
+    { name: "Grand Total", selector: (row) => row.grandTotal, sortable: true },
     {
       name: "Actions",
       cell: (row) => (
         <div className="d-flex gap-2">
-          {perms.includes("edit supplier") ? (
+          {perms.includes("edit purchase order") ? (
             <button
               className="btn btn-sm btn-primary"
               onClick={() => router.push(`/purchase/edit/${row.id}`)}
@@ -127,7 +170,16 @@ export default function UserPage() {
             </button>
           ) : null}
 
-          {perms.includes("delete supplier") ? (
+          {perms.includes("edit purchase order") ? (
+            <button
+              className="btn btn-sm btn-info"
+              onClick={() => router.push(`/purchase/preview/${row.id}`)}
+            >
+              <i className="bi bi-zoom-in"></i> Preview
+            </button>
+          ) : null}
+
+          {perms.includes("delete purchase order") ? (
             <button
               className="btn btn-sm btn-danger"
               onClick={() => handleDelete(row.id)}
@@ -144,7 +196,7 @@ export default function UserPage() {
   const handlePageChange = (newPage) => setPage(newPage);
   const handlePerRowsChange = (newPerPage) => setPerPage(newPerPage);
 
-  if (!perms.includes("view supplier")) {
+  if (!perms.includes("view purchase order")) {
     router.replace("/dashboard");
     return false;
   }
@@ -188,26 +240,33 @@ export default function UserPage() {
               <div className="card-title w-100">
                 <div className="row g-2 align-items-center">
                   {/* Column 1: Search input */}
-                  <div className="col-12 col-md-6 col-lg-6">
+                  <div className="col-12 col-md-4 col-lg-4">
                     <input
                       type="text"
-                      placeholder="Search name..."
+                      placeholder="Search Invoice Number.."
                       className="form-control"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
                   </div>
-                  {/* Status Filter */}
-                  <div className="col-4 col-md-4 col-lg-3">
+                  <div className="col-12 col-md-4 col-lg-4">
                     <select
-                      className="form-control"
-                      value={statusFilter}
-                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="form-select"
+                      value={selectedSupplier}
+                      onChange={(e) => {
+                        setSelectedSupplier(e.target.value);
+                      }}
                     >
-                      <option value="1">Active</option>
-                      <option value="0">Inactive</option>
+                      <option value="">-- All Supplier --</option>
+                      {purchaseData.map((supplier) => (
+                        <option key={supplier.id} value={supplier.id}>
+                          {supplier.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
+                  {/* Status Filter */}
+
                   {/* Column 2: Fetch button */}
                   <div className="col-6 col-md-3 col-lg-2">
                     <button
@@ -215,7 +274,7 @@ export default function UserPage() {
                       className="btn btn-outline-secondary w-100"
                       onClick={() => fetchData()}
                     >
-                      Fetch
+                      Filter
                     </button>
                   </div>
 

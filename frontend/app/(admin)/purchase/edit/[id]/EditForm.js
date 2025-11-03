@@ -15,67 +15,171 @@ export default function EditUserForm({ id }) {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const router = useRouter();
+  const [purchaseData, setPurchaseData] = useState([]);
+  const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [billingAddress, setBillingAddress] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
+  const [orderDate, setOrderDate] = useState("");
+  const [invNumber, setInvNum] = useState("");
+  const [remarks, setRemarks] = useState("");
 
-  const [formData, setFormData] = useState({
-    id: id || "",
-    name: user?.name || "",
-    status: user?.status || "",
-  });
+  const [items, setItems] = useState([
+    { description: "", sku: "", attribute: "", qty: 1, price: 0 },
+  ]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  // Add new item row
+  const addItem = () => {
+    setItems([
+      ...items,
+      { description: "", sku: "", attribute: "", qty: 1, price: 0 },
+    ]);
+  };
+  //  Remove
+  const removeRow = (index) => {
+    const newItems = [...items];
+    newItems.splice(index, 1);
+    setItems(newItems);
+  };
+
+  //  Handle input change
+  const handleChange = (index, field, value) => {
+    const newItems = [...items];
+    newItems[index][field] =
+      field === "qty" || field === "price" ? Number(value) : value;
+    setItems(newItems);
+  };
+
+  // 💰 Calculate line total
+  const getLineTotal = (item) => {
+    return (item.qty * item.price).toFixed(2);
+  };
+
+  // 💵 Calculate grand total
+  const grandTotal = items
+    .reduce((sum, item) => sum + item.qty * item.price, 0)
+    .toFixed(2);
+
+  const fetchSupplierData = async (selectedFilter = 1) => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/supplier/index?selectedFilter=${selectedFilter}`;
+      const res = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      let result;
+      try {
+        result = await res.json();
+      } catch (e) {
+        result = null;
+      }
+
+      if (!res.ok) {
+        if (result && result.message) {
+          throw new Error(result.message);
+        } else {
+          throw new Error(`HTTP Error: ${res.status}`);
+        }
+      }
+      setPurchaseData(result.data || []);
+    } catch (err) {
+      console.error("Fetch users failed:", err.message);
+      toast.error(err.message || "Something went wrong!");
+    }
+  };
+
+  useEffect(() => {
+    fetchSupplierData();
+  }, []);
+
+  const purchaseOrder = {
+    id: id,
+    invNumber: invNumber,
+    supplier: selectedSupplier,
+    billingAddress: billingAddress,
+    shippingAddress: shippingAddress,
+    orderDate,
+    remarks,
+    items,
+    grandTotal,
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/supplier/updateData`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/purchase/update`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ pass token
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ ...formData }),
+          body: JSON.stringify(purchaseOrder),
         }
       );
 
       const data = await res.json();
+
       if (res.ok) {
-        setUser(data);
-        toast.success("Updated successfully ✅"); // ✅ success toast
-        router.push("/supplier");
+        toast.success("Purchase Order added successfully ✅");
+        router.push("/purchase");
       } else if (data.errors) {
-        toast.error(Object.values(data.errors).flat().join(" ")); // show backend validation errors
+        toast.error(Object.values(data.errors).flat().join("\n"), {
+          style: { whiteSpace: "pre-line" },
+        });
+        setErrors(data.errors);
       } else {
         toast.error(data.message || "Something went wrong!");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Network or Server Error:", err);
       toast.error("Network or server error!");
     }
   };
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE}/supplier/chkrow/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const user = data?.data || {};
-        setFormData({
-          id: user.id, // ✅ now id will be included
-          name: user.name ?? "",
-          status: user.status ?? "",
-        });
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE}/purchase/chkrow/${id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const particular = data?.particularData || {};
+        const history = data?.historyData || [];
+
+        // ✅ Set states safely
+        setItems(history);
+        setSelectedSupplier(particular.supplier_id || "");
+        setBillingAddress(particular.billingAddress || "");
+        setShippingAddress(particular.shippingAddress || "");
+        setOrderDate(particular.orderDate || "");
+        setInvNum(particular.invNumber || "");
+      } catch (error) {
+        console.error("Error fetching purchase data:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      }
+    };
+
+    fetchData();
   }, []);
 
   const pathname = usePathname();
@@ -141,53 +245,253 @@ export default function EditUserForm({ id }) {
               <div className="card card-primary card-outline mb-4">
                 {/*begin::Form*/}
                 <Toaster position="top-right" />
-                <form onSubmit={handleSubmit}>
-                  <div className="card-body">
-                    <div className="mb-3">
-                      <label className="form-label">Name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        className={`form-control ${
-                          errors.name ? "is-invalid" : ""
-                        }`}
-                        value={formData.name}
-                        onChange={handleChange}
-                      />
-                      {errors.name?.length > 0 && (
-                        <div className="invalid-feedback">{errors.name[0]}</div>
-                      )}
-                    </div>
 
-                    <div className="mb-3">
-                      <label className="form-label">Status</label>
-                      <select
-                        className={`form-control ${
-                          errors.status ? "is-invalid" : ""
-                        }`}
-                        name="status"
-                        value={formData.status}
-                        onChange={handleChange}
-                      >
-                        <option value="">-- Select Status --</option>
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                      </select>
-
-                      {errors.status && errors.status.length > 0 && (
-                        <div className="invalid-feedback">
-                          {errors.status[0]}
+                <div className="px-4 px-md-5 my-4">
+                  <div className="card shadow-sm">
+                    <div className="card-body">
+                      <form onSubmit={handleSubmit}>
+                        <div className="row g-3">
+                          <div className="col-md-3">
+                            <label className="form-label">Invoice Number</label>
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Invoice Number"
+                              value={invNumber}
+                              onChange={(e) => setInvNum(e.target.value)}
+                            />
+                          </div>
+                          <div className="col-md-3">
+                            <label className="form-label">Date</label>
+                            <input
+                              type="date"
+                              className="form-control"
+                              value={orderDate}
+                              onChange={(e) => setOrderDate(e.target.value)}
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <label className="form-label">Supplier</label>
+                            <select
+                              className="form-select"
+                              value={selectedSupplier}
+                              onChange={(e) =>
+                                setSelectedSupplier(e.target.value)
+                              }
+                            >
+                              <option value="">-- Select Supplier --</option>
+                              {purchaseData.map((supplier) => (
+                                <option key={supplier.id} value={supplier.id}>
+                                  {supplier.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div className="col-md-6">
+                            <label className="form-label">
+                              Billing Address
+                            </label>
+                            <textarea
+                              className="form-control"
+                              rows={2}
+                              value={billingAddress}
+                              onChange={(e) =>
+                                setBillingAddress(e.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <label className="form-label">
+                              Shipping Address
+                            </label>
+                            <textarea
+                              className="form-control"
+                              rows={2}
+                              value={shippingAddress}
+                              onChange={(e) =>
+                                setShippingAddress(e.target.value)
+                              }
+                            />
+                          </div>
                         </div>
-                      )}
+                        <hr />
+                        <div className="d-flex justify-content-between align-items-center mb-2">
+                          <h5 className="mb-0">Items</h5>
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={addItem}
+                          >
+                            + Add Item
+                          </button>
+                        </div>
+                        {loading ? (
+                          <div
+                            className="d-flex justify-content-center align-items-center"
+                            style={{ height: "200px" }}
+                          >
+                            <div
+                              className="spinner-border text-primary"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          </div>
+                        ) : null}
+                        <div className="table-responsive">
+                          <table
+                            className="table table-bordered align-middle"
+                            id="itemTable"
+                          >
+                            <thead className="table-light">
+                              <tr>
+                                <th>Description</th>
+                                <th>SKU</th>
+                                <th>Attribute</th>
+                                <th>Qty</th>
+                                <th>Unit Price</th>
+                                <th className="text-end">Line Total</th>
+                                <th>Action</th>
+                              </tr>
+                            </thead>
+                            <tbody id="itemBody">
+                              {items.map((item, index) => (
+                                <tr key={index}>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      value={item.description}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          index,
+                                          "description",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Item description"
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      value={item.sku}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          index,
+                                          "sku",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      value={item.attribute}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          index,
+                                          "attribute",
+                                          e.target.value
+                                        )
+                                      }
+                                      placeholder="Color/Size"
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      className="form-control text-end"
+                                      min="1"
+                                      value={item.qty}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          index,
+                                          "qty",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="number"
+                                      className="form-control text-end"
+                                      step="0.01"
+                                      min="0"
+                                      value={item.price}
+                                      onChange={(e) =>
+                                        handleChange(
+                                          index,
+                                          "price",
+                                          e.target.value
+                                        )
+                                      }
+                                    />
+                                  </td>
+                                  <td className="text-end">
+                                    {getLineTotal(item)}
+                                  </td>
+                                  <td className="text-center">
+                                    <button
+                                      type="button"
+                                      className="btn btn-sm btn-danger"
+                                      onClick={() => removeRow(index)}
+                                    >
+                                      Remove
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <div className="row mt-3">
+                          <div className="col-md-6">
+                            <label className="form-label">Notes</label>
+                            <textarea
+                              type="text"
+                              className="form-control"
+                              rows={3}
+                              placeholder="Additional Notes."
+                              value={remarks}
+                              onChange={(e) => setRemarks(e.target.value)}
+                            />
+                          </div>
+                          <div className="col-md-6">
+                            <div className="card p-3">
+                              <div className="d-flex justify-content-between">
+                                <div>Subtotal</div>
+                                <div id="subtotal">{grandTotal}</div>
+                              </div>
+                              <hr />
+                              <div className="d-flex justify-content-between">
+                                <strong>Grand Total</strong>
+                                <strong id="grandTotal">{grandTotal}</strong>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="d-flex justify-content-end gap-2 mt-3">
+                          <button
+                            type="reset"
+                            className="btn btn-outline-secondary"
+                          >
+                            Reset
+                          </button>
+                          <button type="submit" className="btn btn-primary">
+                            Save Purchase Order
+                          </button>
+                        </div>
+                      </form>
                     </div>
                   </div>
-
-                  <div className="card-footer text-end">
-                    <button type="submit" className="btn btn-primary">
-                      Submit
-                    </button>
-                  </div>
-                </form>
+                </div>
 
                 {/*end::Form*/}
               </div>

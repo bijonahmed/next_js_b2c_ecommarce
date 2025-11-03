@@ -103,6 +103,19 @@ export default function AdminSidebar() {
             ],
           },
 
+           {
+            label: "Product Management",
+            href: "#",
+            icon: "bi-clipboard-fill",
+            children: [
+              {
+                label: "Product List",
+                href: "#",
+                icon: "bi-circle",
+              },
+            ],
+          },
+
           {
             label: "System Management",
             href: "#",

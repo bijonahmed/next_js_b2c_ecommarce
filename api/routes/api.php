@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Roles\RolesController;
 use App\Http\Controllers\Api\Permissions\PermissionsController;
 use App\Http\Controllers\Api\ProductCategories\ProductCategoryController;
 use App\Http\Controllers\Api\Public\PublicController;
+use App\Http\Controllers\Api\PurchaseOrder\PurchaseOrderController;
 use App\Http\Controllers\Api\Settings\SettingsController;
 use App\Http\Controllers\Api\Supplier\SupplierController;
 use Illuminate\Support\Facades\Route;
@@ -51,6 +52,20 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/chkrow/{id}', [SupplierController::class, 'checkrow']);
         Route::post('/updateData', [SupplierController::class, 'update']);
     });
+
+
+     Route::prefix('purchase')->group(function () {
+        Route::get('/index', [PurchaseOrderController::class, 'index']);
+        Route::post('/create', [PurchaseOrderController::class, 'store']);
+        Route::DELETE('/delete/{id}', [PurchaseOrderController::class, 'destroy']);
+        Route::get('/chkrow/{id}', [PurchaseOrderController::class, 'checkrow']);
+        Route::post('/update', [PurchaseOrderController::class, 'update']);
+    });
+
+
+
+
+
     Route::prefix('roles')->group(function () {
         Route::get('/index', [RolesController::class, 'index']);
         Route::post('/create', [RolesController::class, 'store']);

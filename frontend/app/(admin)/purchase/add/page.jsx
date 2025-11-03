@@ -8,14 +8,17 @@ import toast, { Toaster } from "react-hot-toast";
 
 import Link from "next/link";
 
-export default function postcategoriesAddCategoriesPage() {
+export default function PurchasePages() {
   const { token, permissions } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
   const [errors, setErrors] = useState({});
   const [purchaseData, setPurchaseData] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [billingAddress, setBillingAddress] = useState("");
+  const [shippingAddress, setShippingAddress] = useState("");
   const [orderDate, setOrderDate] = useState("");
+  const [invNumber, setInvNum] = useState("");
   const [remarks, setRemarks] = useState("");
   const title = "Purchase Order";
   // update document title
@@ -29,22 +32,21 @@ export default function postcategoriesAddCategoriesPage() {
     { description: "", sku: "", attribute: "", qty: 1, price: 0 },
   ]);
 
-  // ➕ Add new item row
+  // Add new item row
   const addItem = () => {
     setItems([
       ...items,
       { description: "", sku: "", attribute: "", qty: 1, price: 0 },
     ]);
   };
-
-  // ❌ Remove item row
+  //  Remove
   const removeRow = (index) => {
     const newItems = [...items];
     newItems.splice(index, 1);
     setItems(newItems);
   };
 
-  // 🔄 Handle input change
+  //  Handle input change
   const handleChange = (index, field, value) => {
     const newItems = [...items];
     newItems[index][field] =
@@ -94,13 +96,15 @@ export default function postcategoriesAddCategoriesPage() {
     }
   };
 
-  fetchSupplierData();
   useEffect(() => {
     fetchSupplierData();
   }, []);
 
   const purchaseOrder = {
+    invNumber: invNumber,
     supplier: selectedSupplier,
+    billingAddress: billingAddress,
+    shippingAddress: shippingAddress,
     orderDate,
     remarks,
     items,
@@ -109,20 +113,16 @@ export default function postcategoriesAddCategoriesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    console.log("Submitting purchase order:", purchaseOrder); // ✅ see payload in console
-    return false;
-
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/supplier/create`, // ✅ make sure endpoint is correct
+        `${process.env.NEXT_PUBLIC_API_BASE}/purchase/create`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ token must be valid
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(purchaseOrder), // no need for `{ ...purchaseOrder }`
+          body: JSON.stringify(purchaseOrder),
         }
       );
 
@@ -130,7 +130,7 @@ export default function postcategoriesAddCategoriesPage() {
 
       if (res.ok) {
         toast.success("Purchase Order added successfully ✅");
-        router.push("/supplier"); // or wherever you want to go after success
+        router.push("/purchase");
       } else if (data.errors) {
         toast.error(Object.values(data.errors).flat().join("\n"), {
           style: { whiteSpace: "pre-line" },
@@ -140,12 +140,12 @@ export default function postcategoriesAddCategoriesPage() {
         toast.error(data.message || "Something went wrong!");
       }
     } catch (err) {
-      console.error("❌ Network or Server Error:", err);
+      console.error("Network or Server Error:", err);
       toast.error("Network or server error!");
     }
   };
 
-  if (!permissions.includes("create supplier")) {
+  if (!permissions.includes("create purchase order")) {
     router.replace("/dashboard");
     return false;
   }
@@ -209,18 +209,19 @@ export default function postcategoriesAddCategoriesPage() {
                             <input
                               type="text"
                               className="form-control"
-                              defaultValue="PO-0001"
+                              placeholder="Invoice Number"
+                              value={invNumber}
+                              onChange={(e) => setInvNum(e.target.value)}
                             />
                           </div>
                           <div className="col-md-3">
                             <label className="form-label">Date</label>
-                           <input
-              type="date"
-              className="form-control"
-              value={orderDate}
-              onChange={(e) => setOrderDate(e.target.value)}
-              required
-            />
+                            <input
+                              type="date"
+                              className="form-control"
+                              value={orderDate}
+                              onChange={(e) => setOrderDate(e.target.value)}
+                            />
                           </div>
                           <div className="col-md-6">
                             <label className="form-label">Supplier</label>
@@ -233,7 +234,7 @@ export default function postcategoriesAddCategoriesPage() {
                             >
                               <option value="">-- Select Supplier --</option>
                               {purchaseData.map((supplier) => (
-                                <option key={supplier.id} value={supplier.name}>
+                                <option key={supplier.id} value={supplier.id}>
                                   {supplier.name}
                                 </option>
                               ))}
@@ -246,7 +247,10 @@ export default function postcategoriesAddCategoriesPage() {
                             <textarea
                               className="form-control"
                               rows={2}
-                              defaultValue={""}
+                              value={billingAddress}
+                              onChange={(e) =>
+                                setBillingAddress(e.target.value)
+                              }
                             />
                           </div>
                           <div className="col-md-6">
@@ -256,7 +260,10 @@ export default function postcategoriesAddCategoriesPage() {
                             <textarea
                               className="form-control"
                               rows={2}
-                              defaultValue={""}
+                              value={shippingAddress}
+                              onChange={(e) =>
+                                setShippingAddress(e.target.value)
+                              }
                             />
                           </div>
                         </div>
@@ -386,13 +393,13 @@ export default function postcategoriesAddCategoriesPage() {
                           <div className="col-md-6">
                             <label className="form-label">Notes</label>
                             <textarea
-              type="text"
-              className="form-control"
-              rows={3}
-              placeholder="Additional Notes."
-              value={remarks}
-              onChange={(e) => setRemarks(e.target.value)}
-            />
+                              type="text"
+                              className="form-control"
+                              rows={3}
+                              placeholder="Additional Notes."
+                              value={remarks}
+                              onChange={(e) => setRemarks(e.target.value)}
+                            />
                           </div>
                           <div className="col-md-6">
                             <div className="card p-3">
@@ -403,7 +410,7 @@ export default function postcategoriesAddCategoriesPage() {
                               <hr />
                               <div className="d-flex justify-content-between">
                                 <strong>Grand Total</strong>
-                                <strong id="grandTotal">0.00</strong>
+                                <strong id="grandTotal">{grandTotal}</strong>
                               </div>
                             </div>
                           </div>
