@@ -44,7 +44,7 @@ export default function AdminSidebar() {
     {
       label: "Post Management",
       href: "#",
-      icon: "bi-clipboard-fill",
+      icon: "nav-icon bi bi-ui-checks-grid",
       children: [
         { label: "Post Category", href: "/postcategories", icon: "bi-circle" },
         { label: "Post", href: "/post", icon: "bi-circle" },
@@ -57,7 +57,7 @@ export default function AdminSidebar() {
           {
             label: "Product Categories",
             href: "#",
-            icon: "bi-clipboard-fill",
+            icon: "nav-icon bi bi-ui-checks-grid",
             children: [
               {
                 label: "Category",
@@ -69,7 +69,7 @@ export default function AdminSidebar() {
           {
             label: "Banner Management",
             href: "#",
-            icon: "bi-clipboard-fill",
+            icon: "nav-icon bi bi-ui-checks-grid",
             children: [
               {
                 label: "Banner",
@@ -81,7 +81,7 @@ export default function AdminSidebar() {
           {
             label: "Supplier Management",
             href: "#",
-            icon: "bi-clipboard-fill",
+            icon: "nav-icon bi bi-ui-checks-grid",
             children: [
               {
                 label: "Supplier List",
@@ -93,7 +93,7 @@ export default function AdminSidebar() {
           {
             label: "Purchase Management",
             href: "#",
-            icon: "bi-clipboard-fill",
+            icon: "nav-icon bi bi-ui-checks-grid",
             children: [
               {
                 label: "Purchase List",
@@ -106,7 +106,21 @@ export default function AdminSidebar() {
            {
             label: "Product Management",
             href: "#",
-            icon: "bi-clipboard-fill",
+            icon: "nav-icon bi bi-ui-checks-grid",
+            children: [
+              {
+                label: "Product List",
+                href: "/product",
+                icon: "bi-circle",
+              },
+            ],
+          },
+
+
+          {
+            label: "Order Management",
+            href: "#",
+            icon: "nav-icon bi bi-ui-checks-grid",
             children: [
               {
                 label: "Product List",
@@ -117,9 +131,26 @@ export default function AdminSidebar() {
           },
 
           {
+            label: "Customer Management",
+            href: "#",
+            icon: "nav-icon bi bi-ui-checks-grid",
+            children: [
+              {
+                label: "Customer List",
+                href: "/customer",
+                icon: "bi-circle",
+              },
+            ],
+          },
+
+
+
+
+
+          {
             label: "System Management",
             href: "#",
-            icon: "bi-clipboard-fill",
+            icon: "nav-icon bi bi-ui-checks-grid",
             children: [
               { label: "Roles Manage", href: "/roles", icon: "bi-circle" },
               {

@@ -1,32 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useAuth } from "../../../../context/AuthContext"; // adjust path
 import { usePathname } from "next/navigation";
-import { useAuth } from "../../../context/AuthContext"; // adjust path
+import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
-import Link from "next/link";
-
-export default function UserAddPage() {
+export default function EditUserForm({ id }) {
   const { token, permissions } = useAuth();
-  const [user, setUser] = useState(null);
-  const [postCategory, setPostCategorys] = useState([]);
-  const pathname = usePathname();
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [errors, setErrors] = useState({});
-  const title = "Post Add";
-  // update document title
-  useEffect(() => {
-    if (title) {
-      document.title = title;
-    }
-  }, [title]);
-
   const [formData, setFormData] = useState({
+    id: id,
     name: "",
     meta_title: "",
     meta_description: "",
@@ -34,8 +20,14 @@ export default function UserAddPage() {
     categoryId: "",
     description_full: "",
     files: null, // single image
-    status: 1,
+    status: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
+  const [postCategory, setPostCategorys] = useState([]);
+  const router = useRouter();
+  const pathname = usePathname();
+  const title = "Post Edit";
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -45,9 +37,11 @@ export default function UserAddPage() {
       setFormData({ ...formData, [name]: value });
     }
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = new FormData();
+    payload.append("id", formData.id);
     payload.append("name", formData.name);
     payload.append("meta_title", formData.meta_title);
     payload.append("meta_description", formData.meta_description);
@@ -60,26 +54,21 @@ export default function UserAddPage() {
       payload.append("files", formData.files);
     }
 
-    // Check FormData content
-    for (let pair of payload.entries()) {
-      console.log(pair[0], pair[1]);
-    }
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/posts/create`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/posts/update`,
         {
           method: "POST",
           body: payload,
           headers: {
-           // "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
       const data = await res.json();
       if (res.ok) {
-        setUser(data);
-        toast.success("Post add successfully ✅");
+        // setUser(data);
+        toast.success("Post update successfully ✅");
         router.push("/post");
       } else if (data.errors) {
         toast.error(Object.values(data.errors).flat().join("\n"), {
@@ -95,13 +84,13 @@ export default function UserAddPage() {
     }
   };
 
+  // Fetch post data
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchPost = async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE}/posts/postCategorysearch`,
+          `${process.env.NEXT_PUBLIC_API_BASE}/posts/postrow/${id}`,
           {
-            method: "GET",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
@@ -109,36 +98,68 @@ export default function UserAddPage() {
           }
         );
         const data = await res.json();
-        if (res.ok) {
-          setPostCategorys(data);
-        } else {
-          console.error("Auth error:", data.message);
-        }
+        const datarow = data?.data || {};
+        const chkImg = data.images || "";
+        console.log("chkImg", chkImg);
+
+        setFormData({
+          id: datarow.id ?? "",
+          name: datarow.name ?? "",
+          meta_title: datarow.meta_title ?? "",
+          meta_description: datarow.meta_description ?? "",
+          meta_keyword: datarow.meta_keyword ?? "",
+          categoryId: datarow.categoryId ?? "",
+          description_full: datarow.description_full ?? "",
+          status: datarow.status ?? "",
+          files: chkImg ?? "",
+        });
       } catch (err) {
-        console.error("API error:", err);
+        console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [router]);
+    fetchPost();
+  }, []);
 
-  if (loading) {
-    return <p className="text-center py-5"></p>;
-  }
+  // Fetch post categories
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE}/posts/postCategorysearch`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const data = await res.json();
+        if (res.ok) setPostCategorys(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  if (!permissions.includes("create posts")) {
+  useEffect(() => {
+    if (title) document.title = title;
+  }, [title]);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (!permissions.includes("edit posts")) {
     router.replace("/dashboard");
     return false;
   }
 
   return (
     <main className="app-main" id="main" tabIndex={-1}>
-      {/*begin::App Content Header*/}
+      <Toaster position="top-right" />
       <div className="app-content-header">
-        {/*begin::Container*/}
         <div className="container-fluid">
-          {/*begin::Row*/}
           <div className="row">
             <div className="col-sm-6">
               <h3 className="mb-0">{title}</h3>
@@ -163,57 +184,49 @@ export default function UserAddPage() {
               </ol>
             </div>
           </div>
-          {/*end::Row*/}
         </div>
-        {/*end::Container*/}
       </div>
 
-      {/*begin::App Content*/}
       <div className="app-content">
-        {/*begin::Container*/}
         <div className="container-fluid">
-          {/*begin::Row*/}
           <div className="row g-4">
-            {/*begin::Col*/}
             <div className="col-md-12">
-              {/*begin::Quick Example*/}
               <div className="card card-primary card-outline mb-4">
-                {/*begin::Form*/}
-                <Toaster position="top-right" />
                 <form onSubmit={handleSubmit}>
-                  {/*begin::Body*/}
                   <div className="card-body">
                     <div className="mb-3">
                       <label className="form-label">Name</label>
                       <input
                         type="text"
+                        name="name"
                         className={`form-control ${
                           errors.name ? "is-invalid" : ""
                         }`}
-                        name="name"
                         value={formData.name}
                         onChange={handleChange}
                       />
-                      {errors.name && errors.name.length > 0 && (
+                      {errors.name && (
                         <div className="invalid-feedback">{errors.name[0]}</div>
                       )}
                     </div>
+
                     <div className="mb-3">
                       <label className="form-label">Meta Title</label>
                       <input
                         type="text"
-                        className="form-control"
                         name="meta_title"
+                        className="form-control"
                         value={formData.meta_title}
                         onChange={handleChange}
                       />
                     </div>
+
                     <div className="mb-3">
                       <label className="form-label">Meta Keyword</label>
                       <input
                         type="text"
-                        className="form-control"
                         name="meta_keyword"
+                        className="form-control"
                         value={formData.meta_keyword}
                         onChange={handleChange}
                       />
@@ -222,48 +235,45 @@ export default function UserAddPage() {
                     <div className="mb-3">
                       <label className="form-label">Meta Description</label>
                       <textarea
-                        className="form-control"
                         name="meta_description"
+                        className="form-control"
                         rows={5}
-                        cols={5}
                         value={formData.meta_description}
                         onChange={handleChange}
                       />
                     </div>
 
                     <div className="mb-3">
-                      <label className="form-label">Post Categoryes</label>
+                      <label className="form-label">Post Category</label>
                       <select
+                        name="categoryId"
                         className={`form-control ${
                           errors.categoryId ? "is-invalid" : ""
                         }`}
-                        name="categoryId"
                         value={formData.categoryId}
                         onChange={handleChange}
                       >
                         <option value="">-- Select --</option>
-                        {postCategory.map((pcategory, index) => (
-                          <option key={pcategory.id} value={pcategory.id}>
-                            {pcategory.name}
+                        {postCategory.map((cat) => (
+                          <option key={cat.id} value={cat.id}>
+                            {cat.name}
                           </option>
                         ))}
                       </select>
-
-                      {errors.categoryId && errors.categoryId.length > 0 && (
-                        <div className="invalid-feedback">
-                          {errors.categoryId[0]}
-                        </div>
-                      )}
                     </div>
 
                     <div className="mb-3">
                       <label className="form-label">Full Description</label>
                       <CKEditor
                         editor={ClassicEditor}
+                        key={formData.id} // important: force rerender when id changes
                         data={formData.description_full}
                         onChange={(event, editor) => {
                           const data = editor.getData();
-                          setFormData({ ...formData, description_full: data });
+                          setFormData((prev) => ({
+                            ...prev,
+                            description_full: data,
+                          }));
                         }}
                       />
                     </div>
@@ -283,7 +293,11 @@ export default function UserAddPage() {
                     {formData.files && (
                       <div className="mb-3">
                         <img
-                          src={URL.createObjectURL(formData.files)}
+                          src={
+                            typeof formData.files === "string"
+                              ? formData.files // API URL
+                              : URL.createObjectURL(formData.files) // new File object
+                          }
                           alt="Preview"
                           className="img-thumbnail"
                           style={{ maxHeight: "150px" }}
@@ -291,26 +305,18 @@ export default function UserAddPage() {
                       </div>
                     )}
                   </div>
-                  {/*end::Body*/}
-                  {/*begin::Footer*/}
+
                   <div className="card-footer text-end">
                     <button type="submit" className="btn btn-primary">
                       Submit
                     </button>
                   </div>
-                  {/*end::Footer*/}
                 </form>
-                {/*end::Form*/}
               </div>
-              {/*end::Quick Example*/}
             </div>
-            {/*end::Col*/}
           </div>
-          {/*end::Row*/}
         </div>
-        {/*end::Container*/}
       </div>
-      {/*end::App Content*/}
     </main>
   );
 }

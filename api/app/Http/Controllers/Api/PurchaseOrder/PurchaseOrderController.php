@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\PurchaseOrder;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use App\Models\PurchaseOrderInvoice;
 use App\Models\PurchaseOrderParticular;
 use App\Models\Supplier;
@@ -45,11 +46,12 @@ class PurchaseOrderController extends Controller
         $paginator = $query->paginate($pageSize, ['*'], 'page', $page);
         $modifiedCollection = $paginator->getCollection()->map(function ($item) {
             return [
-                'id'            => $item->id,
-                'invNumber'     => $item->invNumber,
-                'orderDate'     => date("d-M-Y", strtotime($item->orderDate)),
-                'grandTotal'    => 'TK. ' . $item->grandTotal,
-                'supplier_name' => $item->supplierName,
+                'id'              => $item->id,
+                'invNumber'       => $item->invNumber,
+                'orderDate'       => date("d-M-Y", strtotime($item->orderDate)),
+                'grandTotal'      => 'TK. ' . $item->grandTotal,
+                'supplier_name'   => $item->supplierName,
+                'transfer_status' => $item->transfer_status,
             ];
         });
         // Return the modified collection along with pagination metadata
@@ -59,6 +61,49 @@ class PurchaseOrderController extends Controller
             'total_pages'    => $paginator->lastPage(),
             'total_records'  => $paginator->total(),
         ], 200);
+    }
+
+    public function sendToTransferProduct($id)
+    {
+
+        $purchase_order_id = $id;
+        $chkData           = PurchaseOrderInvoice::where('purchase_order_id', $purchase_order_id)->get();
+        // Delete existing products for this purchase order
+        Product::where('purchase_order_id', $purchase_order_id)->delete();
+
+
+        $phsitory = [];
+        foreach ($chkData as $r) {
+            $chkSupplier  = PurchaseOrderParticular::where('id', $r->purchase_order_id)->first();
+            $supName      = Supplier::where('id', $chkSupplier->supplier_id)->first();
+            $phsitory[] = [
+                'name'               => $r->description ?? "",
+                'slug'               => Str::slug($r->description ?? ""), // generate slug
+                //'qty' => $r->qty ?? "",
+                'purchase_order_id'  => $r->purchase_order_id ?? "",
+                'supplier_id'        => $chkSupplier->id ?? "",
+                'supplier_name'      => $supName->name ?? "", // only for response
+
+            ];
+        }
+        $insertData = array_map(function ($item) {
+            unset($item['supplier_name']); // remove supplier_name before insert
+            return $item;
+        }, $phsitory);
+        // Insert all records at once
+        if (!empty($insertData)) {
+            Product::insert($insertData);
+        }
+        // Update transfer_status for all purchase order particulars
+        PurchaseOrderParticular::where('id', $purchase_order_id)
+            ->update(['transfer_status' => 1]);
+
+        return response()->json([
+            'status'            => true,
+            'message'           => 'Successfully transfer',
+            'purchase_order_id' => $purchase_order_id,
+            'phsitory'          => $phsitory,
+        ], 201);
     }
 
     public function store(Request $request)
@@ -137,7 +182,11 @@ class PurchaseOrderController extends Controller
     public function checkrow($id)
     {
 
-        $particularData = PurchaseOrderParticular::where('id', $id)->first();
+        $particularData =  PurchaseOrderParticular::select('purchase_order_particular.*', 'supplier.name as supplier_name')
+            ->leftJoin('supplier', 'supplier.id', '=', 'purchase_order_particular.supplier_id')
+            ->where('purchase_order_particular.id', $id)
+            ->first();
+
         $historyData    = PurchaseOrderInvoice::where('purchase_order_id', $id)->get();
 
         return response()->json([

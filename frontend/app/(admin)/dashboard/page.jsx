@@ -3,14 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "../../context/AuthContext";
+import useDashboardLogic from "../../hooks/dashboardLogic";
 
 export default function DashboardPage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { token, permissions } = useAuth();
+  const { dashbaordData } = useDashboardLogic();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     const fetchUser = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/profile`, {
@@ -56,7 +59,7 @@ export default function DashboardPage() {
                 {/*begin::Small Box Widget 2*/}
                 <div className="small-box text-bg-success">
                   <div className="inner">
-                    <h3>100</h3>
+                    <h3>{dashbaordData.product_catgory}</h3>
                     <p>Product Category</p>
                   </div>
                   <svg
@@ -84,7 +87,7 @@ export default function DashboardPage() {
                 {/*begin::Small Box Widget 2*/}
                 <div className="small-box text-bg-warning">
                   <div className="inner">
-                    <h3>01</h3>
+                    <h3>{dashbaordData.baner}</h3>
                     <p>Banner Mangement</p>
                   </div>
                   <svg
@@ -110,7 +113,7 @@ export default function DashboardPage() {
                 {/*begin::Small Box Widget 3*/}
                 <div className="small-box text-bg-success">
                   <div className="inner">
-                    <h3>44</h3>
+                    <h3>{dashbaordData.customer}</h3>
                     <p>Total Customer</p>
                   </div>
                   <svg
@@ -123,7 +126,7 @@ export default function DashboardPage() {
                     <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
                   </svg>
                   <Link
-                    href="/user"
+                    href="/customer"
                     className="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover"
                   >
                     More info <i className="bi bi-link-45deg" />
@@ -136,7 +139,7 @@ export default function DashboardPage() {
                 {/*begin::Small Box Widget 4*/}
                 <div className="small-box text-bg-danger">
                   <div className="inner">
-                    <h3>1</h3>
+                    <h3>{dashbaordData.supplier}</h3>
                     <p>All Supplier</p>
                   </div>
                   <svg
@@ -165,16 +168,13 @@ export default function DashboardPage() {
                   </Link>
                 </div>
                 {/*end::Small Box Widget 4*/}
-
-
-                
               </div>
               {/*end::Col*/}
               <div className="col-lg-2 col-6">
                 {/*begin::Small Box Widget 2*/}
                 <div className="small-box text-bg-warning">
                   <div className="inner">
-                    <h3>01</h3>
+                    <h3>{dashbaordData.purchase}</h3>
                     <p>Purchase Mangement</p>
                   </div>
                   <svg
@@ -196,8 +196,7 @@ export default function DashboardPage() {
                 {/*end::Small Box Widget 2*/}
               </div>
 
-
-                  <div className="col-lg-2 col-6">
+              <div className="col-lg-2 col-6">
                 {/*begin::Small Box Widget 3*/}
                 <div className="small-box text-bg-success">
                   <div className="inner">
@@ -214,7 +213,7 @@ export default function DashboardPage() {
                     <path d="M6.25 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM3.25 19.125a7.125 7.125 0 0114.25 0v.003l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM19.75 7.5a.75.75 0 00-1.5 0v2.25H16a.75.75 0 000 1.5h2.25v2.25a.75.75 0 001.5 0v-2.25H22a.75.75 0 000-1.5h-2.25V7.5z" />
                   </svg>
                   <Link
-                    href="#"
+                    href="/product"
                     className="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover"
                   >
                     More info <i className="bi bi-link-45deg" />
@@ -223,8 +222,6 @@ export default function DashboardPage() {
                 {/*end::Small Box Widget 3*/}
               </div>
               {/*end::Col*/}
-
-              
             </div>
             {/*end::Row*/}
             {/*begin::Row*/}

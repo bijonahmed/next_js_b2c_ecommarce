@@ -14,6 +14,7 @@ export default function EditUserForm({ id }) {
   const [loading, setLoading] = useState(true);
   const [purchaseData, setPurchaseData] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState("");
+  const [supplier_name, setSupplier_name] = useState("");
   const [billingAddress, setBillingAddress] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
   const [orderDate, setOrderDate] = useState("");
@@ -82,6 +83,7 @@ export default function EditUserForm({ id }) {
         setOrderDate(particular.orderDate || "");
         setInvNum(particular.invNumber || "");
         setRemarks(particular.remarks || "");
+        setSupplier_name(particular.supplier_name || "");
       } catch (error) {
         console.error(error);
         toast.error("Failed to fetch purchase data.");
@@ -208,9 +210,7 @@ export default function EditUserForm({ id }) {
                                 Supplier:
                               </label>
                               <div className="form-control-plaintext">
-                                {purchaseData.find(
-                                  (s) => s.id === Number(selectedSupplier)
-                                )?.name || "-"}
+                               {supplier_name || "-"}
                               </div>
                             </div>
 
@@ -262,8 +262,8 @@ export default function EditUserForm({ id }) {
                                 <thead className="table-light">
                                   <tr>
                                     <th>Description</th>
-                                    <th>SKU</th>
-                                    <th>Attribute</th>
+                                    <th className="text-center">SKU</th>
+                                    <th className="text-center">Attribute</th>
                                     <th className="text-end">Qty</th>
                                     <th className="text-end">Unit Price</th>
                                     <th className="text-end">Line Total</th>
@@ -274,8 +274,8 @@ export default function EditUserForm({ id }) {
                                     items.map((item, index) => (
                                       <tr key={index}>
                                         <td>{item.description || "-"}</td>
-                                        <td>{item.sku || "-"}</td>
-                                        <td>{item.attribute || "-"}</td>
+                                        <td className="text-center">{item.sku || "-"}</td>
+                                        <td className="text-center">{item.attribute || "-"}</td>
                                         <td className="text-end">{item.qty || 0}</td>
                                         <td className="text-end">{item.price || 0}</td>
                                         <td className="text-end">{getLineTotal(item)}</td>

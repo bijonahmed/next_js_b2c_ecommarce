@@ -32,6 +32,8 @@ export default function UserPage() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [transferItems, setTransferItems] = useState([]);
 
   const fetchSupplierData = async (selectedFilter = 1) => {
     try {
@@ -108,6 +110,42 @@ export default function UserPage() {
     }
   };
 
+  const handleTransferToProduct = async (id) => {
+    if (!confirm("Are you sure you want to transfer?")) return;
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/purchase/sendToTransferProduct/${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || "Transfer failed");
+        return;
+      }
+      //console.log(data.phsitory);
+      setTransferItems(data.phsitory);
+      // ✅ Open Bootstrap Modal
+      const modalEl = document.getElementById("transferModal");
+      const modal = new bootstrap.Modal(modalEl);
+      modal.show();
+      toast.success("Transfer successfully done.");
+      fetchData();
+      // Refresh table / remove deleted row from state
+      setData((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    }
+  };
+
   const handleDelete = async (id) => {
     if (!confirm("Are you sure you want to delete?")) return;
 
@@ -179,6 +217,24 @@ export default function UserPage() {
             </button>
           ) : null}
 
+          <div className="flex items-center gap-2">
+            {perms.includes("view purchase order") &&
+              (row.transfer_status == 0 ? (
+                <button
+                  className="btn btn-sm btn btn-warning flex items-center gap-1"
+                  onClick={() => handleTransferToProduct(row.id)}
+                >
+                  <i className="bi bi-arrow-repeat"></i> Transfer to product
+                </button>
+              ) : (
+                <button
+                  className="btn btn-sm btn-success flex items-center gap-1"
+                  disabled
+                >
+                  <i className="bi bi-check-circle"></i> Transfer complete
+                </button>
+              ))}
+          </div>
           {perms.includes("delete purchase order") ? (
             <button
               className="btn btn-sm btn-danger"
@@ -190,6 +246,7 @@ export default function UserPage() {
         </div>
       ),
       ignoreRowClick: true,
+      width: "500px",
     },
   ];
 
@@ -315,6 +372,71 @@ export default function UserPage() {
         {/*end::Row*/}
       </div>
       {/*end::Container*/}
+      {/* Modal */}
+      {/* ✅ Modal Popup */}
+      <div
+        className="modal fade"
+        id="transferModal"
+        tabIndex="-1"
+        aria-labelledby="transferModalLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content shadow-lg border-0">
+            <div className="modal-header bg-primary text-white">
+              <h5 className="modal-title" id="transferModalLabel">
+                <i className="bi bi-box-seam me-2"></i>Transferred Product List
+              </h5>
+              <button
+                type="button"
+                className="btn-close btn-close-white"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+
+            <div className="modal-body">
+             
+              {transferItems.length > 0 ? (
+                <div className="table-responsive">
+                  <table className="table table-striped table-bordered align-middle">
+                    <thead className="table-light">
+                      <tr>
+                        <th>#</th>
+                        <th>Product Name</th>
+                        <th>Supplier</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {transferItems.map((item, index) => (
+                        <tr key={index}>
+                          <td>{index + 1}</td>
+                          <td>{item.name}</td>
+                          <td>{item.supplier_name || "-"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-4 text-muted">
+                  <i className="bi bi-info-circle"></i> No items found.
+                </div>
+              )}
+            </div>
+
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                <i className="bi bi-x-circle"></i> Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       {/*end::App Content*/}
     </main>
   );

@@ -62,14 +62,13 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-
+       // dd($request->all());
         $user = Auth::user();
         if (! $user->can('create posts')) {
             return response()->json([
                 'message' => 'Unauthorized: You do not have permission to create posts',
             ], 403);
         }
-
         // dd($request->all());
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -78,8 +77,8 @@ class PostController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-        $userData = Helper::UserData();
-        $user_id = $userData['userId'];
+       
+        $user_id  = $user->id;
         $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $request->input('name'))));
         $data = [
             'name' => $request->name,
@@ -106,7 +105,7 @@ class PostController extends Controller
             $data['thumnail_img'] = $file_url;
         }
         // Post::create($data);
-        $resdata['product_id'] = Post::insertGetId($data);
+        $resdata['product_id'] = PostModel::insertGetId($data);
 
         return response()->json($resdata);
     }

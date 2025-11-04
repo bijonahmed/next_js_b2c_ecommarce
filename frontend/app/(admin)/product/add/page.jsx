@@ -18,7 +18,7 @@ export default function UserAddPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
-  const title = "Post Add";
+  const title = "Add Product";
   // update document title
   useEffect(() => {
     if (title) {
@@ -60,22 +60,15 @@ export default function UserAddPage() {
       payload.append("files", formData.files);
     }
 
-    // Check FormData content
-    for (let pair of payload.entries()) {
-      console.log(pair[0], pair[1]);
-    }
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/posts/create`,
-        {
-          method: "POST",
-          body: payload,
-          headers: {
-           // "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/posts/create`, {
+        method: "POST",
+        body: payload,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await res.json();
       if (res.ok) {
         setUser(data);
@@ -183,6 +176,9 @@ export default function UserAddPage() {
                 <form onSubmit={handleSubmit}>
                   {/*begin::Body*/}
                   <div className="card-body">
+
+
+                    
                     <div className="mb-3">
                       <label className="form-label">Name</label>
                       <input

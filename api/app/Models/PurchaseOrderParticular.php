@@ -13,5 +13,5 @@ class PurchaseOrderParticular extends Authenticatable
 {
     use HasFactory, Notifiable;
     public $table = "purchase_order_particular";
-    protected $fillable = ['supplier_id', 'invNumber', 'billingAddress', 'shippingAddress', 'orderDate', 'remarks', 'grandTotal'];
+    protected $fillable = ['supplier_id', 'invNumber', 'billingAddress', 'shippingAddress', 'orderDate', 'remarks', 'grandTotal','transfer_status'];
 }

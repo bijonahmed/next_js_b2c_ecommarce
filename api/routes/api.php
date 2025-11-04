@@ -1,7 +1,10 @@
 <?php
+
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Banner\BannerController;
 use App\Http\Controllers\Api\Categories\CategoryController;
+use App\Http\Controllers\Api\Customer\CustomerController;
+use App\Http\Controllers\Api\Dashboard\DashboardController;
 use App\Http\Controllers\Api\Post\PostCategoryController;
 use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\User\UserController;
@@ -13,6 +16,7 @@ use App\Http\Controllers\Api\PurchaseOrder\PurchaseOrderController;
 use App\Http\Controllers\Api\Settings\SettingsController;
 use App\Http\Controllers\Api\Supplier\SupplierController;
 use Illuminate\Support\Facades\Route;
+
 Route::middleware('api')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->name('api.register');
     Route::post('/login', [AuthController::class, 'login'])->name('api.login');
@@ -27,10 +31,23 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/updateProfile', [AuthController::class, 'updateProfile']);
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
+
+
     Route::prefix('setting')->group(function () {
         Route::get('/settingrow', [SettingsController::class, 'settingrow']);
         Route::post('/upateSetting', [SettingsController::class, 'upateSetting']);
     });
+
+
+    Route::prefix('dashbaord')->group(function () {
+        Route::get('/getDashboardData', [DashboardController::class, 'getDashboardData']);
+    });
+
+     Route::prefix('customer')->group(function () {
+        Route::get('/index', [CustomerController::class, 'index']);
+    });
+
+
     Route::prefix('banner')->group(function () {
         Route::get('/index', [BannerController::class, 'index']);
         Route::post('/SliderStore', [BannerController::class, 'SliderStore']);
@@ -54,16 +71,14 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
 
-     Route::prefix('purchase')->group(function () {
+    Route::prefix('purchase')->group(function () {
         Route::get('/index', [PurchaseOrderController::class, 'index']);
+        Route::get('/sendToTransferProduct/{id}', [PurchaseOrderController::class, 'sendToTransferProduct']);
         Route::post('/create', [PurchaseOrderController::class, 'store']);
         Route::DELETE('/delete/{id}', [PurchaseOrderController::class, 'destroy']);
         Route::get('/chkrow/{id}', [PurchaseOrderController::class, 'checkrow']);
         Route::post('/update', [PurchaseOrderController::class, 'update']);
     });
-
-
-
 
 
     Route::prefix('roles')->group(function () {
