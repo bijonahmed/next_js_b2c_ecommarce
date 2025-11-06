@@ -57,7 +57,7 @@ export default function AdminSidebar() {
           {
             label: "Product Categories",
             href: "#",
-            icon: "nav-icon bi bi-ui-checks-grid",
+            icon: "bi-box-seam-fill",
             children: [
               {
                 label: "Category",
@@ -81,7 +81,7 @@ export default function AdminSidebar() {
           {
             label: "Supplier Management",
             href: "#",
-            icon: "nav-icon bi bi-ui-checks-grid",
+            icon: "nav-icon bi bi-ui-checks",
             children: [
               {
                 label: "Supplier List",
@@ -93,7 +93,7 @@ export default function AdminSidebar() {
           {
             label: "Purchase Management",
             href: "#",
-            icon: "nav-icon bi bi-ui-checks-grid",
+            icon: "bi-box-seam-fill",
             children: [
               {
                 label: "Purchase List",
@@ -106,7 +106,7 @@ export default function AdminSidebar() {
            {
             label: "Product Management",
             href: "#",
-            icon: "nav-icon bi bi-ui-checks-grid",
+            icon: "nav-icon bi bi-ui-checks",
             children: [
               {
                 label: "Product List",
@@ -120,7 +120,7 @@ export default function AdminSidebar() {
           {
             label: "Order Management",
             href: "#",
-            icon: "nav-icon bi bi-ui-checks-grid",
+            icon: "bi-box-seam-fill",
             children: [
               {
                 label: "Product List",
@@ -133,7 +133,7 @@ export default function AdminSidebar() {
           {
             label: "Customer Management",
             href: "#",
-            icon: "nav-icon bi bi-ui-checks-grid",
+            icon: "nav-icon bi bi-ui-checks",
             children: [
               {
                 label: "Customer List",

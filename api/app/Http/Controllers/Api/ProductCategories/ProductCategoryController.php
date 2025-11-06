@@ -20,7 +20,7 @@ class ProductCategoryController extends Controller
         $user = Auth::user();
         if (! $user->can('view product category')) {
             return response()->json([
-                'message' => 'Unauthorized: You do not have permission to view posts category',
+                'message' => 'Unauthorized: You do not have permission to view category',
             ], 403);
         }
 
@@ -44,6 +44,27 @@ class ProductCategoryController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function checkSubcategory(Request $request)
+    {
+
+        $user = Auth::user();
+        if (! $user->can('view product category')) {
+            return response()->json([
+                'message' => 'Unauthorized: You do not have permission to view category',
+            ], 403);
+        }
+
+        $category_id = $request->category_id;
+
+        $query       = ProductCategory::where('parent_id', $category_id)->where('status', 1)->orderBy('id', 'desc')->get();
+
+        return response()->json([
+            'data' => $query,
+        ], 200);
+
+        exit;
     }
 
     public function store(Request $request)

@@ -71,7 +71,6 @@ class PurchaseOrderController extends Controller
         // Delete existing products for this purchase order
         Product::where('purchase_order_id', $purchase_order_id)->delete();
 
-
         $phsitory = [];
         foreach ($chkData as $r) {
             $chkSupplier  = PurchaseOrderParticular::where('id', $r->purchase_order_id)->first();
@@ -79,10 +78,12 @@ class PurchaseOrderController extends Controller
             $phsitory[] = [
                 'name'               => $r->description ?? "",
                 'slug'               => Str::slug($r->description ?? ""), // generate slug
-                //'qty' => $r->qty ?? "",
+                'stock_qty'          => $r->qty ?? "",
+                'price'              => $r->price ?? "",
                 'purchase_order_id'  => $r->purchase_order_id ?? "",
-                'supplier_id'        => $chkSupplier->id ?? "",
+                'supplier_id'        => $chkSupplier->supplier_id ?? "",
                 'supplier_name'      => $supName->name ?? "", // only for response
+                'status'             => 0, // Inactive 
 
             ];
         }

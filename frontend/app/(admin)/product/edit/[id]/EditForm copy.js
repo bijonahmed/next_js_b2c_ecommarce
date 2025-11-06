@@ -227,13 +227,6 @@ export default function EditProductForm({ id }) {
     return null;
   }
 
-  const allowOnlyNumbers = (e) => {
-    const val = e.target.value;
-    if (!/^\d*$/.test(val)) {
-      e.target.value = val.replace(/\D/g, ""); // remove all non-digit characters
-    }
-  };
-
   return (
     <main className="app-main" id="main" tabIndex={-1}>
       <Toaster position="top-right" />
@@ -320,38 +313,120 @@ export default function EditProductForm({ id }) {
                   <div className="mb-2">
                     <label className="form-label">Regular Price</label>
                     <input
-                      type="text"
+                      type="number"
                       name="price"
                       className="form-control"
                       value={formData.price}
                       onChange={handleChange}
-                      onInput={allowOnlyNumbers}
                     />
                   </div>
 
                   <div className="mb-2">
                     <label className="form-label">Discount Price</label>
                     <input
-                      type="text"
+                      type="number"
                       name="discount_price"
                       className="form-control"
                       value={formData.discount_price}
                       onChange={handleChange}
-                      onInput={allowOnlyNumbers}
                     />
                   </div>
 
                   <div className="mb-2">
                     <label className="form-label">stock_qty</label>
                     <input
-                      type="text"
+                      type="number"
                       name="stock_qty"
                       className="form-control"
                       value={formData.stock_qty}
                       onChange={handleChange}
-                      onInput={allowOnlyNumbers}
                     />
                   </div>
+
+                  {/* Add Attribue */}
+
+                  <div className="container mt-4">
+                    <h5>Product Attributes</h5>
+                    <table className="table table-bordered table-striped">
+                      <thead className="table-dark">
+                        <tr>
+                          <th>Attribute Name</th>
+                          <th>Buying Price</th>
+                          <th>Selling Price</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {attributes.map((attr, index) => (
+                          <tr key={index}>
+                            <td>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={attr.attributeName}
+                                onChange={(e) =>
+                                  handleAttrChange(
+                                    index,
+                                    "attributeName",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Attribute Name"
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                className="form-control"
+                                value={attr.buyingPrice}
+                                onChange={(e) =>
+                                  handleAttrChange(
+                                    index,
+                                    "buyingPrice",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Buying Price"
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="number"
+                                className="form-control"
+                                value={attr.sellingPrice}
+                                onChange={(e) =>
+                                  handleAttrChange(
+                                    index,
+                                    "sellingPrice",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Selling Price"
+                              />
+                            </td>
+                            <td>
+                              <button
+                                type="button"
+                                className="btn btn-danger btn-sm"
+                                onClick={() => removeRow(index)}
+                                disabled={attributes.length === 1} // prevent removing last row
+                              >
+                                ×
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <button
+                      className="btn btn-primary"
+                      type="button"
+                      onClick={addRow}
+                    >
+                      Add More
+                    </button>
+                  </div>
+                  {/* End */}
                 </div>
 
                 {/* Column 2 */}
@@ -418,20 +493,20 @@ export default function EditProductForm({ id }) {
                       onChange={handleChange}
                       className="form-control"
                     />
-                    {formData.files &&
-                      (typeof formData.files === "string" ||
-                      formData.files instanceof File ? (
-                        <img
-                          src={
-                            typeof formData.files === "string"
-                              ? formData.files
-                              : URL.createObjectURL(formData.files)
-                          }
-                          alt="Preview"
-                          className="img-thumbnail mt-2"
-                          style={{ maxHeight: "150px" }}
-                        />
-                      ) : null)}
+                    {formData.files && (
+                      <img
+                        src={
+                          typeof formData.files === "string"
+                            ? formData.files
+                            : formData.files instanceof File
+                            ? URL.createObjectURL(formData.files)
+                            : "" // fallback if not a File
+                        }
+                        alt="Preview"
+                        className="img-thumbnail mt-2"
+                        style={{ maxHeight: "150px" }}
+                      />
+                    )}
                   </div>
 
                   <div className="mb-3 mt-4">
@@ -564,122 +639,27 @@ export default function EditProductForm({ id }) {
                       ))}
                     </div>
                   </div>
-                </div>
 
-                <div className="mb-2">
-                  <label className="form-label">Full Description</label>
-                  <CKEditor
-                    editor={ClassicEditor}
-                    key={formData.id}
-                    data={formData.description_full}
-                    onChange={(event, editor) =>
-                      setFormData({
-                        ...formData,
-                        description_full: editor.getData(),
-                      })
-                    }
-                  />
-                </div>
-
-                {/* Add Attribue */}
-
-                <div className="container mt-4">
-                  <div className="mt-4">
-                    <div className="d-flex justify-content-between align-items-center mb-2">
-                      <h6 className="mb-0">Product Attributes</h6>
-                      <button
-                        type="button"
-                        className="btn btn-success btn-sm"
-                        onClick={addRow}
-                      >
-                        <i className="bi bi-plus-lg"></i> Add Row
-                      </button>
-                    </div>
-
-                    <table className="table table-bordered table-striped align-middle">
-                      <thead className="table-dark">
-                        <tr>
-                          <th scope="col">Attribute Name</th>
-                          <th scope="col">Buying Price</th>
-                          <th scope="col">Selling Price</th>
-                          <th scope="col" className="text-center">
-                            Action
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {attributes.map((attr, index) => (
-                          <tr key={index}>
-                            <td>
-                              <input
-                                type="text"
-                                className="form-control"
-                                value={attr.attributeName}
-                                onChange={(e) =>
-                                  handleAttrChange(
-                                    index,
-                                    "attributeName",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Attribute Name"
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                className="form-control"
-                                 onInput={allowOnlyNumbers}
-                                value={attr.buyingPrice}
-                                onChange={(e) =>
-                                  handleAttrChange(
-                                    index,
-                                    "buyingPrice",
-                                    e.target.value
-                                  )
-                                }
-                                placeholder="Buying Price"
-                              />
-                            </td>
-                            <td>
-                              <input
-                                type="text"
-                                className="form-control"
-                                value={attr.sellingPrice}
-                                onChange={(e) =>
-                                  handleAttrChange(
-                                    index,
-                                    "sellingPrice",
-                                    e.target.value
-                                  )
-                                }
-                                 onInput={allowOnlyNumbers}
-                                placeholder="Selling Price"
-                              />
-                            </td>
-                            <td className="text-center">
-                              <button
-                                type="button"
-                                className="btn btn-danger btn-sm"
-                                onClick={() => removeRow(index)}
-                                disabled={attributes.length === 1} // prevent removing last row
-                                title="Remove Attribute"
-                              >
-                                <i className="bi bi-x-lg"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                  <div className="mb-2">
+                    <label className="form-label">Full Description</label>
+                    <CKEditor
+                      editor={ClassicEditor}
+                      key={formData.id}
+                      data={formData.description_full}
+                      onChange={(event, editor) =>
+                        setFormData({
+                          ...formData,
+                          description_full: editor.getData(),
+                        })
+                      }
+                    />
                   </div>
-                </div>
-                {/* End */}
 
-                <div className="mb-2 mt-4">
-                  <button type="submit" className="btn btn-primary w-100">
-                    Submit
-                  </button>
+                  <div className="mb-2 mt-4">
+                    <button type="submit" className="btn btn-primary w-100">
+                      Submit
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

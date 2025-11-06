@@ -8,7 +8,7 @@ import { customStyles } from "../../components/styles/customDataTable";
 import { useAuth } from "../../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 
-export default function UserPage() {
+export default function CustomerPage() {
   const router = useRouter();
   const { token, permissions } = useAuth();
   const perms = Array.isArray(permissions)

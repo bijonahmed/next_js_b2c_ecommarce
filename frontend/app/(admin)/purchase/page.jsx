@@ -396,7 +396,6 @@ export default function UserPage() {
             </div>
 
             <div className="modal-body">
-             
               {transferItems.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table table-striped table-bordered align-middle">
@@ -404,6 +403,8 @@ export default function UserPage() {
                       <tr>
                         <th>#</th>
                         <th>Product Name</th>
+                        <th className="text-center">Qty</th>
+                        <th className="text-center">Price</th>
                         <th>Supplier</th>
                       </tr>
                     </thead>
@@ -412,6 +413,8 @@ export default function UserPage() {
                         <tr key={index}>
                           <td>{index + 1}</td>
                           <td>{item.name}</td>
+                          <td className="text-center">{item.stock_qty}</td>
+                          <td className="text-center">Tk. {item.price}</td>
                           <td>{item.supplier_name || "-"}</td>
                         </tr>
                       ))}

@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\User\UserController;
 use App\Http\Controllers\Api\Roles\RolesController;
 use App\Http\Controllers\Api\Permissions\PermissionsController;
 use App\Http\Controllers\Api\ProductCategories\ProductCategoryController;
+use App\Http\Controllers\Api\Products\ProductsController;
 use App\Http\Controllers\Api\Public\PublicController;
 use App\Http\Controllers\Api\PurchaseOrder\PurchaseOrderController;
 use App\Http\Controllers\Api\Settings\SettingsController;
@@ -43,10 +44,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/getDashboardData', [DashboardController::class, 'getDashboardData']);
     });
 
-     Route::prefix('customer')->group(function () {
+    Route::prefix('customer')->group(function () {
         Route::get('/index', [CustomerController::class, 'index']);
     });
-
 
     Route::prefix('banner')->group(function () {
         Route::get('/index', [BannerController::class, 'index']);
@@ -54,11 +54,13 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/bannerStore', [BannerController::class, 'bannerStore']);
         Route::post('/deleteHomeSlider', [BannerController::class, 'destroyHomeSlider']);
     });
+
     Route::prefix('product-category')->group(function () {
         Route::get('/index', [ProductCategoryController::class, 'index']);
         Route::post('/create', [ProductCategoryController::class, 'store']);
         Route::post('/create-subcategory', [ProductCategoryController::class, 'createSubcategory']);
         Route::post('/update/{id}', [ProductCategoryController::class, 'update']);
+        Route::post('/checkSubcategory', [ProductCategoryController::class, 'checkSubcategory']);
         Route::post('/uploadCategoryImage', [ProductCategoryController::class, 'uploadCategoryImage']);
         Route::post('/uploadBannerImage', [ProductCategoryController::class, 'uploadBannerImage']);
     });
@@ -79,6 +81,17 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/chkrow/{id}', [PurchaseOrderController::class, 'checkrow']);
         Route::post('/update', [PurchaseOrderController::class, 'update']);
     });
+
+    Route::prefix('product')->group(function () {
+        Route::get('/index', [ProductsController::class, 'index']);
+        // Route::get('/sendToTransferProduct/{id}', [PurchaseOrderController::class, 'sendToTransferProduct']);
+        // Route::post('/create', [PurchaseOrderController::class, 'store']);
+        // Route::DELETE('/delete/{id}', [PurchaseOrderController::class, 'destroy']);
+        Route::get('/productrow/{id}', [ProductsController::class, 'productrow']);
+        Route::post('/update', [ProductsController::class, 'update']);
+        Route::post('/gallery-delete', [ProductsController::class, 'deleteGalleryImage']);
+    });
+
 
 
     Route::prefix('roles')->group(function () {
