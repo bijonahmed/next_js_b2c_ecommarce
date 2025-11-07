@@ -25,9 +25,9 @@ class ProductsController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        if (! $user->can('view purchase order')) {
+        if (! $user->can('view product')) {
             return response()->json([
-                'message' => 'Unauthorized: You do not have permission to view purchase order',
+                'message' => 'Unauthorized: You do not have permission to view product',
             ], 403);
         }
         $page             = (int) $request->input('page', 1);
@@ -134,7 +134,7 @@ class ProductsController extends Controller
         $user = Auth::user();
 
         // Check permission
-        if (! $user->can('delete purchase order')) {
+        if (! $user->can('delete product')) {
             return response()->json([
                 'status' => false,
                 'message' => 'Unauthorized: You do not have permission to delete',
@@ -175,9 +175,9 @@ class ProductsController extends Controller
     {
 
         $user = Auth::user();
-        if (!$user->can('edit purchase order')) {
+        if (!$user->can('edit product')) {
             return response()->json([
-                'message' => 'Unauthorized: You do not have permission to edit supplier',
+                'message' => 'Unauthorized: You do not have permission to edit product',
             ], 403);
         }
 
@@ -310,7 +310,7 @@ class ProductsController extends Controller
                 ProductsAttribues::create([
                     'product_id'    => $request->id,
                     'attributeName' => $attr['attributeName'] ?? '',
-                    'buyingPrice'   => $attr['buyingPrice'] ?? 0,
+                    'quantity'      => (int) $attr['quantity'] ?? 0,
                     'sellingPrice'  => $attr['sellingPrice'] ?? 0,
                 ]);
             }

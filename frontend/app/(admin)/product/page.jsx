@@ -156,7 +156,7 @@ export default function ProductPage() {
       name: "Actions",
       cell: (row) => (
         <div className="d-flex gap-2">
-          {perms.includes("edit posts") && (
+          {perms.includes("edit product") && (
             <button
               className="btn btn-sm btn-primary"
               onClick={() => router.push(`/product/edit/${row.id}`)}
@@ -165,7 +165,7 @@ export default function ProductPage() {
             </button>
           )}
 
-          {perms.includes("delete posts") && (
+          {perms.includes("delete product") && (
             <button
               className="btn btn-sm btn-danger"
               onClick={() => handleDelete(row.id)}
@@ -315,7 +315,7 @@ export default function ProductPage() {
                     </button>
                   </div>
                   <div className="col-6 col-md-3 col-lg-1 ms-auto d-none">
-                    {perms.includes("create posts") && (
+                    {perms.includes("create product") && (
                       <button
                         className="btn btn-primary w-100"
                         onClick={() => router.push(`#`)}

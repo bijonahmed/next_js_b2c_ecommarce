@@ -18,7 +18,7 @@ export default function EditProductForm({ id }) {
   const [errors, setErrors] = useState({});
   const [subcategoryList, setSubCategories] = useState([]);
   const [attributes, setAttributes] = useState([
-    { attributeName: "", buyingPrice: "", sellingPrice: "" },
+    { attributeName: "", quantity: "", sellingPrice: "" },
   ]);
   const handleAttrChange = (index, field, value) => {
     const newAttributes = [...attributes];
@@ -29,7 +29,7 @@ export default function EditProductForm({ id }) {
   const addRow = () => {
     setAttributes([
       ...attributes,
-      { attributeName: "", buyingPrice: "", sellingPrice: "" },
+      { attributeName: "", quantity: "", sellingPrice: "" },
     ]);
   };
 
@@ -221,8 +221,8 @@ export default function EditProductForm({ id }) {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (!permissions.includes("edit posts")) {
+
+  if (!permissions.includes("edit product")) {
     router.replace("/dashboard");
     return null;
   }
@@ -600,7 +600,7 @@ export default function EditProductForm({ id }) {
                       <thead className="table-dark">
                         <tr>
                           <th scope="col">Attribute Name</th>
-                          <th scope="col">Buying Price</th>
+                          <th scope="col">Quantity</th>
                           <th scope="col">Selling Price</th>
                           <th scope="col" className="text-center">
                             Action
@@ -629,16 +629,16 @@ export default function EditProductForm({ id }) {
                               <input
                                 type="text"
                                 className="form-control"
-                                 onInput={allowOnlyNumbers}
-                                value={attr.buyingPrice}
+                                onInput={allowOnlyNumbers}
+                                value={attr.quantity}
                                 onChange={(e) =>
                                   handleAttrChange(
                                     index,
-                                    "buyingPrice",
+                                    "quantity",
                                     e.target.value
                                   )
                                 }
-                                placeholder="Buying Price"
+                                placeholder="Quantity"
                               />
                             </td>
                             <td>
@@ -653,7 +653,7 @@ export default function EditProductForm({ id }) {
                                     e.target.value
                                   )
                                 }
-                                 onInput={allowOnlyNumbers}
+                                onInput={allowOnlyNumbers}
                                 placeholder="Selling Price"
                               />
                             </td>

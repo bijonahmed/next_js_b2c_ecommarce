@@ -16,7 +16,7 @@ class ProductsAttribues extends Authenticatable
     protected $fillable = [
         'product_id',
         'attributeName',
-        'buyingPrice',
+        'quantity',
         'sellingPrice',
        
     ];

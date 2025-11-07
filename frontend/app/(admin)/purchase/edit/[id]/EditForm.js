@@ -349,7 +349,7 @@ export default function EditUserForm({ id }) {
                               <tr>
                                 <th>Description</th>
                                 <th>SKU</th>
-                                <th>Attribute</th>
+                                <th className="d-none">Attribute</th>
                                 <th>Qty</th>
                                 <th>Unit Price</th>
                                 <th className="text-end">Line Total</th>
@@ -388,7 +388,7 @@ export default function EditUserForm({ id }) {
                                       }
                                     />
                                   </td>
-                                  <td>
+                                  <td className="d-none">
                                     <input
                                       type="text"
                                       className="form-control"

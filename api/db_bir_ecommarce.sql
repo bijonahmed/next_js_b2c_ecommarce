@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 04, 2025 at 07:39 PM
+-- Generation Time: Nov 06, 2025 at 11:11 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -64,7 +64,7 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel-cache-spatie.permission.cache', 'a:3:{s:5:\"alias\";a:6:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"d\";s:9:\"role_type\";s:1:\"e\";s:9:\"parent_id\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:51:{i:0;a:6:{s:1:\"a\";i:1;s:1:\"b\";s:10:\"view posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:27;s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:1;a:6:{s:1:\"a\";i:2;s:1:\"b\";s:12:\"create posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:27;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:2;a:6:{s:1:\"a\";i:3;s:1:\"b\";s:10:\"edit posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:27;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:3;a:6:{s:1:\"a\";i:4;s:1:\"b\";s:12:\"delete posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:27;s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:6:{s:1:\"a\";i:5;s:1:\"b\";s:10:\"view users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:28;s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:5;a:6:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"create users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:28;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:6;a:6:{s:1:\"a\";i:7;s:1:\"b\";s:10:\"edit users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:28;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:7;a:6:{s:1:\"a\";i:8;s:1:\"b\";s:12:\"delete users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:28;s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:6:{s:1:\"a\";i:9;s:1:\"b\";s:13:\"view products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:29;s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:9;a:6:{s:1:\"a\";i:10;s:1:\"b\";s:15:\"create products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:29;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:10;a:6:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"edit products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:29;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:6:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"delete products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:29;s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:6:{s:1:\"a\";i:14;s:1:\"b\";s:19:\"view posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:30;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:6:{s:1:\"a\";i:15;s:1:\"b\";s:21:\"create posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:30;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:14;a:6:{s:1:\"a\";i:16;s:1:\"b\";s:19:\"edit posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:30;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:15;a:6:{s:1:\"a\";i:17;s:1:\"b\";s:21:\"delete posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:30;s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:6:{s:1:\"a\";i:22;s:1:\"b\";s:9:\"view role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:31;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:6:{s:1:\"a\";i:23;s:1:\"b\";s:11:\"create role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:31;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:6:{s:1:\"a\";i:24;s:1:\"b\";s:9:\"edit role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:31;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:19;a:6:{s:1:\"a\";i:25;s:1:\"b\";s:11:\"delete role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:31;s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:5:{s:1:\"a\";i:26;s:1:\"b\";s:22:\"Update website setting\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:21;a:5:{s:1:\"a\";i:27;s:1:\"b\";s:15:\"Post Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:22;a:5:{s:1:\"a\";i:28;s:1:\"b\";s:15:\"User Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:23;a:5:{s:1:\"a\";i:29;s:1:\"b\";s:19:\"Products Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:24;a:5:{s:1:\"a\";i:30;s:1:\"b\";s:24:\"Post Category Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:25;a:5:{s:1:\"a\";i:31;s:1:\"b\";s:15:\"Role Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:26;a:5:{s:1:\"a\";i:32;s:1:\"b\";s:21:\"Permission Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:27;a:6:{s:1:\"a\";i:33;s:1:\"b\";s:15:\"view permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:6:{s:1:\"a\";i:34;s:1:\"b\";s:17:\"create permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:29;a:6:{s:1:\"a\";i:35;s:1:\"b\";s:15:\"edit permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:6:{s:1:\"a\";i:36;s:1:\"b\";s:17:\"delete permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:5:{s:1:\"a\";i:37;s:1:\"b\";s:28:\"Products Category Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:32;a:6:{s:1:\"a\";i:38;s:1:\"b\";s:21:\"view product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:6:{s:1:\"a\";i:39;s:1:\"b\";s:23:\"create product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:6:{s:1:\"a\";i:40;s:1:\"b\";s:21:\"edit product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:6:{s:1:\"a\";i:41;s:1:\"b\";s:23:\"delete product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:5:{s:1:\"a\";i:42;s:1:\"b\";s:17:\"Banner Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:37;a:6:{s:1:\"a\";i:43;s:1:\"b\";s:11:\"view banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:38;a:6:{s:1:\"a\";i:44;s:1:\"b\";s:13:\"create banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:39;a:6:{s:1:\"a\";i:45;s:1:\"b\";s:11:\"edit banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:40;a:6:{s:1:\"a\";i:46;s:1:\"b\";s:13:\"delete banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:41;a:5:{s:1:\"a\";i:47;s:1:\"b\";s:19:\"Supplier Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:42;a:6:{s:1:\"a\";i:48;s:1:\"b\";s:13:\"view supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:43;a:6:{s:1:\"a\";i:49;s:1:\"b\";s:15:\"create supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:44;a:6:{s:1:\"a\";i:50;s:1:\"b\";s:13:\"edit supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:45;a:6:{s:1:\"a\";i:51;s:1:\"b\";s:15:\"delete supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:46;a:5:{s:1:\"a\";i:52;s:1:\"b\";s:25:\"Purchase Order Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:47;a:6:{s:1:\"a\";i:53;s:1:\"b\";s:19:\"view purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}i:48;a:6:{s:1:\"a\";i:54;s:1:\"b\";s:21:\"create purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}i:49;a:6:{s:1:\"a\";i:55;s:1:\"b\";s:19:\"edit purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}i:50;a:6:{s:1:\"a\";i:56;s:1:\"b\";s:21:\"delete purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:3:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"api\";s:1:\"d\";i:1;}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:6:\"editor\";s:1:\"c\";s:3:\"api\";s:1:\"d\";i:2;}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:6:\"viewer\";s:1:\"c\";s:3:\"api\";s:1:\"d\";i:3;}}}', 1762349422);
+('laravel-cache-spatie.permission.cache', 'a:3:{s:5:\"alias\";a:6:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"d\";s:9:\"role_type\";s:1:\"e\";s:9:\"parent_id\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:51:{i:0;a:6:{s:1:\"a\";i:1;s:1:\"b\";s:10:\"view posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:27;s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:1;a:6:{s:1:\"a\";i:2;s:1:\"b\";s:12:\"create posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:27;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:2;a:6:{s:1:\"a\";i:3;s:1:\"b\";s:10:\"edit posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:27;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:3;a:6:{s:1:\"a\";i:4;s:1:\"b\";s:12:\"delete posts\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:27;s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:6:{s:1:\"a\";i:5;s:1:\"b\";s:10:\"view users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:28;s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:5;a:6:{s:1:\"a\";i:6;s:1:\"b\";s:12:\"create users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:28;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:6;a:6:{s:1:\"a\";i:7;s:1:\"b\";s:10:\"edit users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:28;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:7;a:6:{s:1:\"a\";i:8;s:1:\"b\";s:12:\"delete users\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:28;s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:6:{s:1:\"a\";i:9;s:1:\"b\";s:13:\"view products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:29;s:1:\"r\";a:3:{i:0;i:1;i:1;i:2;i:2;i:3;}}i:9;a:6:{s:1:\"a\";i:10;s:1:\"b\";s:15:\"create products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:29;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:10;a:6:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"edit products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:29;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:6:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"delete products\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:29;s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:6:{s:1:\"a\";i:14;s:1:\"b\";s:19:\"view posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:30;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:6:{s:1:\"a\";i:15;s:1:\"b\";s:21:\"create posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:30;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:14;a:6:{s:1:\"a\";i:16;s:1:\"b\";s:19:\"edit posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:30;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:15;a:6:{s:1:\"a\";i:17;s:1:\"b\";s:21:\"delete posts category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:30;s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:6:{s:1:\"a\";i:22;s:1:\"b\";s:9:\"view role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:31;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:6:{s:1:\"a\";i:23;s:1:\"b\";s:11:\"create role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:31;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:6:{s:1:\"a\";i:24;s:1:\"b\";s:9:\"edit role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:3:\"1,2\";s:1:\"e\";i:31;s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:19;a:6:{s:1:\"a\";i:25;s:1:\"b\";s:11:\"delete role\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:5:\"1,2,3\";s:1:\"e\";i:31;s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:5:{s:1:\"a\";i:26;s:1:\"b\";s:22:\"Update website setting\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:21;a:5:{s:1:\"a\";i:27;s:1:\"b\";s:15:\"Post Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:22;a:5:{s:1:\"a\";i:28;s:1:\"b\";s:15:\"User Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:23;a:5:{s:1:\"a\";i:29;s:1:\"b\";s:19:\"Products Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:24;a:5:{s:1:\"a\";i:30;s:1:\"b\";s:24:\"Post Category Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:25;a:5:{s:1:\"a\";i:31;s:1:\"b\";s:15:\"Role Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:26;a:5:{s:1:\"a\";i:32;s:1:\"b\";s:21:\"Permission Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:27;a:6:{s:1:\"a\";i:33;s:1:\"b\";s:15:\"view permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:6:{s:1:\"a\";i:34;s:1:\"b\";s:17:\"create permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:29;a:6:{s:1:\"a\";i:35;s:1:\"b\";s:15:\"edit permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:6:{s:1:\"a\";i:36;s:1:\"b\";s:17:\"delete permission\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:32;s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:5:{s:1:\"a\";i:37;s:1:\"b\";s:28:\"Products Category Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:32;a:6:{s:1:\"a\";i:38;s:1:\"b\";s:21:\"view product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:6:{s:1:\"a\";i:39;s:1:\"b\";s:23:\"create product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:6:{s:1:\"a\";i:40;s:1:\"b\";s:21:\"edit product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:6:{s:1:\"a\";i:41;s:1:\"b\";s:23:\"delete product category\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:37;s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:5:{s:1:\"a\";i:42;s:1:\"b\";s:17:\"Banner Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:37;a:6:{s:1:\"a\";i:43;s:1:\"b\";s:11:\"view banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:38;a:6:{s:1:\"a\";i:44;s:1:\"b\";s:13:\"create banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:39;a:6:{s:1:\"a\";i:45;s:1:\"b\";s:11:\"edit banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:40;a:6:{s:1:\"a\";i:46;s:1:\"b\";s:13:\"delete banner\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:42;s:1:\"r\";a:1:{i:0;i:1;}}i:41;a:5:{s:1:\"a\";i:47;s:1:\"b\";s:19:\"Supplier Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:42;a:6:{s:1:\"a\";i:48;s:1:\"b\";s:13:\"view supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:43;a:6:{s:1:\"a\";i:49;s:1:\"b\";s:15:\"create supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:44;a:6:{s:1:\"a\";i:50;s:1:\"b\";s:13:\"edit supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:45;a:6:{s:1:\"a\";i:51;s:1:\"b\";s:15:\"delete supplier\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:47;s:1:\"r\";a:1:{i:0;i:1;}}i:46;a:5:{s:1:\"a\";i:52;s:1:\"b\";s:25:\"Purchase Order Management\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:0;}i:47;a:6:{s:1:\"a\";i:53;s:1:\"b\";s:19:\"view purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}i:48;a:6:{s:1:\"a\";i:54;s:1:\"b\";s:21:\"create purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}i:49;a:6:{s:1:\"a\";i:55;s:1:\"b\";s:19:\"edit purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}i:50;a:6:{s:1:\"a\";i:56;s:1:\"b\";s:21:\"delete purchase order\";s:1:\"c\";s:3:\"api\";s:1:\"d\";s:1:\"1\";s:1:\"e\";i:52;s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:3:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"api\";s:1:\"d\";i:1;}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:6:\"editor\";s:1:\"c\";s:3:\"api\";s:1:\"d\";i:2;}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:6:\"viewer\";s:1:\"c\";s:3:\"api\";s:1:\"d\";i:3;}}}', 1762488178);
 
 -- --------------------------------------------------------
 
@@ -509,22 +509,24 @@ CREATE TABLE `product` (
   `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `slug` varchar(255) DEFAULT NULL,
-  `product_description` text DEFAULT NULL,
+  `description_full` text DEFAULT NULL,
   `purchase_order_id` int(11) DEFAULT NULL,
   `supplier_id` int(11) DEFAULT NULL,
+  `categoryId` int(11) DEFAULT NULL,
+  `subcategoryId` int(11) DEFAULT NULL,
   `meta_title` varchar(255) DEFAULT NULL,
   `meta_description` text DEFAULT NULL,
   `meta_keyword` varchar(255) DEFAULT NULL,
-  `product_tag` varchar(255) DEFAULT NULL,
   `sku` varchar(255) DEFAULT NULL,
   `cash_dev_status` int(11) DEFAULT NULL,
-  `price` double(10,2) DEFAULT NULL,
-  `old_price` decimal(10,2) DEFAULT NULL,
+  `price` double(10,2) DEFAULT NULL COMMENT 'regular_price',
+  `discount_price` decimal(10,2) DEFAULT NULL COMMENT 'discount_price',
   `unit` varchar(255) DEFAULT NULL,
   `stock_qty` int(11) DEFAULT NULL,
   `stock_mini_qty` int(11) DEFAULT NULL,
   `shipping_days` int(11) DEFAULT NULL,
   `thumnail_img` varchar(255) DEFAULT NULL,
+  `first_update` int(11) NOT NULL COMMENT '1=first update\r\n0=no update',
   `status` int(11) DEFAULT 1,
   `entry_by` int(11) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
@@ -535,43 +537,77 @@ CREATE TABLE `product` (
 -- Dumping data for table `product`
 --
 
-INSERT INTO `product` (`id`, `name`, `slug`, `product_description`, `purchase_order_id`, `supplier_id`, `meta_title`, `meta_description`, `meta_keyword`, `product_tag`, `sku`, `cash_dev_status`, `price`, `old_price`, `unit`, `stock_qty`, `stock_mini_qty`, `shipping_days`, `thumnail_img`, `status`, `entry_by`, `created_at`, `updated_at`) VALUES
-(1, 'Flat File With Plastic Handle(Bir Standard) 08\"', 'flat-file-with-plastic-handlebir-standard-08', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(2, 'Half Round File ( Wooden)-10\'\'', 'half-round-file-wooden-10', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(3, 'Half Round File ( Wooden)-8\'\'', 'half-round-file-wooden-8', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(4, 'Tri Angel File-4\" Mini (6pcs Set)-Super', 'tri-angel-file-4-mini-6pcs-set-super', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(5, 'Tri Angle File-Mini-4\" ( 6pcs Set)', 'tri-angle-file-mini-4-6pcs-set', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(6, 'American Claw Hammer with Fiber Glass-16OZ', 'american-claw-hammer-with-fiber-glass-16oz', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(7, 'Ball Peen Hammer (Standard) -16 Oz (1 LB)', 'ball-peen-hammer-standard-16-oz-1-lb', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(8, 'Ball Pein Hammer-04 OZ ( 1/4 LB)', 'ball-pein-hammer-04-oz-14-lb', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(9, 'Ball Pein Hammer-08 Oz (1/2 LB)', 'ball-pein-hammer-08-oz-12-lb', NULL, 6, 6, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:33:59', '2025-11-05 00:33:59'),
-(10, 'Axe(Bir Brand)-Fiber Handle', 'axebir-brand-fiber-handle', NULL, 4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:17', '2025-11-05 00:34:17'),
-(11, 'Axe ( Bir Brand)-Premium Quality', 'axe-bir-brand-premium-quality', NULL, 4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:17', '2025-11-05 00:34:17'),
-(12, 'Axe(Bir Brand)-Small', 'axebir-brand-small', NULL, 4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:17', '2025-11-05 00:34:17'),
-(13, 'Drill Bit ( 6.5mm-Super)', 'drill-bit-65mm-super', NULL, 4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:17', '2025-11-05 00:34:17'),
-(14, 'Drill Chuck (1.5-13mm)', 'drill-chuck-15-13mm', NULL, 4, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:17', '2025-11-05 00:34:17'),
-(15, 'Aluminium Level with Magnet-09', 'aluminium-level-with-magnet-09', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(16, '4\" Daimond  Cup Grinding Disk-Single', '4-daimond-cup-grinding-disk-single', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(17, '4\" Daimond Cup Grinding Wheel-Std.Quality', '4-daimond-cup-grinding-wheel-stdquality', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(18, '4\" Daimond Cutter-Professional Quality-Plain Saw', '4-daimond-cutter-professional-quality-plain-saw', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(19, '4\" Daimond Cutter-Professional Quality-Seg.Cutting', '4-daimond-cutter-professional-quality-segcutting', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(20, '4\" Daimond Cutter-Standard Quality-Seg.Cutting', '4-daimond-cutter-standard-quality-segcutting', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(21, '4\" Diamond Cup Grinding Wheel (Double)', '4-diamond-cup-grinding-wheel-double', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(22, '4\" Grinding Wheel', '4-grinding-wheel', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21'),
-(23, '4\'\' Cutting Disc- Thin Turbo Blade', '4-cutting-disc-thin-turbo-blade', NULL, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2025-11-05 00:34:21', '2025-11-05 00:34:21');
+INSERT INTO `product` (`id`, `name`, `slug`, `description_full`, `purchase_order_id`, `supplier_id`, `categoryId`, `subcategoryId`, `meta_title`, `meta_description`, `meta_keyword`, `sku`, `cash_dev_status`, `price`, `discount_price`, `unit`, `stock_qty`, `stock_mini_qty`, `shipping_days`, `thumnail_img`, `first_update`, `status`, `entry_by`, `created_at`, `updated_at`) VALUES
+(1, 'Flat File With Plastic Handle(Bir Standard) 08\"', 'flat-file-with-plastic-handlebir-standard-08', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 150.00, NULL, NULL, 50, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(2, 'Half Round File ( Wooden)-10\'\'', 'half-round-file-wooden-10', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 130.00, NULL, NULL, 61, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(3, 'Half Round File ( Wooden)-8\'\'', 'half-round-file-wooden-8', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 104.00, NULL, NULL, 86, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(4, 'Tri Angel File-4\" Mini (6pcs Set)-Super', 'tri-angel-file-4-mini-6pcs-set-super', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 155.00, NULL, NULL, 187, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(5, 'Tri Angle File-Mini-4\" ( 6pcs Set)', 'tri-angle-file-mini-4-6pcs-set', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 125.00, NULL, NULL, 1095, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(6, 'American Claw Hammer with Fiber Glass-16OZ', 'american-claw-hammer-with-fiber-glass-16oz', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 252.00, NULL, NULL, 4985, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(7, 'Ball Peen Hammer (Standard) -16 Oz (1 LB)', 'ball-peen-hammer-standard-16-oz-1-lb', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 125.00, NULL, NULL, 1, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(8, 'Ball Pein Hammer-04 OZ ( 1/4 LB)', 'ball-pein-hammer-04-oz-14-lb', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 164.00, NULL, NULL, 222, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(9, 'Ball Pein Hammer-08 Oz (1/2 LB)', 'ball-pein-hammer-08-oz-12-lb', NULL, 6, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 188.00, NULL, NULL, 1889, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:26', '2025-11-06 10:15:26'),
+(10, 'Axe(Bir Brand)-Fiber Handle', 'axebir-brand-fiber-handle', NULL, 4, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 430.00, NULL, NULL, 25, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:40', '2025-11-06 10:15:40'),
+(11, 'Axe ( Bir Brand)-Premium Quality', 'axe-bir-brand-premium-quality', NULL, 4, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 520.00, NULL, NULL, 284, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:40', '2025-11-06 10:15:40'),
+(12, 'Axe(Bir Brand)-Small', 'axebir-brand-small', NULL, 4, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 455.00, NULL, NULL, 3326, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:40', '2025-11-06 10:15:40'),
+(13, 'Drill Bit ( 6.5mm-Super)', 'drill-bit-65mm-super', NULL, 4, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 16.50, NULL, NULL, 402, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:40', '2025-11-06 10:15:40'),
+(14, 'Drill Chuck (1.5-13mm)', 'drill-chuck-15-13mm', NULL, 4, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 245.00, NULL, NULL, 2609, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:40', '2025-11-06 10:15:40'),
+(15, 'Cutting Tools', 'cutting-tools', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 143.31, NULL, NULL, 57563, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(16, 'Abresive Paper Sheet-(120-White)', 'abresive-paper-sheet-120-white', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 12.50, NULL, NULL, 442, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(17, 'Aluminium Cutter-12\"', 'aluminium-cutter-12', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1300.00, NULL, NULL, 159, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(18, 'American Snip-12\"', 'american-snip-12', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 295.00, NULL, NULL, 102, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(19, 'Axe(Bir Brand)-Fiber Handle', 'axebir-brand-fiber-handle', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 430.00, NULL, NULL, 25, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(20, 'Axe ( Bir Brand)-Premium Quality', 'axe-bir-brand-premium-quality', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 520.00, NULL, NULL, 284, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(21, 'Axe(Bir Brand)-Small', 'axebir-brand-small', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 455.00, NULL, NULL, 3326, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(22, 'Bolt Cutter-12\"', 'bolt-cutter-12', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 520.00, NULL, NULL, 432, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(23, 'Cable Cutter-10\"', 'cable-cutter-10', NULL, 3, 2, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 235.00, NULL, NULL, 42, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:15:59', '2025-11-06 10:15:59'),
+(24, 'Aluminium Level with Magnet-09', 'aluminium-level-with-magnet-09', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 215.00, NULL, NULL, 210, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(25, '4\" Daimond  Cup Grinding Disk-Single', '4-daimond-cup-grinding-disk-single', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 240.00, NULL, NULL, 7, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(26, '4\" Daimond Cup Grinding Wheel-Std.Quality', '4-daimond-cup-grinding-wheel-stdquality', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 230.00, NULL, NULL, 251, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(27, '4\" Daimond Cutter-Professional Quality-Plain Saw', '4-daimond-cutter-professional-quality-plain-saw', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 105.00, NULL, NULL, 3684, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(28, '4\" Daimond Cutter-Professional Quality-Seg.Cutting', '4-daimond-cutter-professional-quality-segcutting', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 108.00, NULL, NULL, 80, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(29, '4\" Daimond Cutter-Standard Quality-Seg.Cutting', '4-daimond-cutter-standard-quality-segcutting', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 94.00, NULL, NULL, 39735, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(30, '4\" Diamond Cup Grinding Wheel (Double)', '4-diamond-cup-grinding-wheel-double', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 382.00, NULL, NULL, 400, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(31, '4\" Grinding Wheel', '4-grinding-wheel', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 40.00, NULL, NULL, 710, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(32, '4\'\' Cutting Disc- Thin Turbo Blade', '4-cutting-disc-thin-turbo-blade', NULL, 1, 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 150.00, NULL, NULL, 6826, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:13', '2025-11-06 10:16:13'),
+(33, '4\'\' Daimond Cutter-Standard Quality-Plain Saw', '4-daimond-cutter-standard-quality-plain-saw', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 94.00, NULL, NULL, 24429, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(34, '4.5\" Daimond Cutter (Multi Prof.Quality)', '45-daimond-cutter-multi-profquality', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 115.00, NULL, NULL, 7212, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(35, '5\" Daimond Cup Grinding Wheel-Single', '5-daimond-cup-grinding-wheel-single', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 330.00, NULL, NULL, 1177, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(36, '5\" Daimond Cutter -Platinum Quality-Seg Cutting', '5-daimond-cutter-platinum-quality-seg-cutting', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 155.00, NULL, NULL, 467, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(37, '5\" Daimond Cutter -Professional Quality-Plain Saw', '5-daimond-cutter-professional-quality-plain-saw', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 133.00, NULL, NULL, 37585, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(38, '5\" Daimond Cutter-Professional Quality-Seg.Cutting', '5-daimond-cutter-professional-quality-segcutting', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 133.00, NULL, NULL, 74470, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(39, '5\" Diamond Cup Grinding Wheel', '5-diamond-cup-grinding-wheel', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 550.00, NULL, NULL, 250, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(40, '7\" Daimond Cutter( Super Quality)', '7-daimond-cutter-super-quality', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 285.00, NULL, NULL, 103, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(41, '7\'\' Dimond Cutter Seg Cutting Proffessional Quality', '7-dimond-cutter-seg-cutting-proffessional-quality', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 250.00, NULL, NULL, 13225, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(42, '7\' Grinding Wheel (180x6mmx22mm)', '7-grinding-wheel-180x6mmx22mm', NULL, 2, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 138.00, NULL, NULL, 177, NULL, NULL, NULL, 0, 0, NULL, '2025-11-06 10:16:23', '2025-11-06 10:16:23'),
+(43, '9\" Dimond Cutter Seg Cutting Proffessional Quality', '9-dimond-cutter-seg-cutting-proffessional-quality', '', 2, 3, 1, 25, '9\" Dimond Cutter Seg Cutting Proffessional Quality', '9\" Dimond Cutter Seg Cutting Proffessional Quality9\" Dimond Cutter Seg Cutting Proffessional Quality9\" Dimond Cutter Seg Cutting Proffessional Quality', '9\" Dimond Cutter Seg Cutting Proffessional Quality', NULL, NULL, 390.00, 290.00, NULL, 1873, NULL, NULL, 'uploads/products/1762466648_9-dimond-cutter-seg-cutting-proffessional-quality.jpg', 1, 1, NULL, '2025-11-06 10:16:23', '2025-11-06 22:04:08'),
+(44, 'Metal Cutting Disk', 'metal-cutting-disk', '<p><strong>Vikars Premium Foldable Drying Rack – Space-Saving &amp; Heavy-Duty</strong></p><p>The <strong>Vikars Foldable Drying Rack</strong> is designed to make laundry simple, efficient, and space-friendly. Built with high-grade aluminum and stainless steel, it’s completely rust-proof and safe for delicate clothes. With a 30kg load capacity, you can dry everything from everyday wear to heavy towels and bedsheets with ease.</p><p>Its smart design lets you hook it onto balconies and window grills without tools or mount it permanently on the wall for a fixed solution. Perfect for apartments and small homes, the foldable frame saves space when not in use and allows faster drying thanks to open-air airflow.</p><p>&nbsp;</p><p><strong>Key Features:</strong></p><ol><li>✅ <strong>Premium Build:</strong> High-grade aluminum bars &amp; 100% stainless steel</li><li>✅ <strong>Rust-Proof &amp; Long-Lasting:</strong> Safe for delicate clothes</li><li>✅ <strong>Heavy Load Capacity:</strong> Holds up to 30kg of laundry</li><li>✅ <strong>Easy Installation:</strong> Hook on grills or drill to walls</li><li>✅ <strong>Space-Saving:</strong> Compact &amp; foldable design</li><li>✅ <strong>Versatile Use:</strong> Suitable for indoor &amp; outdoor drying</li><li>✅ <strong>Quick Drying:</strong> Maximizes airflow for faster results</li></ol><p>&nbsp;</p><p>Upgrade your laundry routine with a drying rack that combines durability, convenience, and style—all in one.</p><p>&nbsp;</p>', 2, 3, 2, 27, '333', 'hh', 'hh', NULL, NULL, 150.00, 170.00, NULL, 800, NULL, NULL, 'uploads/products/1762453039_metal-cutting-disk.jpg', 1, 1, NULL, '2025-11-06 10:16:23', '2025-11-06 20:49:55');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `product_categories`
+-- Table structure for table `product_attribue`
 --
 
-CREATE TABLE `product_categories` (
+CREATE TABLE `product_attribue` (
   `id` int(11) NOT NULL,
   `product_id` int(11) DEFAULT NULL,
-  `category_id` int(11) DEFAULT NULL,
-  `parent_id` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `attributeName` varchar(255) DEFAULT NULL,
+  `buyingPrice` decimal(10,2) DEFAULT NULL,
+  `sellingPrice` decimal(10,2) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `product_attribue`
+--
+
+INSERT INTO `product_attribue` (`id`, `product_id`, `attributeName`, `buyingPrice`, `sellingPrice`, `created_at`, `updated_at`) VALUES
+(19, 44, 'asdfasdf', 33.00, 33.00, '2025-11-06 15:38:39', '2025-11-06 15:38:39'),
+(20, 44, 'Test', 2222.00, 3333333.00, '2025-11-06 15:38:39', '2025-11-06 15:38:39'),
+(23, 43, 'Test', 500.00, 700.00, '2025-11-06 16:10:30', '2025-11-06 16:10:30'),
+(24, 43, 'Test-1', 5000.00, 6000.00, '2025-11-06 16:10:30', '2025-11-06 16:10:30');
 
 -- --------------------------------------------------------
 
@@ -582,10 +618,23 @@ CREATE TABLE `product_categories` (
 CREATE TABLE `product_img_history` (
   `id` int(11) NOT NULL,
   `product_id` int(11) DEFAULT NULL,
-  `images` varchar(255) NOT NULL,
+  `gallery_image` varchar(255) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `product_img_history`
+--
+
+INSERT INTO `product_img_history` (`id`, `product_id`, `gallery_image`, `created_at`, `updated_at`) VALUES
+(1, 44, 'uploads/product_gallery/1762458619_690cfbfb89022_metal-cutting-disk.jpg', '2025-11-06 19:50:19', '2025-11-06 19:50:19'),
+(3, 44, 'uploads/product_gallery/1762458764_690cfc8c79cd3_metal-cutting-disk.jpg', '2025-11-06 19:52:44', '2025-11-06 19:52:44'),
+(4, 44, 'uploads/product_gallery/1762458764_690cfc8c79ec8_metal-cutting-disk.jpg', '2025-11-06 19:52:44', '2025-11-06 19:52:44'),
+(5, 43, 'uploads/product_gallery/1762466648_690d1b58e0b78_9-dimond-cutter-seg-cutting-proffessional-quality.jpg', '2025-11-06 22:04:08', '2025-11-06 22:04:08'),
+(6, 43, 'uploads/product_gallery/1762466648_690d1b58e0d4d_9-dimond-cutter-seg-cutting-proffessional-quality.jpg', '2025-11-06 22:04:08', '2025-11-06 22:04:08'),
+(7, 43, 'uploads/product_gallery/1762466648_690d1b58e0e5c_9-dimond-cutter-seg-cutting-proffessional-quality.jpg', '2025-11-06 22:04:08', '2025-11-06 22:04:08'),
+(8, 43, 'uploads/product_gallery/1762466648_690d1b58e0f5b_9-dimond-cutter-seg-cutting-proffessional-quality.jpg', '2025-11-06 22:04:08', '2025-11-06 22:04:08');
 
 -- --------------------------------------------------------
 
@@ -698,11 +747,11 @@ CREATE TABLE `purchase_order_particular` (
 --
 
 INSERT INTO `purchase_order_particular` (`id`, `supplier_id`, `invNumber`, `orderDate`, `grandTotal`, `transfer_status`, `billingAddress`, `shippingAddress`, `remarks`, `created_at`, `updated_at`) VALUES
-(1, '4', '0001448', '2025-11-04', 5440210.00, 1, '', '', '', '2025-11-04 09:10:17', '2025-11-04 12:34:21'),
-(2, '3', '0001441', '2025-11-04', 22837817.00, 0, '', '', '', '2025-11-04 09:18:25', '2025-11-04 18:32:35'),
-(3, '2', '0001445', '2025-11-05', 10397938.53, 0, '', '', '', '2025-11-04 09:28:50', '2025-11-04 18:32:35'),
-(4, '2', '0001455', '2025-11-04', 2317598.00, 1, '', '', '', '2025-11-04 09:41:04', '2025-11-04 12:34:17'),
-(6, '1', '0001456', '2025-11-05', 1838119.00, 1, '', '', '', '2025-11-04 09:48:10', '2025-11-04 12:33:59');
+(1, '4', '0001448', '2025-11-04', 5440210.00, 1, '', '', '', '2025-11-04 09:10:17', '2025-11-05 22:16:13'),
+(2, '3', '0001441', '2025-11-04', 22837817.00, 1, '', '', '', '2025-11-04 09:18:25', '2025-11-05 22:16:23'),
+(3, '2', '0001445', '2025-11-05', 10397938.53, 1, '', '', '', '2025-11-04 09:28:50', '2025-11-05 22:15:59'),
+(4, '2', '0001455', '2025-11-04', 2317598.00, 1, '', '', '', '2025-11-04 09:41:04', '2025-11-05 22:15:40'),
+(6, '1', '0001456', '2025-11-05', 1838119.00, 1, '', '', '', '2025-11-04 09:48:10', '2025-11-05 22:15:26');
 
 -- --------------------------------------------------------
 
@@ -847,8 +896,21 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
+('5DaVpALc9TQRNNtlj79TMDIuwD3FXSXuhRBkngXz', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieFBEbFJFQWZwMGFYenBURVdJc0xTTm5rZEp6U2xGeHJHaHBSWDB1ZiI7czo1OiJlcnJvciI7czozODoiT29wcyEgSW52YWxpZCBVUkwsIHJlZGlyZWN0ZWQgdG8gaG9tZS4iO3M6NjoiX2ZsYXNoIjthOjI6e3M6MzoibmV3IjthOjA6e31zOjM6Im9sZCI7YToxOntpOjA7czo1OiJlcnJvciI7fX1zOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czo3MjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3VwbG9hZHMvcHJvZHVjdHMvMTc2MjQ1Mjg2OF9tZXRhbC1jdXR0aW5nLWRpc2suanBnIjt9fQ==', 1762452921),
+('9CN1UKrS69XZXjj1m5QDWeSEjguDpdEaL7ALqzaI', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiR3N4YnR3VlZ5Sk5GcllwTDhaQnR1YVZNWkw3dGR3TE5JbnlUUnRsRyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762452723),
 ('efs7tipJ5EzeJnZ0auszXc5CNzyTIWobHe7NckLf', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiOFFIWURSd1VpRjROSUdTWmhoOXdjdkNOU1ZhYWFjSzN6Y0ZDakdGTiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1761881044),
+('eJbDNwaKWhZj2mIgoERcITQRVCCZNLUJFKcIGGRm', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQ0xSRkl3ZmxoSVlBZDhqVnlwNkJNN1hHYWpoZWJwcEdTNHd3RFIyTCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762323151),
+('GorcfXOpzrhavNcKGijKPiLt2h9hQ7xDAjNa5eiG', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNU9SS1NhdWJhdVBQRE5iSU5YbGRNbVhYV2dPRjhXRkE1UDVCOGZNcyI7czo1OiJlcnJvciI7czozODoiT29wcyEgSW52YWxpZCBVUkwsIHJlZGlyZWN0ZWQgdG8gaG9tZS4iO3M6NjoiX2ZsYXNoIjthOjI6e3M6MzoibmV3IjthOjA6e31zOjM6Im9sZCI7YToxOntpOjA7czo1OiJlcnJvciI7fX1zOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czo3MjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3VwbG9hZHMvcHJvZHVjdHMvMTc2MjQ1MDk3N19tZXRhbC1jdXR0aW5nLWRpc2suanBnIjt9fQ==', 1762452770),
+('hGpOWPtr4XspCKpFngVdv1nKH0Xp9cDzGMbsN4cY', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiY3F4R0FpbFhobTdZaG11cldTRmF1MzQxMnljOWROQWVuUk9TYmozdiI7czo1OiJlcnJvciI7czozODoiT29wcyEgSW52YWxpZCBVUkwsIHJlZGlyZWN0ZWQgdG8gaG9tZS4iO3M6NjoiX2ZsYXNoIjthOjI6e3M6MzoibmV3IjthOjA6e31zOjM6Im9sZCI7YToxOntpOjA7czo1OiJlcnJvciI7fX1zOjk6Il9wcmV2aW91cyI7YToxOntzOjM6InVybCI7czo3MjoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL3VwbG9hZHMvcHJvZHVjdHMvMTc2MjQ1MDk3N19tZXRhbC1jdXR0aW5nLWRpc2suanBnIjt9fQ==', 1762452722),
 ('iAKJpaVSwUSnDld3LbNvU8A6GSOOMrh24jFQVoBb', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoieHBtOThhb1BjY1QzUkNGVVpvM2h3eTM1a25GMlNNaDE2Q2RsakdBMSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1761881086),
+('IxIVkuVlhVRYmeQK2DG7iDZ1zhWnDWfUbyOmj0u7', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiQVpVcWFzN1NhNERmQmF4aXd3cFA2V042MVZBTHI2aktKYWRTRVFkRyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762323152),
+('IXzsXxXxifUvfg7xvzW2FSXEhF8waBIXvwnyCgym', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoicHRtZXNvM1RTZklJTDZ4bmR5b1IyWHU1UXQ1TEFHaXNiWGZjT1BHMiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJuZXciO2E6MDp7fXM6Mzoib2xkIjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fX0=', 1762452782),
+('j7FtBdbEbrLDtD8wGi0smw633XW4Ny9dagUiH0Xn', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVmozdjFXZ24zbUlxa0tIdkFtNWppMmp2bjR3WDJiMFpkaWRxbmZCNiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762323146),
+('muKRZxlfoNHYoizduqfoFI3WymEpJxAnltBJQ0rO', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiV2lnRElvYTFqZGNrM3RZM0ZXdEpkczFLeEc3emxQRGVGV0ZoOVpLaSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762452922),
+('OhcktcyqQgEVZQgnQxQ2PNcs0OHV1IyNEliW4GGJ', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiRFNzWTBqdmI4dU9YWHJQQ1E3UzNOWXN0c2F5SzFuQzZtQXFNRmVOViI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762323151),
+('qQE2kqqL80QuXEqrCm0bd8ipIQpg8V66JZ0D7ALm', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoicjRVNnlCR25WN3VrVnM5eWp4RTNYN2V6NDUzVllQU3VzWmNqWE45NCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762452771),
+('TfHFT6C1vj1dxMvkPOqgA9XJNF7EKUnse6GmSV6G', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiNUVvVFN3clMyNmRxY1YzQnNpY0lONEZIMkdrSXVUVHpxY01yOWhDayI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762323151),
+('Uy1eqwCFWq5y1Udx4huiNZ7X17duljhv2W5iUxGq', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiY0YwNzFQdmNqVFV5cTU3aFF2SzBxTVgxbVo5U1YyUWJiOXBmd3E2RSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1762323151),
 ('VSjdrNnBmkmgGhlTy88YdIg39LNr5Qcx4RvHxK2G', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:144.0) Gecko/20100101 Firefox/144.0', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiN3B0cjg5Z1k5RENldjhoanVnOGlWUzdNSHdWdUlLcXFEdDZ2T0VUSCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1761881021);
 
 -- --------------------------------------------------------
@@ -1092,9 +1154,9 @@ ALTER TABLE `product`
   ADD UNIQUE KEY `sku` (`sku`);
 
 --
--- Indexes for table `product_categories`
+-- Indexes for table `product_attribue`
 --
-ALTER TABLE `product_categories`
+ALTER TABLE `product_attribue`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -1243,19 +1305,19 @@ ALTER TABLE `post_category`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
--- AUTO_INCREMENT for table `product_categories`
+-- AUTO_INCREMENT for table `product_attribue`
 --
-ALTER TABLE `product_categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `product_attribue`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `product_img_history`
 --
 ALTER TABLE `product_img_history`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `product_inventory`

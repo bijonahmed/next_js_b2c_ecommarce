@@ -263,7 +263,7 @@ export default function EditUserForm({ id }) {
                                   <tr>
                                     <th>Description</th>
                                     <th className="text-center">SKU</th>
-                                    <th className="text-center">Attribute</th>
+                                    <th className="text-center d-none">Attribute</th>
                                     <th className="text-end">Qty</th>
                                     <th className="text-end">Unit Price</th>
                                     <th className="text-end">Line Total</th>
@@ -275,7 +275,7 @@ export default function EditUserForm({ id }) {
                                       <tr key={index}>
                                         <td>{item.description || "-"}</td>
                                         <td className="text-center">{item.sku || "-"}</td>
-                                        <td className="text-center">{item.attribute || "-"}</td>
+                                        <td className="text-center d-none">{item.attribute || "-"}</td>
                                         <td className="text-end">{item.qty || 0}</td>
                                         <td className="text-end">{item.price || 0}</td>
                                         <td className="text-end">{getLineTotal(item)}</td>
