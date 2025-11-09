@@ -191,7 +191,7 @@ class ProductsController extends Controller
             $validator = Validator::make($request->all(), [
                 'name'           => 'required',
                 'categoryId'     => 'required|integer',
-                'subcategoryId'  => 'required|integer',
+                //'subcategoryId'  => 'required|integer',
                 'price'          => 'required',
                 'discount_price' => 'required',
                 'stock_qty'      => 'required|integer|min:0',
@@ -202,7 +202,7 @@ class ProductsController extends Controller
             ], [
                 'name.required'           => 'Product name is required.',
                 'categoryId.required'     => 'Category is required.',
-                'subcategoryId.required'  => 'Subcategory is required.',
+                //    'subcategoryId.required'  => 'Subcategory is required.',
                 'price.required'          => 'Price is required.',
                 'discount_price.required' => 'Discount price is required.',
                 'stock_qty.required'      => 'Stock quantity is required.',
@@ -221,7 +221,7 @@ class ProductsController extends Controller
             $validator = Validator::make($request->all(), [
                 'name'           => 'required',
                 'categoryId'     => 'required|integer',
-                'subcategoryId'  => 'required|integer',
+                // 'subcategoryId'  => 'required|integer',
                 'price'          => 'required',
                 'discount_price' => 'required|numeric|min:0',
                 'stock_qty'      => 'required|integer|min:0',
@@ -229,7 +229,7 @@ class ProductsController extends Controller
             ], [
                 'name.required'           => 'Product name is required.',
                 'categoryId.required'     => 'Category is required.',
-                'subcategoryId.required'  => 'Subcategory is required.',
+                // 'subcategoryId.required'  => 'Subcategory is required.',
                 'price.required'          => 'Price is required.',
                 'discount_price.required' => 'Discount price is required.',
                 'stock_qty.required'      => 'Stock quantity is required.',
@@ -251,7 +251,7 @@ class ProductsController extends Controller
             'meta_description'      => $request->meta_description ?? "",
             'meta_keyword'          => $request->meta_keyword ?? "",
             'categoryId'            => $request->categoryId ?? "",
-            'subcategoryId'         => $request->subcategoryId ?? "",
+            'subcategoryId'         => $request->subcategoryId ?: null, //$request->subcategoryId ?? "",
             'price'                 => $request->price ?? "",
             'discount_price'        => $request->discount_price ?? "",
             'stock_qty'             => $request->stock_qty ?? "",
@@ -277,6 +277,8 @@ class ProductsController extends Controller
                 'message' => 'Product not found',
             ], 404);
         }
+
+        //  dd($data);
         $productData->update($data);
 
         if ($request->hasFile('gallery')) {
@@ -320,6 +322,31 @@ class ProductsController extends Controller
             'status' => true,
             'message' => 'Product updated successfully!',
             'order_id' => $request->id,
+        ], 200);
+    }
+
+
+    public function destroy($id)
+    {
+        $user = Auth::user();
+
+        if (! $user->can('delete product')) {
+            return response()->json([
+                'message' => 'Unauthorized: You do not have permission to delete',
+            ], 403);
+        }
+
+        $pdata = Product::find($id);
+        if (! $pdata) {
+            return response()->json([
+                'message' => 'Data not found',
+            ], 404);
+        }
+        //$pdata->delete();
+
+        return response()->json([
+            'message' => 'Deleted successfully',
+            'id' => $id,
         ], 200);
     }
 }

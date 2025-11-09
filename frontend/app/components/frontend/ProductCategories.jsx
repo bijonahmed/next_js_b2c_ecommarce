@@ -48,276 +48,97 @@ export default function ProductCategories() {
           </div>
 
           {/* Product placeholder section */}
+          {/* <div className="ps-block__product-box">
+            <div className="ps-product ps-product--simple">
+              <div className="ps-product__thumbnail">
+                <a href="#">
+                  <img
+                    loading="lazy"
+                    src="/frontend_theme/img/products/clothing/1.jpg"
+                    alt="image"
+                  />
+                </a>
+                <ul className="ps-product__actions">
+                  <li>
+                    <a href="#" title="Read More">
+                      <i className="icon-bag2" />
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" title="Quick View">
+                      <i className="icon-eye" />
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" title="Add to Wishlist">
+                      <i className="icon-heart" />
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" title="Compare">
+                      <i className="icon-chart-bars" />
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="ps-product__container">
+                <div className="ps-product__content">
+                  <a className="ps-product__title" href="#">
+                    Demo Product
+                  </a>
+                  <p className="ps-product__price sale">
+                    $567.99 <del>$670.00</del>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+         
+
+          
+
+
+
+           
+          </div> */}
+
+          {/* ✅ Product loop section */}
           <div className="ps-block__product-box">
-            <div className="ps-product ps-product--simple">
-              <div className="ps-product__thumbnail">
-                <a href="#">
-                  <img
-                    loading="lazy"
-                    src="/frontend_theme/img/products/clothing/1.jpg"
-                    alt="image"
-                  />
-                </a>
-                <ul className="ps-product__actions">
-                  <li>
-                    <a href="#" title="Read More">
-                      <i className="icon-bag2" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Quick View">
-                      <i className="icon-eye" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Add to Wishlist">
-                      <i className="icon-heart" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Compare">
-                      <i className="icon-chart-bars" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
+            {parent.products && parent.products.length > 0 ? (
+              parent.products.map((product) => (
+                <div key={product.id} className="ps-product ps-product--simple">
+                  <div className="ps-product__thumbnail">
+                    <Link href={`/product-details/${product.slug}`}>
+                      <img
+                        loading="lazy"
+                        src={
+                          product.thumbnail
+                            ? product.thumbnail
+                            : "/frontend_theme/img/products/clothing/1.jpg"
+                        }
+                        alt={product.name}
+                      />
+                    </Link>
+                  </div>
+                  <div className="ps-product__container">
+                    <div className="ps-product__content">
+                      <Link
+                        className="ps-product__title"
+                        href={`/product-details/${product.slug}`}
+                      >
+                        {product.name}
+                      </Link>
+                      <p className="ps-product__price sale">Tk.{product.discount_price ?? "0"} <del>Tk.{product.price ?? "0"} </del></p>
 
-              <div className="ps-product__container">
-                <div className="ps-product__content">
-                  <a className="ps-product__title" href="#">
-                    Demo Product
-                  </a>
-                  <p className="ps-product__price sale">
-                    $567.99 <del>$670.00</del>
-                  </p>
+                   
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="ps-product ps-product--simple">
-              <div className="ps-product__thumbnail">
-                <a href="#">
-                  <img
-                    loading="lazy"
-                    src="/frontend_theme/img/products/clothing/1.jpg"
-                    alt="image"
-                  />
-                </a>
-                <ul className="ps-product__actions">
-                  <li>
-                    <a href="#" title="Read More">
-                      <i className="icon-bag2" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Quick View">
-                      <i className="icon-eye" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Add to Wishlist">
-                      <i className="icon-heart" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Compare">
-                      <i className="icon-chart-bars" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="ps-product__container">
-                <div className="ps-product__content">
-                  <a className="ps-product__title" href="#">
-                    Demo Product
-                  </a>
-                  <p className="ps-product__price sale">
-                    $567.99 <del>$670.00</del>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="ps-product ps-product--simple">
-              <div className="ps-product__thumbnail">
-                <a href="#">
-                  <img
-                    loading="lazy"
-                    src="/frontend_theme/img/products/clothing/1.jpg"
-                    alt="image"
-                  />
-                </a>
-                <ul className="ps-product__actions">
-                  <li>
-                    <a href="#" title="Read More">
-                      <i className="icon-bag2" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Quick View">
-                      <i className="icon-eye" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Add to Wishlist">
-                      <i className="icon-heart" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Compare">
-                      <i className="icon-chart-bars" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="ps-product__container">
-                <div className="ps-product__content">
-                  <a className="ps-product__title" href="#">
-                    Demo Product
-                  </a>
-                  <p className="ps-product__price sale">
-                    $567.99 <del>$670.00</del>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="ps-product ps-product--simple">
-              <div className="ps-product__thumbnail">
-                <a href="#">
-                  <img
-                    loading="lazy"
-                    src="/frontend_theme/img/products/clothing/1.jpg"
-                    alt="image"
-                  />
-                </a>
-                <ul className="ps-product__actions">
-                  <li>
-                    <a href="#" title="Read More">
-                      <i className="icon-bag2" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Quick View">
-                      <i className="icon-eye" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Add to Wishlist">
-                      <i className="icon-heart" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Compare">
-                      <i className="icon-chart-bars" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="ps-product__container">
-                <div className="ps-product__content">
-                  <a className="ps-product__title" href="#">
-                    Demo Product
-                  </a>
-                  <p className="ps-product__price sale">
-                    $567.99 <del>$670.00</del>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="ps-product ps-product--simple">
-              <div className="ps-product__thumbnail">
-                <a href="#">
-                  <img
-                    loading="lazy"
-                    src="/frontend_theme/img/products/clothing/1.jpg"
-                    alt="image"
-                  />
-                </a>
-                <ul className="ps-product__actions">
-                  <li>
-                    <a href="#" title="Read More">
-                      <i className="icon-bag2" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Quick View">
-                      <i className="icon-eye" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Add to Wishlist">
-                      <i className="icon-heart" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Compare">
-                      <i className="icon-chart-bars" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="ps-product__container">
-                <div className="ps-product__content">
-                  <a className="ps-product__title" href="#">
-                    Demo Product
-                  </a>
-                  <p className="ps-product__price sale">
-                    $567.99 <del>$670.00</del>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="ps-product ps-product--simple">
-              <div className="ps-product__thumbnail">
-                <a href="#">
-                  <img
-                    loading="lazy"
-                    src="/frontend_theme/img/products/clothing/1.jpg"
-                    alt="image"
-                  />
-                </a>
-                <ul className="ps-product__actions">
-                  <li>
-                    <a href="#" title="Read More">
-                      <i className="icon-bag2" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Quick View">
-                      <i className="icon-eye" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Add to Wishlist">
-                      <i className="icon-heart" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Compare">
-                      <i className="icon-chart-bars" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="ps-product__container">
-                <div className="ps-product__content">
-                  <a className="ps-product__title" href="#">
-                    Demo Product
-                  </a>
-                  <p className="ps-product__price sale">
-                    $567.99 <del>$670.00</del>
-                  </p>
-                </div>
-              </div>
-            </div>
+              ))
+            ) : (
+              <p className="text-muted ps-3">No products found</p>
+            )}
           </div>
         </div>
       ))}

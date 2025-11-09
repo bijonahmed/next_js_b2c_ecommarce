@@ -1,0 +1,233 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import ProductSlider from "./ProductSlider";
+import RelatedProducts from "./RelatedProducts";
+import styles from "./ProductDetail.module.css";
+import "../../../components/frontend/DarknessLoader.css";
+import { useCart } from "../../../context/CartContext";
+
+export default function ProductDetailsClient({ slug }) {
+  const formattedSlug = slug.replace(/-/g, " ");
+  const [productRow, setProductData] = useState(null);
+  const [galleryData, setGalleryData] = useState([]);
+  const [relatedProducts, setRelatedProductsData] = useState([]);
+  const [attributesData, setAttributesData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedAttr, setSelectedAttr] = useState(null);
+  const [price, setPrice] = useState(null);
+  const { addToCart } = useCart();
+  const [qty, setQty] = useState(1);
+
+
+  const { cart, updateQty, removeFromCart } = useCart();
+
+  const handleAddToCart = () => {
+    console.log("==" + productRow.thumnail_img);
+    
+    const product = {
+      id: productRow.id,
+      slug: productRow.slug,
+      name: productRow.name,
+      price: price,
+      qty: qty,
+      thumnail_img: productRow.thumnail_img,
+      selectedAttr: selectedAttr,
+    };
+    addToCart(product);
+    console.log("Added to cart:", product);
+  };
+  //console.log("Added to cart:", product);
+  // Update price when selectedAttr changes
+  useEffect(() => {
+    if (selectedAttr && attributesData.length) {
+      const selected = attributesData.find(
+        (attr) => attr.id === parseInt(selectedAttr)
+      );
+      if (selected) setPrice(selected.sellingPrice);
+    } else if (productRow) {
+      setPrice(productRow.discount_price);
+    }
+  }, [selectedAttr, attributesData, productRow]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE}/public/checkProductDetails/${slug}`
+        );
+        const result = await res.json();
+
+        setProductData(result.product || {});
+        setGalleryData(result.gallery || []);
+        setRelatedProductsData(result.related_prdoucts || []);
+        setAttributesData(result.attributes || []);
+      } catch (err) {
+        console.error("Fetch failed:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [slug]);
+  const images = galleryData.map((item) => item.gallery_image);
+
+
+
+  if (loading || !productRow) {
+    return (
+      <div className="darkness-loader-overlay">
+        <div className="darkness-spinner"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="ps-page--simple">
+      {/* Breadcrumb */}
+      <div className="ps-breadcrumb">
+        <div className="container">
+          <ul className="breadcrumb">
+            <li>
+              <Link href="/">Home</Link>
+            </li>
+            <li>
+              <Link href="/shop">Shop</Link>
+            </li>
+            <li>{productRow.name}</li>
+          </ul>
+        </div>
+      </div>
+
+      {/* Product details */}
+      <div className="ps-container mt-3">
+        <div className="ps-page__container">
+          <div className="ps-page__left">
+            <div className="ps-product--detail ps-product--fullwidth">
+              <div className={styles["ps-product--detail"]}>
+                <div className="ps-product__thumbnail">
+                  <ProductSlider images={images} />
+                </div>
+                <div className="ps-product__info">
+                  <h1>{productRow.name}</h1>
+                  <div className="ps-product__meta">
+                    <p>
+                      Brand: <a href="#">BIR GROUP</a>
+                    </p>
+                  </div>
+
+                  {/* Display price dynamically */}
+                  <h4 className="ps-product__price">Tk.{price}</h4>
+
+                  {/* Description */}
+                  <div
+                    className="ps-product__desc text-justify"
+                    dangerouslySetInnerHTML={{
+                      __html: productRow.description_full,
+                    }}
+                  />
+
+                  {/* Attribute dropdown */}
+                  {attributesData && attributesData.length > 0 && (
+                    <>
+                      {" "}
+                      <div className="mb-4">
+                        <label className="form-label fw-bold fs-5 text-dark">
+                          Attribute:
+                        </label>
+                        <select
+                          className="form-select form-select-lg border-2 shadow-sm"
+                          style={{
+                            fontSize: "15px",
+                            padding: "0.75rem 1rem",
+                          }}
+                          value={selectedAttr || ""}
+                          onChange={(e) => setSelectedAttr(e.target.value)}
+                        >
+                          <option value="">Select option</option>
+                          {attributesData.map((attr) => (
+                            <option key={attr.id} value={attr.id}>
+                              {attr.attributeName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Shopping buttons */}
+                  <div className="ps-product__shopping">
+                    <figure>
+                      <figcaption>Quantity</figcaption>
+                      <div className="form-group--number">
+                        <button className="up">
+                          <i className="fa-solid fa-plus" />
+                        </button>
+                        <button className="down">
+                          <i className="fa-solid fa-minus" />
+                        </button>
+                        <input
+                          className="form-control"
+                          type="text"
+                          placeholder={1}
+                        />
+                      </div>
+                    </figure>
+                    <a
+                      className="ps-btn ps-btn--black"
+                      href="#"
+                      onClick={handleAddToCart}
+                    >
+                      Add to cart
+                    </a>
+                    <Link className="ps-btn" href="/shop">
+                      Buy Now
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+      {cart.map((item) => (
+        <div key={item.id}>
+          <h5>{item.name}</h5>
+          <p>Price: {item.price}</p>
+          <p>Qty: {item.qty}</p>
+          <button onClick={() => updateQty(item.id, item.qty + 1)}>+</button>
+          <button onClick={() => updateQty(item.id, item.qty - 1)}>-</button>
+          <button onClick={() => removeFromCart(item.id)}>Remove</button>
+        </div>
+      ))}
+    </div>
+
+              {/* Description tab */}
+              <div className="ps-product__content ps-tab-root">
+                <ul className="ps-tab-list">
+                  <li className="active">
+                    <a href="#tab-1">Description</a>
+                  </li>
+                </ul>
+                <div className="ps-tabs">
+                  <div className="ps-tab active" id="tab-1">
+                    <div className="ps-document">
+                      <div
+                        dangerouslySetInnerHTML={{
+                          __html: productRow.description_full,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Related products */}
+        <RelatedProducts products={relatedProducts} />
+      </div>
+    </div>
+  );
+}

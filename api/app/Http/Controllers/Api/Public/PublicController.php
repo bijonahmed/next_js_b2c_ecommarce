@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Api\Public;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Models\Product;
 use App\Models\Roles;
 use App\Models\ProductCategory;
+use App\Models\ProductsAttribues;
+use App\Models\ProductsGallery;
 use App\Models\User;
+use Attribute;
 use DB;
 use File;
 use Helper;
@@ -98,20 +102,40 @@ class PublicController extends Controller
         try {
             $categories = ProductCategory::where('status', 1)->get();
             $grouped    = $categories->groupBy('parent_id');
-            $buildTree  = function ($parentId) use (&$buildTree, $grouped) {
+            // Recursive closure
+            $buildTree = function ($parentId) use (&$buildTree, $grouped) {
                 return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
+                    // Get up to 6 products for this category
+                    $filterProducts = Product::where('categoryId', $category->id)
+                        ->limit(6)
+                        ->get()
+                        ->map(function ($product) {
+                            return [
+                                'id'    => $product->id,
+                                'name'  => $product->name,
+                                'slug'  => $product->slug,
+                                'price' => $product->price,
+                                'discount_price' => $product->discount_price,
+                                'thumbnail'      => $product->thumnail_img ? url($product->thumnail_img) : null,
+                            ];
+                        });
+                    // Recursively build child categories (limited to 6)
+                    $children = $buildTree($category->id)->take(6);
+
                     return [
-                        'id'         => $category->id,
-                        'name'       => $category->name,
-                        'slug'       => $category->slug,
-                        'parent_id'  => $category->parent_id,
-                        'children'   => $buildTree($category->id),
+                        'id'              => $category->id,
+                        'name'            => $category->name,
+                        'slug'            => $category->slug,
+                        'parent_id'       => $category->parent_id,
                         'thumbnail_image' => $category->thumbnail_image ? url($category->thumbnail_image) : null,
                         'banner_image'    => $category->banner_image ? url($category->banner_image) : null,
+                        'children'        => $children,       // nested categories
+                        'products'        => $filterProducts, // related products
                     ];
                 });
             };
-            // Start with parent_id = 0 (top-level)
+
+            // Start recursion from parent_id = 0 (root)
             $nestedCategories = $buildTree(0);
 
             return response()->json([
@@ -131,4 +155,67 @@ class PublicController extends Controller
             ], 500);
         }
     }
+
+
+    public function checkProductDetails($slug)
+    {
+
+        $product = Product::where('slug', $slug)->first();
+
+        if ($product) {
+            $product->thumnail_img = $product->thumnail_img ? url($product->thumnail_img) : null;
+        }
+        // Return a 404 response if not found
+        if (!$product) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Product not found.',
+            ], 404);
+        }
+
+
+        $rproducts = Product::where('categoryId', $product->categoryId)->where('id', '!=', $product->id)->where('status', 1)->get();
+        //dd($rproducts);
+        $related_prdoucts = $rproducts->map(function ($data) {
+            return [
+                'id'              => $data->id,
+                'name'            => $data->name,
+                'slug'            => $data->slug,
+                'price'           => $data->price,
+                'discount_price'  => $data->discount_price,
+                'thumbnail_image' => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'          => 'BIR GROUP',
+            ];
+        });
+
+
+        // Fetch related data
+        $attributes = ProductsAttribues::where('product_id', $product->id)->get();
+        $galleries  = ProductsGallery::where('product_id', $product->id)->get();
+
+        // Map gallery data with full URL
+        $formattedGallery = $galleries->map(function ($gallery) {
+            return [
+                'id'            => $gallery->id,
+                'product_id'    => $gallery->product_id,
+                'gallery_image' => $gallery->gallery_image ? url($gallery->gallery_image) : null,
+            ];
+        });
+
+        // Return a structured JSON response
+        return response()->json([
+            'success'               => true,
+            'product'               => $product,
+            'attributes'            => $attributes,
+            'gallery'               => $formattedGallery,
+            'related_prdoucts'      => $related_prdoucts,
+        ], 200);
+    }
+
+
+    //dd($productrow);
+    // dd($checkAttribue);
+    // dd($productGallery);
+
+
 }

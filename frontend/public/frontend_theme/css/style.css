@@ -9578,7 +9578,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 .ps-product--detail .ps-product__header .ps-product__info {
   max-width: 57%;
-  padding-left: 30px;
+  padding-left: 02px;
 }
 
 .ps-product--detail > .ps-product__content {

@@ -26,6 +26,7 @@ Route::prefix('public')->group(function () {
     Route::get('/getCategory', [PublicController::class, 'index']);
     Route::get('/getCategoryParent', [PublicController::class, 'getCategoryParent']);
     Route::get('/productsCategory', [PublicController::class, 'productsCategory']);
+    Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
 });
 Route::middleware(['auth:api'])->group(function () {
     // User
@@ -86,7 +87,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/index', [ProductsController::class, 'index']);
         // Route::get('/sendToTransferProduct/{id}', [PurchaseOrderController::class, 'sendToTransferProduct']);
         // Route::post('/create', [PurchaseOrderController::class, 'store']);
-        // Route::DELETE('/delete/{id}', [PurchaseOrderController::class, 'destroy']);
+        Route::DELETE('/delete/{id}', [ProductsController::class, 'destroy']);
         Route::get('/productrow/{id}', [ProductsController::class, 'productrow']);
         Route::post('/update', [ProductsController::class, 'update']);
         Route::post('/gallery-delete', [ProductsController::class, 'deleteGalleryImage']);

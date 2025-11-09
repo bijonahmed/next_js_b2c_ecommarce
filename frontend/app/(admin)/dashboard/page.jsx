@@ -200,7 +200,7 @@ export default function DashboardPage() {
                 {/*begin::Small Box Widget 3*/}
                 <div className="small-box text-bg-success">
                   <div className="inner">
-                    <h3>33</h3>
+                    <h3>{dashbaordData.products}</h3>
                     <p>Total Products</p>
                   </div>
                   <svg

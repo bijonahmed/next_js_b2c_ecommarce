@@ -61,6 +61,7 @@ export default function EditProductForm({ id }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        setLoading(true);
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_BASE}/product/productrow/${id}`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -76,7 +77,7 @@ export default function EditProductForm({ id }) {
         setFormData({
           id: p.id,
           name: p.name ?? "",
-          meta_title: p.meta_title ?? "",
+          meta_title: p.meta_title ?? p.name,
           meta_description: p.meta_description ?? "",
           meta_keyword: p.meta_keyword ?? "",
           categoryId: p.categoryId ?? "",
@@ -221,7 +222,6 @@ export default function EditProductForm({ id }) {
     }
   };
 
-
   if (!permissions.includes("edit product")) {
     router.replace("/dashboard");
     return null;
@@ -266,6 +266,17 @@ export default function EditProductForm({ id }) {
           </div>
         </div>
         <div className="card card-primary card-outline mb-4">
+          {loading ? (
+            <div
+              className="d-flex justify-content-center align-items-center"
+              style={{ height: "200px" }}
+            >
+              <div className="spinner-border text-primary" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : null}
+
           <form onSubmit={handleSubmit}>
             <div className="card-body">
               <div className="row g-3">

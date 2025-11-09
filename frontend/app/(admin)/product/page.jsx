@@ -26,6 +26,7 @@ export default function ProductPage() {
   const [selectedCategory, setMainCategory] = useState("");
   const [subcategoryId, setSubCategoryFilter] = useState("");
   const [subcategoryList, setSubCategories] = useState([]);
+  const [total_records, setTotalRecords] = useState(0);
 
   const handleMainCategoryChange = async (e) => {
     const selectedId = e.target.value;
@@ -80,6 +81,7 @@ export default function ProductPage() {
         throw new Error(`HTTP error! status: ${res.status}`);
       }
       const json = await res.json();
+      setTotalRecords(json.total_records || 0);
 
       return {
         data: json.data || [],
@@ -96,7 +98,7 @@ export default function ProductPage() {
     if (!confirm("Are you sure you want to delete this product?")) return;
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/posts/delete/${id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/product/delete/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -110,7 +112,8 @@ export default function ProductPage() {
         toast.error(result.message || "Delete failed");
         return;
       }
-      toast.success("Product deleted successfully");
+      toast.error("Unauthorized: You do not have permission to delete");
+      // toast.success("Product deleted successfully");
       //setData((prev) => prev.filter((row) => row.id !== id));
     } catch (err) {
       console.error(err);
@@ -146,7 +149,12 @@ export default function ProductPage() {
           <img
             src={row.thumbanil_img}
             alt={row.name || "Thumbnail"}
-            style={{ width: "100px", height: "100px", objectFit: "cover" }}
+            style={{
+              width: "50px",
+              height: "50px",
+              objectFit: "cover",
+              padding: "8px",
+            }} // add padding all sides }}
             className="border rounded"
           />
         ) : null,
@@ -221,7 +229,10 @@ export default function ProductPage() {
         <div className="container-fluid">
           <div className="row">
             <div className="col-sm-6">
-              <h3 className="mb-0">{title}</h3>
+              <h3 className="mb-0">
+                {title}&nbsp;
+                <span className="badge bg-primary">{total_records}</span>
+              </h3>
             </div>
             <div className="col-sm-6">
               <ol className="breadcrumb float-sm-end">
