@@ -157,6 +157,31 @@ class PublicController extends Controller
     }
 
 
+    public function getProducts()
+    {
+
+        $product = Product::where('status', 1)->limit(12)->orderBy('id', 'desc')->get();
+
+        $get_prdoucts = $product->map(function ($data) {
+            return [
+                'id'              => $data->id,
+                'name'            => $data->name,
+                'slug'            => $data->slug,
+                'price'           => $data->price,
+                'discount_price'  => $data->discount_price,
+                'thumnail_img'    => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'          => 'BIR GROUP',
+            ];
+        });
+
+        // Return a 404 response if not found
+        return response()->json([
+            'success'               => true,
+            'product'               => $get_prdoucts,
+        ], 200);
+    }
+
+
     public function checkProductDetails($slug)
     {
 
@@ -211,11 +236,4 @@ class PublicController extends Controller
             'related_prdoucts'      => $related_prdoucts,
         ], 200);
     }
-
-
-    //dd($productrow);
-    // dd($checkAttribue);
-    // dd($productGallery);
-
-
 }

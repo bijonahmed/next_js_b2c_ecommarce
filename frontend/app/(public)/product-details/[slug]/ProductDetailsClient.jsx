@@ -7,6 +7,7 @@ import RelatedProducts from "./RelatedProducts";
 import styles from "./ProductDetail.module.css";
 import "../../../components/frontend/DarknessLoader.css";
 import { useCart } from "../../../context/CartContext";
+import Swal from "sweetalert2";
 
 export default function ProductDetailsClient({ slug }) {
   const formattedSlug = slug.replace(/-/g, " ");
@@ -19,13 +20,12 @@ export default function ProductDetailsClient({ slug }) {
   const [price, setPrice] = useState(null);
   const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
-
-
   const { cart, updateQty, removeFromCart } = useCart();
 
+  const handleIncrement = () => setQty((prev) => prev + 1);
+  const handleDecrement = () => setQty((prev) => (prev > 1 ? prev - 1 : 1));
+
   const handleAddToCart = () => {
-    console.log("==" + productRow.thumnail_img);
-    
     const product = {
       id: productRow.id,
       slug: productRow.slug,
@@ -35,9 +35,38 @@ export default function ProductDetailsClient({ slug }) {
       thumnail_img: productRow.thumnail_img,
       selectedAttr: selectedAttr,
     };
+
+    const isDuplicate = cart.some(
+      (item) =>
+        item.id === product.id && item.selectedAttr === product.selectedAttr
+    );
+
+    if (isDuplicate) {
+      Swal.fire({
+        icon: "warning",
+        title: "<span style='font-size:18px;'>Already in Cart</span>",
+        html: "<span style='font-size:16px;'>This product is already in your cart.</span>",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
     addToCart(product);
-    console.log("Added to cart:", product);
+
+    Swal.fire({
+      icon: "success",
+      title: "<span style='font-size:18px;'>Added to Cart</span>",
+      html: `<span style='font-size:16px;'>"${product.name}" has been added to your cart.</span>`,
+      showConfirmButton: false,
+      timer: 1500,
+    });
   };
+
+  const handleChange = (e) => {
+    const value = parseInt(e.target.value, 10);
+    setQty(isNaN(value) || value < 1 ? 1 : value); // always >=1
+  };
+
   //console.log("Added to cart:", product);
   // Update price when selectedAttr changes
   useEffect(() => {
@@ -73,8 +102,6 @@ export default function ProductDetailsClient({ slug }) {
     fetchData();
   }, [slug]);
   const images = galleryData.map((item) => item.gallery_image);
-
-
 
   if (loading || !productRow) {
     return (
@@ -162,16 +189,26 @@ export default function ProductDetailsClient({ slug }) {
                     <figure>
                       <figcaption>Quantity</figcaption>
                       <div className="form-group--number">
-                        <button className="up">
+                        <button
+                          type="button"
+                          className="up"
+                          onClick={handleIncrement}
+                        >
                           <i className="fa-solid fa-plus" />
                         </button>
-                        <button className="down">
+                        <button
+                          type="button"
+                          className="down"
+                          onClick={handleDecrement}
+                        >
                           <i className="fa-solid fa-minus" />
                         </button>
                         <input
                           className="form-control"
                           type="text"
-                          placeholder={1}
+                          value={qty}
+                          onChange={handleChange}
+                          placeholder="1"
                         />
                       </div>
                     </figure>
@@ -188,19 +225,6 @@ export default function ProductDetailsClient({ slug }) {
                   </div>
                 </div>
               </div>
-
-              <div>
-      {cart.map((item) => (
-        <div key={item.id}>
-          <h5>{item.name}</h5>
-          <p>Price: {item.price}</p>
-          <p>Qty: {item.qty}</p>
-          <button onClick={() => updateQty(item.id, item.qty + 1)}>+</button>
-          <button onClick={() => updateQty(item.id, item.qty - 1)}>-</button>
-          <button onClick={() => removeFromCart(item.id)}>Remove</button>
-        </div>
-      ))}
-    </div>
 
               {/* Description tab */}
               <div className="ps-product__content ps-tab-root">

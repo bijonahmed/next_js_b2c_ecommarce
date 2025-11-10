@@ -1,37 +1,54 @@
 "use client";
 
 import React, { createContext, useContext, useReducer, useEffect } from "react";
+import toast from "react-hot-toast";
 
-// Cart context
-const CartContext = createContext();
+const CartContext = createContext(null);
 
-// Reducer function
+// Helper: stringify attributes safely
+const getAttrKey = (attr) => JSON.stringify(attr || {});
+
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case "ADD_TO_CART":
+    case "ADD_TO_CART": {
+      const { id, selectedAttr } = action.payload;
+      const attrKey = getAttrKey(selectedAttr);
+
+      //  Find existing same product with same attributes
       const existingIndex = state.findIndex(
-        (item) => item.id === action.payload.id && item.selectedAttr === action.payload.selectedAttr
+        (item) => item.id === id && getAttrKey(item.selectedAttr) === attrKey
       );
 
       if (existingIndex >= 0) {
+        //  Increase quantity instead of blocking duplicate
         const updatedCart = [...state];
         updatedCart[existingIndex].qty += action.payload.qty || 1;
+        toast.success("Quantity updated in cart!");
         return updatedCart;
-      } else {
-        return [...state, { ...action.payload, qty: action.payload.qty || 1 }];
       }
 
-    case "REMOVE_FROM_CART":
-      return state.filter(
-        (item) => !(item.id === action.payload.id && item.selectedAttr === action.payload.selectedAttr)
-      );
+      //  Add new unique product variation
+      toast.success("Added to cart!");
+      return [...state, { ...action.payload, qty: action.payload.qty || 1 }];
+    }
 
-    case "UPDATE_QTY":
+    case "REMOVE_FROM_CART": {
+      const { id, selectedAttr } = action.payload;
+      const attrKey = getAttrKey(selectedAttr);
+      return state.filter(
+        (item) => !(item.id === id && getAttrKey(item.selectedAttr) === attrKey)
+      );
+    }
+
+    case "UPDATE_QTY": {
+      const { id, selectedAttr, qty } = action.payload;
+      const attrKey = getAttrKey(selectedAttr);
       return state.map((item) =>
-        item.id === action.payload.id && item.selectedAttr === action.payload.selectedAttr
-          ? { ...item, qty: action.payload.qty }
+        item.id === id && getAttrKey(item.selectedAttr) === attrKey
+          ? { ...item, qty }
           : item
       );
+    }
 
     case "CLEAR_CART":
       return [];
@@ -41,47 +58,40 @@ const cartReducer = (state, action) => {
   }
 };
 
-// Provider component
+// Provider
 export const CartProvider = ({ children }) => {
   const [cart, dispatch] = useReducer(cartReducer, [], () => {
     if (typeof window !== "undefined") {
-      const storedCart = localStorage.getItem("cart");
-      return storedCart ? JSON.parse(storedCart) : [];
+      const stored = localStorage.getItem("cart");
+      return stored ? JSON.parse(stored) : [];
     }
     return [];
   });
 
-  // Sync cart to localStorage
+  // Sync with localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       localStorage.setItem("cart", JSON.stringify(cart));
     }
   }, [cart]);
 
-  const addToCart = (product) => {
-    dispatch({ type: "ADD_TO_CART", payload: product });
-  };
-
-  const removeFromCart = (product) => {
-    dispatch({ type: "REMOVE_FROM_CART", payload: product });
-  };
-
-  const updateQty = (product, qty) => {
+  // Actions
+  const addToCart = (product) => dispatch({ type: "ADD_TO_CART", payload: product });
+  const removeFromCart = (product) => dispatch({ type: "REMOVE_FROM_CART", payload: product });
+  const updateQty = (product, qty) =>
     dispatch({ type: "UPDATE_QTY", payload: { ...product, qty } });
-  };
-
-  const clearCart = () => {
-    dispatch({ type: "CLEAR_CART" });
-  };
+  const clearCart = () => dispatch({ type: "CLEAR_CART" });
 
   return (
-    <CartContext.Provider
-      value={{ cart, addToCart, removeFromCart, updateQty, clearCart }}
-    >
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateQty, clearCart }}>
       {children}
     </CartContext.Provider>
   );
 };
 
-// Custom hook
-export const useCart = () => useContext(CartContext);
+// Hook
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart must be used within a CartProvider");
+  return context;
+};

@@ -11,13 +11,13 @@ export const metadata = { title: "Welcome to Bir E-commerce" };
 export default function PublicLayout({ children }) {
   return (
     <AuthProvider>
-      <FrontendAssets />
-      <ClientNavbar />
       <CartProvider>
+        <FrontendAssets />
+        <ClientNavbar />
         <main>{children}</main>
+        <ClientFooter />
+        <FooterMobileMenu />
       </CartProvider>
-      <ClientFooter />
-      <FooterMobileMenu />
     </AuthProvider>
   );
 }

@@ -26,6 +26,7 @@ Route::prefix('public')->group(function () {
     Route::get('/getCategory', [PublicController::class, 'index']);
     Route::get('/getCategoryParent', [PublicController::class, 'getCategoryParent']);
     Route::get('/productsCategory', [PublicController::class, 'productsCategory']);
+    Route::get('/getProducts', [PublicController::class, 'getProducts']);
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
 });
 Route::middleware(['auth:api'])->group(function () {

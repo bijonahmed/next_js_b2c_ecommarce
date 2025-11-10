@@ -8,21 +8,25 @@ import TopNavbar from "./TopNavbar";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useCart } from "../../context/CartContext";
+import useCategories from "../../hooks/useCategories";
 
 export default function InsideHeader() {
   const [token, setToken] = useState(null);
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("0");
+  const { cart, updateQty, removeFromCart } = useCart();
+  const { categoryData, loading } = useCategories();
 
-useEffect(() => {
+  useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
       setToken(storedToken);
     }
-  }, []); 
+  }, []);
 
-   const handleLogout = () => {
+  const handleLogout = () => {
     Swal.fire({
       title: "Are you sure?",
       text: "You will be logged out.",
@@ -106,42 +110,69 @@ useEffect(() => {
                     <i>0</i>
                   </span>
                 </Link>
+                {/* ---------- Cart Dropdown ---------- */}
                 <div className="ps-cart--mini">
-                  <a className="header__extra" href="#">
+                  <Link className="header__extra" href="/cart">
                     <i className="icon-bag2" />
                     <span>
-                      <i>0</i>
+                      <i>{cart?.length || 0}</i>
                     </span>
-                  </a>
+                  </Link>
                   <div className="ps-cart__content">
                     <div className="ps-cart__items">
-                      <div className="ps-product--cart-mobile">
-                        <div className="ps-product__thumbnail">
-                          <a href="#">
-                            <img
-                              loading="lazy"
-                              src="/frontend_theme/img/products/clothing/7.jpg"
-                              alt="Img"
-                            />
-                          </a>
-                        </div>
-                        <div className="ps-product__content">
-                          <a className="ps-product__remove" href="#">
-                            <i className="icon-cross" />
-                          </a>
-                          <a href="product-default.html">
-                            MVMTH Classical Leather Watch In Black
-                          </a>
-                          <p>
-                            <strong>Sold by:</strong> YOUNG SHOP
-                          </p>
-                          <small>1 x $59.99</small>
-                        </div>
-                      </div>
+                      {cart.length > 0 ? (
+                        cart.map((item) => {
+                          const key = `${item.id}-${JSON.stringify(
+                            item.selectedAttr
+                          )}`;
+                          return (
+                            <div className="ps-product--cart-mobile" key={key}>
+                              <div className="ps-product__thumbnail">
+                                <a href="#">
+                                  <img
+                                    loading="lazy"
+                                    src={item.thumnail_img || ""}
+                                    alt={item.name || "Product image"}
+                                    className="img-fluid"
+                                  />
+                                </a>
+                              </div>
+                              <div className="ps-product__content">
+                                <a
+                                  className="ps-product__remove"
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    removeFromCart(item);
+                                  }}
+                                >
+                                  <i className="icon-cross" />
+                                </a>
+                                <a href="#">{item.name}</a>
+                                <small>
+                                  &nbsp;{item.qty} × Tk.{item.price}
+                                </small>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p className="text-center py-3">Your cart is empty</p>
+                      )}
                     </div>
+
                     <div className="ps-cart__footer">
                       <h3>
-                        Sub Total:<strong>$59.99</strong>
+                        Sub Total:
+                        <strong>
+                          Tk.
+                          {cart
+                            .reduce(
+                              (acc, item) => acc + item.price * item.qty,
+                              0
+                            )
+                            .toFixed(2)}
+                        </strong>
                       </h3>
                       <figure>
                         <Link className="ps-btn" href="/cart">
@@ -155,10 +186,8 @@ useEffect(() => {
                   </div>
                 </div>
                 <div className="ps-block--user-header">
-
                   <div className="ps-block__left">
                     <i className="icon-user" />
-                    
                   </div>
                   <div className="ps-block__right">
                     {token ? (
@@ -180,6 +209,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
+
         <nav className="navigation">
           <div className="ps-container">
             <div className="navigation__left">
@@ -194,50 +224,90 @@ useEffect(() => {
                 </div>
                 {/* Dropdown Content */}
                 {menuOpen && (
-                  <div
-                    className="menu__content bg-white shadow mt-2 p-3 position-absolute z-50"
-                    style={{ top: "100%", left: 0 }}
-                  >
-                    <ul className="menu--dropdown list-unstyled mb-0">
-                      <li>
-                        <a href="#.html">Hot Promotions</a>
-                      </li>
-                      <li className="menu-item-has-children has-mega-menu">
-                        <a href="#">Consumer Electronic</a>
-                        <span className="sub-toggle" />
-                        <div className="mega-menu mt-2 ps-3">
-                          <div className="mega-menu__column mb-3">
-                            <h4>
-                              Electronic <span className="sub-toggle" />
-                            </h4>
-                            <ul className="mega-menu__list list-unstyled">
-                              <li>
-                                <a href="#.html">Home Audio & Theathers</a>
-                              </li>
-                            </ul>
-                          </div>
-                          <div className="mega-menu__column">
-                            <h4>
-                              Accessories & Parts{" "}
-                              <span className="sub-toggle" />
-                            </h4>
-                            <ul className="mega-menu__list list-unstyled">
-                              <li>
-                                <a href="#.html">Digital Cables</a>
-                              </li>
-                              <li>
-                                <a href="#.html">Audio & Video Cables</a>
-                              </li>
-                              <li>
-                                <a href="#.html">Batteries</a>
-                              </li>
-                            </ul>
-                          </div>
-                        </div>
-                      </li>
+                  <div className="menu__content">
+                    <ul className="menu--dropdown">
+                      {categoryData.map((parent) => (
+                        <li
+                          key={parent.id}
+                          className={`menu-item-has-children has-mega-menu ${
+                            parent.children && parent.children.length > 0
+                              ? "has-sub"
+                              : ""
+                          }`}
+                        >
+                          <a href="#">
+                            {parent.name}{" "}
+                            {parent.children && parent.children.length > 0 && (
+                              <>
+                                <i className="fa-solid fa-chevrons-right" />
+                                <i
+                                  className="fa-solid fa-circle-chevron-right"
+                                  style={{ marginLeft: "5px" }}
+                                />
+                              </>
+                            )}
+                          </a>
 
+                          {/* Mega Menu */}
+                          {parent.children && parent.children.length > 0 && (
+                            <div
+                              className="mega-menu"
+                              style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                backgroundColor: "#f9f9f9",
+                                padding: "10px",
+                                borderRadius: "6px",
+                                boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+                                maxWidth: "500px", // adjust as needed
+                              }}
+                            >
+                              {parent.children &&
+                                parent.children.length > 0 && (
+                                  <ul
+                                    className="mega-menu__list"
+                                    style={{
+                                      display: "flex",
+                                      flexWrap: "wrap",
+                                      padding: 0,
+                                      margin: 0,
+                                      listStyle: "none",
+                                      width: "100%",
+                                    }}
+                                  >
+                                    {parent.children.map((subItem, index) => (
+                                      <li
+                                        key={subItem.id}
+                                        style={{
+                                          width: "50%", // two columns
+                                          padding: "5px 10px",
+                                          boxSizing: "border-box",
+                                        }}
+                                      >
+                                        <Link
+                                          href={`/shop/${subItem.slug}`}
+                                          style={{
+                                            textDecoration: "none",
+                                            color: "#333",
+                                            display: "block",
+                                            padding: "5px",
+                                            borderRadius: "4px",
+                                            backgroundColor: "#fff",
+                                            marginBottom: "3px",
+                                          }}
+                                        >
+                                          {subItem.name}
+                                        </Link>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                            </div>
+                          )}
+                        </li>
+                      ))}
                       <li>
-                        <a href="#.html">Babies & Moms</a>
+                        <Link href="/shop">All Products</Link>
                       </li>
                     </ul>
                   </div>

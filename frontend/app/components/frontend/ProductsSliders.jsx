@@ -2,6 +2,10 @@
 import React from "react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
+import Link from "next/link";
+import useProductsLimit from "../../hooks/getProducts";
+import { useCart } from "../../context/CartContext";
+import Swal from "sweetalert2";
 
 const responsive = {
   superLargeDesktop: { breakpoint: { max: 4000, min: 1280 }, items: 5 },
@@ -10,95 +14,49 @@ const responsive = {
   mobile: { breakpoint: { max: 640, min: 0 }, items: 2 },
 };
 
-// Example product data array
-const products = [
-  {
-    id: 1,
-    title: "Korea Long Sofa Fabric In Blue Navy Color",
-    vendor: "Young Shop",
-    price: 567.99,
-    oldPrice: 670,
-    discount: "-16%",
-    sold: 22,
-    rating: 4,
-    stock: true,
-    img: "/frontend_theme/img/products/home/1.jpg",
-  },
-  {
-    id: 2,
-    title: "Aroma Rice Cooker",
-    vendor: "Global Office",
-    price: 101.99,
-    discount: null,
-    sold: 0,
-    rating: 5,
-    stock: false,
-    img: "/frontend_theme/img/products/home/2.jpg",
-  },
-  {
-    id: 3,
-    title: "Simple Plastic Chair In White Color",
-    vendor: "Young Shop",
-    price: 42,
-    oldPrice: 60,
-    discount: "-25%",
-    sold: 50,
-    rating: 4,
-    stock: true,
-    img: "/frontend_theme/img/products/home/3.jpg",
-  },
-  {
-    id: 4,
-    title: "Simple Plastic Chair In White Color",
-    vendor: "Young Shop",
-    price: 42,
-    oldPrice: 60,
-    discount: "-25%",
-    sold: 50,
-    rating: 4,
-    stock: true,
-    img: "/frontend_theme/img/products/home/4.jpg",
-  },
-  {
-    id: 5,
-    title: "Simple Plastic Chair In White Color",
-    vendor: "Young Shop",
-    price: 42,
-    oldPrice: 60,
-    discount: "-25%",
-    sold: 50,
-    rating: 4,
-    stock: true,
-    img: "/frontend_theme/img/products/home/5.jpg",
-  },
-  {
-    id: 6,
-    title: "Simple Plastic Chair In White Color",
-    vendor: "Young Shop",
-    price: 42,
-    oldPrice: 60,
-    discount: "-25%",
-    sold: 50,
-    rating: 4,
-    stock: true,
-    img: "/frontend_theme/img/products/home/6.jpg",
-  },
-  {
-    id: 7,
-    title: "Simple Plastic Chair In White Color",
-    vendor: "Young Shop",
-    price: 42,
-    oldPrice: 60,
-    discount: "-25%",
-    sold: 50,
-    rating: 4,
-    stock: true,
-    img: "/frontend_theme/img/products/home/7.jpg",
-  },
-  // Add more products here...
-];
-
 export default function ProductsSliders() {
+  const { products, loading } = useProductsLimit();
+  const { cart, updateQty, removeFromCart } = useCart();
+
+  const { addToCart } = useCart();
+
+  const handleAddToCart = (productRow) => {
+    const product = {
+      id: productRow.id,
+      slug: productRow.slug,
+      name: productRow.name,
+      price: productRow.discount_price,
+      qty: 1,
+      thumnail_img: productRow.thumnail_img,
+      selectedAttr: [],
+    };
+
+    const isDuplicate = cart.some(
+      (item) =>
+        item.id === product.id && item.selectedAttr === product.selectedAttr
+    );
+
+    if (isDuplicate) {
+      Swal.fire({
+        icon: "warning",
+        title: "<span style='font-size:18px;'>Already in Cart</span>",
+        html: "<span style='font-size:16px;'>This product is already in your cart.</span>",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+    addToCart(product);
+
+    Swal.fire({
+      icon: "success",
+      title: "<span style='font-size:18px;'>Added to Cart</span>",
+      html: `<span style='font-size:16px;'>"${product.name}" has been added to your cart.</span>`,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
   return (
     <div className="ps-deal-of-day mt-5">
       <div className="container">
@@ -109,7 +67,7 @@ export default function ProductsSliders() {
             </div>
             <div className="ps-block__right"></div>
           </div>
-          <a href="shop-default.html">View all</a>
+          <Link href="/shop">View all</Link>
         </div>
 
         <div className="ps-section__content">
@@ -117,48 +75,51 @@ export default function ProductsSliders() {
             responsive={responsive}
             infinite
             autoPlay
-            arrows={false}
+            arrows={true}
+            showDots={false}
             autoPlaySpeed={5000}
-            showDots
             swipeable
             containerClass="ps-carousel--nav owl-slider"
           >
             {products.map((product) => (
               <div key={product.id} className="ps-product ps-product--inner">
                 <div className="ps-product__thumbnail">
-                  <a href="#">
+                  <Link href={`/product-details/${product.slug}`}>
                     <img
                       loading="lazy"
-                      src={product.img}
-                      alt={product.title}
-                      className="w-full h-[300px] object-cover"
+                      src={product.thumnail_img}
+                      alt={product.name}
+                      className="img-fluid"
+                      style={{
+                        height: "250px",
+                        objectFit: "cover",
+                        width: "100%",
+                      }}
                     />
-                  </a>
+                  </Link>
 
                   <ul className="ps-product__actions">
                     <li>
-                      <a href="#" title="Read More">
+                      <a
+                        href="#"
+                        title="Read More"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleAddToCart(product);
+                        }}
+                      >
                         <i className="icon-bag2" />
                       </a>
                     </li>
+
                     <li>
-                      <a
-                        href="#"
-                        title="Quick View"
-                        data-bs-toggle="modal"
-                        data-bs-target="#product-quickview"
-                      >
+                      <Link href={`/product-details/${product.slug}`}>
                         <i className="icon-eye" />
-                      </a>
+                      </Link>
                     </li>
                     <li>
                       <a href="#" title="Add to Wishlist">
                         <i className="icon-heart" />
-                      </a>
-                    </li>
-                    <li>
-                      <a href="#" title="Compare">
-                        <i className="icon-chart-bars" />
                       </a>
                     </li>
                   </ul>
@@ -168,13 +129,16 @@ export default function ProductsSliders() {
                     {product.vendor}
                   </a>
                   <div className="ps-product__content">
-                    <a className="ps-product__title" href="#">
-                      {product.title}
-                    </a>
+                    <Link
+                      className="ps-product__title"
+                      href={`/product-details/${product.slug}`}
+                    >
+                      {product.name}
+                    </Link>
 
                     <p className="ps-product__price sale">
-                      ${product.price.toFixed(2)}{" "}
-                      {product.oldPrice && <del>${product.oldPrice}</del>}
+                      TK.{product.discount_price}
+                      {product.price && <del>&nbsp;TK.{product.price}</del>}
                     </p>
                   </div>
                 </div>
