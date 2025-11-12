@@ -9,6 +9,7 @@ use App\Models\Roles;
 use App\Models\ProductCategory;
 use App\Models\ProductsAttribues;
 use App\Models\ProductsGallery;
+use App\Models\Supplier;
 use App\Models\User;
 use Attribute;
 use DB;
@@ -71,6 +72,36 @@ class PublicController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+
+
+
+    public function getsAllproducts()
+    {
+
+        $product = Product::where('status', 1)->orderBy('id', 'desc')->get();
+
+        $get_prdoucts = $product->map(function ($data) {
+            $checksupplier = Supplier::find($data->supplier_id);
+            return [
+                'id'              => $data->id,
+                'name'            => $data->name,
+                'slug'            => $data->slug,
+                'price'           => $data->price,
+                'description_full' => $data->description_full,
+                'discount_price'  => $data->discount_price,
+                'thumnail_img'    => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'          => $checksupplier ? $checksupplier->name : 'BIR GROUP',
+                'currency'        => 'Tk.',
+            ];
+        });
+
+        // Return a 404 response if not found
+        return response()->json([
+            'success'               => true,
+            'product'               => $get_prdoucts,
+        ], 200);
     }
 
 
@@ -159,7 +190,6 @@ class PublicController extends Controller
 
     public function getProducts()
     {
-
         $product = Product::where('status', 1)->limit(12)->orderBy('id', 'desc')->get();
 
         $get_prdoucts = $product->map(function ($data) {
