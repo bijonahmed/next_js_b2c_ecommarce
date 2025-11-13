@@ -141,7 +141,7 @@ export default function SidebarSystem() {
                         }
                       >
                         <a
-                          href={`/${parent.slug}`}
+                          href={`/product-categories/${parent.slug}`}
                           className="text-decoration-none text-dark fw-semibold"
                         >
                           {parent.name}
@@ -176,7 +176,7 @@ export default function SidebarSystem() {
                               }}
                             >
                               <a
-                                href={`/${child.slug}`}
+                               href={`/shop-categories/${child.slug}`}
                                 className="text-decoration-none text-secondary"
                               >
                                 {child.name}

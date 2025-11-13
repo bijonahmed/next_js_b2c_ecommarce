@@ -255,7 +255,7 @@ export default function InsideHeader() {
                               : ""
                           }`}
                         >
-                          <a href="#">
+                          <Link href={`/product-categories/${parent.slug}`}>
                             {parent.name}{" "}
                             {parent.children && parent.children.length > 0 && (
                               <>
@@ -266,7 +266,7 @@ export default function InsideHeader() {
                                 />
                               </>
                             )}
-                          </a>
+                          </Link>
 
                           {/* Mega Menu */}
                           {parent.children && parent.children.length > 0 && (
@@ -305,7 +305,7 @@ export default function InsideHeader() {
                                         }}
                                       >
                                         <Link
-                                          href={`/shop/${subItem.slug}`}
+                                          href={`/shop-categories/${subItem.slug}`}
                                           style={{
                                             textDecoration: "none",
                                             color: "#333",

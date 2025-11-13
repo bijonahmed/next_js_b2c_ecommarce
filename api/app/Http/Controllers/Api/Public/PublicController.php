@@ -73,6 +73,113 @@ class PublicController extends Controller
             ], 500);
         }
     }
+    public function getsAllproductsBySubCategories(Request $request)
+    {
+        //dd($request->all());
+        $slug                   = $request->query('slug');
+        $category_id          = $request->query('category_id', null);
+        $subcategory_id         = $request->query('subcategory_id', null);
+        $offset                 = $request->query('offset', 0);
+        $limit                  = $request->query('limit', 40);
+
+
+        $checkCategories = ProductCategory::where('slug', $slug)->first();
+        // dd($checkCategories);
+
+        // ✅ Only check slug if both category and subcategory are NOT provided
+        if (empty($category_id) && empty($subcategory_id) && !empty($slug)) {
+            $checkCategories = ProductCategory::where('slug', $slug)->first();
+            $subcategory_id  = $checkCategories->id ?? null;
+        }
+
+        // ✅ Build the query
+        $query = Product::where('status', 1);
+
+        if (!empty($category_id)) {
+            $query->where('categoryId', $category_id);
+        }
+
+        if (!empty($subcategory_id)) {
+            $query->where('subcategoryId', $subcategory_id);
+        }
+        $products = $query->orderBy('id', 'desc')
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        //      dd($products);
+
+        $get_products      = $products->map(function ($data) {
+            $checksupplier = Supplier::find($data->supplier_id);
+            return [
+                'id'                => $data->id,
+                'name'              => $data->name,
+                'slug'              => $data->slug,
+                'price'             => $data->price,
+                'description_full'  => $data->description_full,
+                'discount_price'    => $data->discount_price,
+                'thumnail_img'      => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'            => $checksupplier ? $checksupplier->name : 'BIR GROUP',
+                'currency'          => 'Tk.',
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'product' => $get_products,
+        ]);
+    }
+    public function getsAllproductsByCategories(Request $request)
+    {
+        //dd($request->all());
+        $slug                   = $request->query('slug');
+        //$category_id          = $request->query('category_id', null);
+        $subcategory_id         = $request->query('subcategory_id', null);
+        $offset                 = $request->query('offset', 0);
+        $limit                  = $request->query('limit', 40);
+
+
+        $checkCategories = ProductCategory::where('slug', $slug)->first();
+        if ($checkCategories) {
+            $category_id    = $checkCategories->id;
+        }
+
+
+        $query                  = Product::where('status', 1);
+
+        if ($category_id) {
+            $query->where('categoryId', $category_id);
+        }
+
+        if ($subcategory_id) {
+            $query->where('subcategoryId', $subcategory_id);
+        }
+
+        $products = $query->orderBy('id', 'desc')
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        $get_products      = $products->map(function ($data) {
+            $checksupplier = Supplier::find($data->supplier_id);
+            return [
+                'id'                => $data->id,
+                'name'              => $data->name,
+                'slug'              => $data->slug,
+                'price'             => $data->price,
+                'description_full'  => $data->description_full,
+                'discount_price'    => $data->discount_price,
+                'thumnail_img'      => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'            => $checksupplier ? $checksupplier->name : 'BIR GROUP',
+                'currency'          => 'Tk.',
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'product' => $get_products,
+        ]);
+    }
 
 
     public function getsAllproducts(Request $request)

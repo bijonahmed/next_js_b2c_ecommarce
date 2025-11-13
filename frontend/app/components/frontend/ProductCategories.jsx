@@ -30,9 +30,9 @@ export default function ProductCategories() {
                 <li className="text-gray-400">No subcategories</li>
               )}
             </ul>
-            <a className="ps-block__more-link" href={`/shop/${parent.slug}`}>
+            <Link className="ps-block__more-link" href={`/product-categories/${parent.slug}`}>
               View All
-            </a>
+            </Link>
           </div>
 
           {/* Middle image */}

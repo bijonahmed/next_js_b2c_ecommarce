@@ -252,7 +252,8 @@ export default function ClientNavbar() {
                                     </a>
                                     <a href="#">{item.name}</a>
                                     <small>
-                                      &nbsp;{item.qty} × Tk.{item.price}
+                                      &nbsp;{item.qty} × {item.price} = Tk.
+                                      {item.qty * item.price}
                                     </small>
                                   </div>
                                 </div>

@@ -1,19 +1,19 @@
 "use client";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import Slider from "../../components/frontend/Slider";
-import useProducts from "../../hooks/getProducts";
-import "../../components/styles/darknessLoader.css";
-import "../../components/styles/beforeLoading.css";
-import "../../components/styles/loadmore.css";
 
-import useCategories from "../../hooks/useProductsCategoriesAllData";
+import useProducts from "../../../hooks/getProductsByCategories";
+import "../../../components/styles/darknessLoader.css";
+import "../../../components/styles/beforeLoading.css";
+import "../../../components/styles/loadmore.css";
+import Slider from "../../../components/frontend/Slider";
+import useCategories from "../../../hooks/useProductsCategoriesAllData";
+import { useCart } from "../../../context/CartContext";
 
-import { useCart } from "../../context/CartContext";
 import Swal from "sweetalert2";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 export const metadata = {
-  title: "shop - Bir E-Commerce",
+  title: "Shop - Bir E-Commerce",
   description: "Securely complete your order and payment on Bir E-Commerce.",
   keywords: [
     "checkout",
@@ -43,7 +43,12 @@ export const metadata = {
   },
 };
 
-export default function AboutPage() {
+export default function ShopByCategoriesPage({ slug }) {
+  const formattedSlug = slug
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+  console.log("Rendering ShopByCategories for slug:", slug);
+
   const [loaded, setLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("grid"); // default view
   const { addToCart, addToWishlist, wishlist } = useCart();
@@ -59,7 +64,8 @@ export default function AboutPage() {
   const { products, loading, hasMore, loadMore } = useProducts(
     40,
     selectedCategory,
-    selectedSubcategory
+    selectedSubcategory,
+    slug
   );
 
   useEffect(() => {
@@ -211,7 +217,8 @@ export default function AboutPage() {
               <li>
                 <Link href="/">Home</Link>
               </li>
-              <li>Shop</li>
+              <li>Shop By Categories</li>
+              <li>{formattedSlug}</li>
             </ul>
           </div>
         </div>
@@ -475,7 +482,7 @@ export default function AboutPage() {
                           )}
 
                           {!hasMore && (
-                            <p className="text-center mt-3 text-secondary">
+                            <p className="text-center mt-3 text-secondary d-none">
                               No more products available.
                             </p>
                           )}
@@ -597,7 +604,7 @@ export default function AboutPage() {
                         )}
 
                         {!hasMore && (
-                          <p className="text-center mt-3 text-secondary">
+                          <p className="text-center mt-3 text-secondary d-none">
                             No more products available.
                           </p>
                         )}

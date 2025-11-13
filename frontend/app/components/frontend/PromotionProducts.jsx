@@ -14,7 +14,7 @@ export default function PromotionProducts() {
         <div className="ps-section__content">
           <div className="ps-section__column">
             <div className="row">
-              {categoryParentData.map((image, index) => (
+              {categoryParentData.map((category, index) => (
                 <div
                   key={index}
                   className="ps-block__overlay col-xl-2 col-lg-3 col-md-4 col-sm-6 col-6"
@@ -32,12 +32,12 @@ export default function PromotionProducts() {
                       justifyContent: "center",
                     }}
                   >
-                    <Link href="/shop/details/iphone-15/">
+                    <Link href={`/product-categories/${category.slug}`}>
                       <img
                         loading="lazy"
                         className="ps-product__thumbnail"
-                        src={image.thumbnail_image}
-                        alt={image.name}
+                        src={category.thumbnail_image}
+                        alt={category.name}
                         style={{
                           width: "100%",
                           height: "100%",
@@ -48,7 +48,9 @@ export default function PromotionProducts() {
                   </div>
                   <center>
                     <p>
-                      <Link href="/shop/details/iphone-15/">{image.name}</Link>
+                      <Link href={`/product-categories/${category.slug}`}>
+                        {category.name}
+                      </Link>
                     </p>
                   </center>
                 </div>

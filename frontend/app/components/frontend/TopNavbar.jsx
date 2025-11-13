@@ -7,14 +7,15 @@ import useCategories from "../../hooks/useCategories";
 
 export default function TopNavbar() {
   const { categoryData, loading } = useCategories();
-  
+
   return (
     <nav className="navigation">
       <div className="container">
         <div className="navigation__left">
           <div className="menu--product-categories">
             <div className="menu__toggle">
-              <i className="icon-menu"></i><span>Shop by Categories</span>
+              <i className="icon-menu"></i>
+              <span>Shop by Categories</span>
             </div>
             <div className="menu__content">
               <ul className="menu--dropdown">
@@ -27,7 +28,7 @@ export default function TopNavbar() {
                         : ""
                     }`}
                   >
-                    <a href="#">
+                    <Link href={`/product-categories/${parent.slug}`}>
                       {parent.name}{" "}
                       {parent.children && parent.children.length > 0 && (
                         <>
@@ -38,7 +39,7 @@ export default function TopNavbar() {
                           />
                         </>
                       )}
-                    </a>
+                    </Link>
 
                     {/* Mega Menu */}
                     {parent.children && parent.children.length > 0 && (
@@ -76,7 +77,7 @@ export default function TopNavbar() {
                                 }}
                               >
                                 <Link
-                                  href={`/shop/${subItem.slug}`}
+                                  href={`/shop-categories/${subItem.slug}`}
                                   style={{
                                     textDecoration: "none",
                                     color: "#333",

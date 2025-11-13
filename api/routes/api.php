@@ -30,6 +30,8 @@ Route::prefix('public')->group(function () {
     Route::get('/getProducts', [PublicController::class, 'getProducts']);
     Route::get('/search-products', [PublicController::class, 'searchProducts']);
     Route::get('/getsAllproducts', [PublicController::class, 'getsAllproducts']);
+    Route::get('/getsAllproductsByCategories', [PublicController::class, 'getsAllproductsByCategories']);
+    Route::get('/getsAllproductsBySubCategories', [PublicController::class, 'getsAllproductsBySubCategories']);
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
 });
 Route::middleware(['auth:api'])->group(function () {
