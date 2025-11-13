@@ -26,7 +26,9 @@ Route::prefix('public')->group(function () {
     Route::get('/getCategory', [PublicController::class, 'index']);
     Route::get('/getCategoryParent', [PublicController::class, 'getCategoryParent']);
     Route::get('/productsCategory', [PublicController::class, 'productsCategory']);
+    Route::get('/productsCategoryAllData', [PublicController::class, 'productsCategoryAllData']);
     Route::get('/getProducts', [PublicController::class, 'getProducts']);
+    Route::get('/search-products', [PublicController::class, 'searchProducts']);
     Route::get('/getsAllproducts', [PublicController::class, 'getsAllproducts']);
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
 });

@@ -2,9 +2,12 @@
 "use client"; // Must be top
 
 import Link from "next/link";
+import React, { useState } from "react";
 import useCategories from "../../hooks/useProductsCategories";
+import "../styles/beforeLoading.css";
 
 export default function ProductCategories() {
+  const [loaded, setLoaded] = useState(false);
   const { categoryData, loading } = useCategories();
   return (
     <>
@@ -47,68 +50,16 @@ export default function ProductCategories() {
             </a>
           </div>
 
-          {/* Product placeholder section */}
-          {/* <div className="ps-block__product-box">
-            <div className="ps-product ps-product--simple">
-              <div className="ps-product__thumbnail">
-                <a href="#">
-                  <img
-                    loading="lazy"
-                    src="/frontend_theme/img/products/clothing/1.jpg"
-                    alt="image"
-                  />
-                </a>
-                <ul className="ps-product__actions">
-                  <li>
-                    <a href="#" title="Read More">
-                      <i className="icon-bag2" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Quick View">
-                      <i className="icon-eye" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Add to Wishlist">
-                      <i className="icon-heart" />
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" title="Compare">
-                      <i className="icon-chart-bars" />
-                    </a>
-                  </li>
-                </ul>
-              </div>
-
-              <div className="ps-product__container">
-                <div className="ps-product__content">
-                  <a className="ps-product__title" href="#">
-                    Demo Product
-                  </a>
-                  <p className="ps-product__price sale">
-                    $567.99 <del>$670.00</del>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-         
-
-          
-
-
-
-           
-          </div> */}
-
           {/* ✅ Product loop section */}
           <div className="ps-block__product-box">
             {parent.products && parent.products.length > 0 ? (
               parent.products.map((product) => (
                 <div key={product.id} className="ps-product ps-product--simple">
-                  <div className="ps-product__thumbnail">
+                  <div
+                    className={`image-wrapper ps-product__thumbnail ${
+                      loaded ? "loaded" : ""
+                    }`}
+                  >
                     <Link href={`/product-details/${product.slug}`}>
                       <img
                         loading="lazy"
@@ -117,6 +68,7 @@ export default function ProductCategories() {
                             ? product.thumbnail
                             : "/frontend_theme/img/products/clothing/1.jpg"
                         }
+                        onLoad={() => setLoaded(true)} // detect when image fully loaded
                         alt={product.name}
                       />
                     </Link>
@@ -129,9 +81,10 @@ export default function ProductCategories() {
                       >
                         {product.name}
                       </Link>
-                      <p className="ps-product__price sale">Tk.{product.discount_price ?? "0"} <del>Tk.{product.price ?? "0"} </del></p>
-
-                   
+                      <p className="ps-product__price sale">
+                        Tk.{product.discount_price ?? "0"}{" "}
+                        <del>Tk.{product.price ?? "0"} </del>
+                      </p>
                     </div>
                   </div>
                 </div>

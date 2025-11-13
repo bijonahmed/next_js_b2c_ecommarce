@@ -3,7 +3,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import "react-multi-carousel/lib/styles.css";
-import "../../components/frontend/slider.css";
+import "../styles/slider.css";
 import useCategories from "../../hooks/useCategories";
 
 const Carousel = dynamic(() => import("react-multi-carousel"), { ssr: false });

@@ -10,15 +10,18 @@ import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useCart } from "../../context/CartContext";
 import useCategories from "../../hooks/useCategories";
+import useProductSearch from "../../hooks/useProductSearch";
+import "../../components/styles/autocmplete.css";
 
 export default function InsideHeader() {
   const [token, setToken] = useState(null);
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { query, setQuery, products } = useProductSearch();
   const [selectedCategory, setSelectedCategory] = useState("0");
-  const { cart, updateQty, removeFromCart } = useCart();
+  const { cart, wishlist, updateQty, removeFromCart } = useCart();
   const { categoryData, loading } = useCategories();
-
+  const [isFocused, setIsFocused] = useState(false);
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
@@ -78,36 +81,53 @@ export default function InsideHeader() {
                 />
               </Link>
             </div>
-            <div className="header__center">
-              <form className="ps-form--quick-search" action="#" method="get">
-                <div className="form-group--icon">
-                  <i className="icon-chevron-down" />
-                  <select
-                    className="form-control"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                  >
-                    <option value="0">All</option>
-                    <option className="level-0" value="babies-moms">
-                      Babies &amp; Moms
-                    </option>
-                  </select>
-                </div>
+            <div className="header__content-center">
+              <div className="ps-form--quick-search">
                 <input
                   className="form-control"
                   type="text"
                   placeholder="I'm shopping for..."
-                  id="input-search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onFocus={() => setIsFocused(true)}
+                  onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                 />
-                <button>Search</button>
-              </form>
+                <button type="button" className="search-btn">
+                  Search
+                </button>
+
+                {loading && <p className="search-loading">Loading...</p>}
+
+                {products.length > 0 && isFocused && (
+                  <ul className="search-results-dropdown">
+                    {products.map((product) => (
+                      <li key={product.id} className="search-result-item">
+                        <Link href={`/product-details/${product.slug}`}>
+                          <img
+                            src={product.thumnail_img}
+                            alt={product.name}
+                            className="search-result-thumb"
+                          />
+                          <span className="search-result-name">
+                            {product.name}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {!loading && isFocused && query && products.length === 0 && (
+                  <div className="search-no-results">No products found</div>
+                )}
+              </div>
             </div>
             <div className="header__right">
               <div className="header__actions">
                 <Link className="header__extra" href="/whishlist">
                   <i className="icon-heart" />
                   <span>
-                    <i>0</i>
+                    <i>{wishlist?.length || 0}</i>
                   </span>
                 </Link>
                 {/* ---------- Cart Dropdown ---------- */}

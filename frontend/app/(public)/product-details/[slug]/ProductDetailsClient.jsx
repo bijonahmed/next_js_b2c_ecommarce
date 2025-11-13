@@ -5,7 +5,7 @@ import Link from "next/link";
 import ProductSlider from "./ProductSlider";
 import RelatedProducts from "./RelatedProducts";
 import styles from "./ProductDetail.module.css";
-import "../../../components/frontend/DarknessLoader.css";
+import "../../../components/styles/darknessLoader.css";
 import { useCart } from "../../../context/CartContext";
 import Swal from "sweetalert2";
 

@@ -15990,7 +15990,7 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 
 .header--standard .ps-form--quick-search input {
   border: 1px solid #e1e1e1;
-  border-left: none;
+  /* border-left: none;*/
 }
 
 .header--standard .header__content {

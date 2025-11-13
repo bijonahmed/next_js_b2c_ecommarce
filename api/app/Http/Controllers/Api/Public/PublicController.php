@@ -75,33 +75,49 @@ class PublicController extends Controller
     }
 
 
-
-
-    public function getsAllproducts()
+    public function getsAllproducts(Request $request)
     {
 
-        $product = Product::where('status', 1)->orderBy('id', 'desc')->get();
+        // dd($request->all());
+        $category_id            = $request->query('category_id', null);
+        $subcategory_id         = $request->query('subcategory_id', null);
+        $offset                 = $request->query('offset', 0);
+        $limit                  = $request->query('limit', 40);
 
-        $get_prdoucts = $product->map(function ($data) {
+        $query                  = Product::where('status', 1);
+
+        if ($category_id) {
+            $query->where('categoryId', $category_id);
+        }
+
+        if ($subcategory_id) {
+            $query->where('subcategoryId', $subcategory_id);
+        }
+
+        $products = $query->orderBy('id', 'desc')
+            ->skip($offset)
+            ->take($limit)
+            ->get();
+
+        $get_products      = $products->map(function ($data) {
             $checksupplier = Supplier::find($data->supplier_id);
             return [
-                'id'              => $data->id,
-                'name'            => $data->name,
-                'slug'            => $data->slug,
-                'price'           => $data->price,
-                'description_full' => $data->description_full,
-                'discount_price'  => $data->discount_price,
-                'thumnail_img'    => $data->thumnail_img ? url($data->thumnail_img) : null,
-                'vendor'          => $checksupplier ? $checksupplier->name : 'BIR GROUP',
-                'currency'        => 'Tk.',
+                'id'                => $data->id,
+                'name'              => $data->name,
+                'slug'              => $data->slug,
+                'price'             => $data->price,
+                'description_full'  => $data->description_full,
+                'discount_price'    => $data->discount_price,
+                'thumnail_img'      => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'            => $checksupplier ? $checksupplier->name : 'BIR GROUP',
+                'currency'          => 'Tk.',
             ];
         });
 
-        // Return a 404 response if not found
         return response()->json([
-            'success'               => true,
-            'product'               => $get_prdoucts,
-        ], 200);
+            'success' => true,
+            'product' => $get_products,
+        ]);
     }
 
 
@@ -185,6 +201,102 @@ class PublicController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function productsCategoryAllData(Request $request)
+    {
+        try {
+            $categories = ProductCategory::where('status', 1)->get();
+            $grouped    = $categories->groupBy('parent_id');
+            // Recursive closure
+            $buildTree = function ($parentId) use (&$buildTree, $grouped) {
+                return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
+                    // Get up to 6 products for this category
+                    $filterProducts = Product::where('categoryId', $category->id)
+                        ->get()
+                        ->map(function ($product) {
+                            return [
+                                'id'    => $product->id,
+                                'name'  => $product->name,
+                                'slug'  => $product->slug,
+                                'price' => $product->price,
+                                'discount_price' => $product->discount_price,
+                                'thumbnail'      => $product->thumnail_img ? url($product->thumnail_img) : null,
+                            ];
+                        });
+                    // Recursively build child categories (limited to 6)
+                    $children = $buildTree($category->id)->take(150);
+
+                    return [
+                        'id'              => $category->id,
+                        'name'            => $category->name,
+                        'slug'            => $category->slug,
+                        'parent_id'       => $category->parent_id,
+                        'thumbnail_image' => $category->thumbnail_image ? url($category->thumbnail_image) : null,
+                        'banner_image'    => $category->banner_image ? url($category->banner_image) : null,
+                        'children'        => $children,       // nested categories
+                        'products'        => $filterProducts, // related products
+                    ];
+                });
+            };
+
+            // Start recursion from parent_id = 0 (root)
+            $nestedCategories = $buildTree(0);
+
+            return response()->json([
+                'success' => true,
+                'data' => $nestedCategories,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::error('Category fetch failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch categories. Please try again later.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function searchProducts(Request $request)
+    {
+
+        $query = $request->query('q', '');
+
+        if (!$query) {
+            return response()->json([
+                'success' => false,
+                'product' => [],
+            ]);
+        }
+
+        // Wildcard search in name or description
+        $products = Product::where('name', 'like', "%{$query}%")
+            // ->orWhere('description_full', 'like', "%{$query}%")
+            ->where('status', 1)
+            ->orderBy('id', 'desc')
+            ->limit(20)
+            ->get();
+
+        $get_prdoucts = $products->map(function ($data) {
+            return [
+                'id'              => $data->id,
+                'name'            => $data->name,
+                'slug'            => $data->slug,
+                'price'           => $data->price,
+                'discount_price'  => $data->discount_price,
+                'thumnail_img'    => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'          => 'BIR GROUP',
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'product' => $get_prdoucts,
+        ]);
     }
 
 

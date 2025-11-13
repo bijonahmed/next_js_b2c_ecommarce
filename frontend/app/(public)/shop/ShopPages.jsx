@@ -1,11 +1,16 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
-import Slider from "../../../components/frontend/Slider";
+import { useState, useEffect, useRef } from "react";
+import Slider from "../../components/frontend/Slider";
+import useProducts from "../../hooks/getProducts";
+import "../../components/styles/darknessLoader.css";
+import "../../components/styles/beforeLoading.css";
+import "../../components/styles/loadmore.css";
 
-import getsAllproducts from "../../../hooks/getAllProducts";
-import "../../../components/frontend/DarknessLoader.css";
+import useCategories from "../../hooks/useProductsCategoriesAllData";
 
+import { useCart } from "../../context/CartContext";
+import Swal from "sweetalert2";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 export const metadata = {
   title: "shop - Bir E-Commerce",
@@ -39,9 +44,155 @@ export const metadata = {
 };
 
 export default function AboutPage() {
-  const { products, loading } = getsAllproducts();
-
+  const [loaded, setLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("grid"); // default view
+  const { addToCart, addToWishlist, wishlist } = useCart();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [qty, setQty] = useState(1);
+  const { cart, updateQty, removeFromCart } = useCart();
+  const { categoryData } = useCategories();
+  const [openMenu, setOpenMenu] = useState(null);
+  const lastScrollY = useRef(0);
+  const shopContainerRef = useRef(null);
+  //const { addToCart, addToWishlist, removeFromWishlist, wishlist } = useCart();
+  const { products, loading, hasMore, loadMore } = useProducts(
+    40,
+    selectedCategory,
+    selectedSubcategory
+  );
+
+  useEffect(() => {
+    const root = shopContainerRef.current ?? document;
+    const clickHandler = (e) => {
+      const a = e.target.closest && e.target.closest("a");
+      if (!a) return;
+      const href = a.getAttribute("href");
+      if (href === "#" || href === "" || href === null) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+    };
+
+    root.addEventListener("click", clickHandler);
+    return () => root.removeEventListener("click", clickHandler);
+  }, []);
+
+  useEffect(() => {
+    if (!loading && lastScrollY.current) {
+      window.scrollTo(0, lastScrollY.current);
+      lastScrollY.current = 0;
+    }
+  }, [loading]);
+
+  const handleSelect = (eOrCategory, maybeCategory = null) => {
+    let e = null;
+    let category = null;
+    let parentId = null;
+
+    if (maybeCategory) {
+      e = eOrCategory;
+      category = maybeCategory;
+    } else {
+      category = eOrCategory;
+    }
+
+    if (e && e.preventDefault) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    lastScrollY.current = window.scrollY;
+
+    if (category.parent_id && category.parent_id !== 0) {
+      parentId = category.parent_id;
+      setSelectedCategory(parentId); // always send parent category id
+      setSelectedSubcategory(category.id); // optional
+    } else {
+      setSelectedCategory(category.id);
+      setSelectedSubcategory(null); // reset
+    }
+  };
+
+  const toggleMenu = (id) => {
+    setOpenMenu((prev) => (prev === id ? null : id));
+  };
+
+  const handleAddToCart = (productRow) => {
+    //console.log("Adding to cart:", productRow);
+    const product = {
+      id: productRow.id,
+      slug: productRow.slug,
+      name: productRow.name,
+      price: productRow.price,
+      qty: 1,
+      thumnail_img: productRow.thumnail_img,
+      selectedAttr: [],
+    };
+
+    const isDuplicate = cart.some(
+      (item) =>
+        item.id === product.id && item.selectedAttr === product.selectedAttr
+    );
+
+    if (isDuplicate) {
+      Swal.fire({
+        icon: "warning",
+        title: "<span style='font-size:18px;'>Already in Cart</span>",
+        html: "<span style='font-size:16px;'>This product is already in your cart.</span>",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+    addToCart(productRow, qty, []);
+
+    Swal.fire({
+      icon: "success",
+      title: "<span style='font-size:18px;'>Added to Cart</span>",
+      html: `<span style='font-size:16px;'>"${product.name}" has been added to your cart.</span>`,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+
+  const handleAddToWishList = (productRow) => {
+    console.log("Adding to wishlist:", productRow);
+    const product = {
+      id: productRow.id,
+      slug: productRow.slug,
+      name: productRow.name,
+      price: productRow.price,
+      thumnail_img: productRow.thumnail_img,
+      selectedAttr: [],
+    };
+
+    // ✅ Check duplicates in wishlist
+    const isDuplicate = wishlist.some((item) => item.id === product.id);
+
+    if (isDuplicate) {
+      Swal.fire({
+        icon: "warning",
+        title: "<span style='font-size:18px;'>Already in Wishlist</span>",
+        html: "<span style='font-size:16px;'>This product is already in your wishlist.</span>",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+
+    // ✅ Add to wishlist
+    addToWishlist(product);
+
+    Swal.fire({
+      icon: "success",
+      title: "<span style='font-size:18px;'>Added to Wishlist</span>",
+      html: `<span style='font-size:16px;'>${product.name} has been added to your wishlist.</span>`,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
 
   if (loading || !products) {
     return (
@@ -51,7 +202,7 @@ export default function AboutPage() {
     );
   }
   return (
-    <div>
+    <div ref={shopContainerRef}>
       {/* Start */}
       <div className="bg-white">
         <div className="ps-breadcrumb">
@@ -68,44 +219,86 @@ export default function AboutPage() {
           <div className="ps-container mt-5">
             <Slider />
 
-            {/* <PromotionProducts /> */}
-
             <div className="ps-layout--shop mt-5  ">
               <div className="ps-layout__left">
                 <aside className="widget widget_shop">
                   <h4 className="widget-title">Categories</h4>
-                  <ul className="ps-list--categories">
-                    <li>
-                      <a href="#">Foldable Clothes Drying Racks</a>
-                    </li>
-                    <li>
-                      <a href="#">Vikars Ladder</a>
-                    </li>
-                    <li>
-                      <a href="#">WD-40 Anti Rust Spray</a>
-                    </li>
 
-                    <li>
-                      <a href="#">Bir Tools</a>
-                    </li>
-                    <li>
-                      <a href="#">Makita Power Tools</a>
-                    </li>
-                    <li>
-                      <a href="#">Home & Utility Essentials</a>
-                    </li>
-                    <li>
-                      <a href="#">Cleaning & Maintenance Products</a>
-                    </li>
-                    <li>
-                      <a href="#">Hand Tools & Hardware</a>
-                    </li>
+                  <ul className="ps-list--categories">
+                    <ul className="category-menu">
+                      {categoryData
+                        .filter((cat) => cat.parent_id === 0)
+                        .map((cat) => (
+                          <li
+                            key={cat.id}
+                            className={`menu-item-has-children ${
+                              openMenu === cat.id ? "open" : ""
+                            }`}
+                          >
+                            <div
+                              className="menu-title"
+                              // parent toggling only
+                              onClick={(e) => {
+                                e && e.stopPropagation();
+                                toggleMenu(cat.id);
+                              }}
+                            >
+                              <button
+                                type="button"
+                                className="category-btn"
+                                onClick={(e) => handleSelect(e, cat)}
+                              >
+                                {cat.name}
+                              </button>
+
+                              {cat.children.length > 0 && (
+                                <span className="sub-toggle">
+                                  <i
+                                    className={`fa-solid fa-angle-${
+                                      openMenu === cat.id ? "up" : "down"
+                                    }`}
+                                  />
+                                </span>
+                              )}
+                            </div>
+
+                            {cat.children.length > 0 && (
+                              <ul
+                                className="sub-menu"
+                                style={{
+                                  display:
+                                    openMenu === cat.id ? "block" : "none",
+                                }}
+                              >
+                                {cat.children.map((child) => (
+                                  <li key={child.id}>
+                                    <button
+                                      type="button"
+                                      className="category-btn"
+                                      onClick={(e) => handleSelect(e, child)}
+                                    >
+                                      {child.name}
+                                    </button>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </li>
+                        ))}
+                    </ul>
                   </ul>
                 </aside>
               </div>
 
               <div className="ps-layout__right">
                 <div className="ps-shopping ps-tab-root">
+                  <center>
+                    {loading && products.length === 0 && (
+                      <p className="text-center text-muted">
+                        Loading products...
+                      </p>
+                    )}
+                  </center>
                   <div className="ps-shopping__header">
                     <p>All Products</p>
                     <div className="ps-shopping__actions">
@@ -144,15 +337,17 @@ export default function AboutPage() {
                     {activeTab === "grid" && (
                       <div className="ps-shopping-product">
                         <div className="row">
-                          {/* Example product */}
                           {products.map((product) => (
                             <div
                               className="col-xl-2 col-lg-4 col-md-4 col-sm-6 col-6"
                               key={product.id}
                             >
-                              <div className="ps-product">
-                                {/* Product Thumbnail */}
-                                <div className="ps-product__thumbnail">
+                              <div className="ps-product ">
+                                <div
+                                  className={`image-wrapper ps-product__thumbnail ${
+                                    loaded ? "loaded" : ""
+                                  }`}
+                                >
                                   <Link
                                     href={`/product-details/${product.slug}`}
                                   >
@@ -161,46 +356,57 @@ export default function AboutPage() {
                                       src={product.thumnail_img}
                                       alt={product.name}
                                       className="img-fluid"
+                                      onLoad={() => setLoaded(true)}
                                     />
                                   </Link>
 
-                                  {/* Product Actions */}
                                   <ul className="ps-product__actions">
                                     <li>
-                                      <Link
-                                        href={`/product-details/${product.slug}`}
+                                      {/* this Link uses onClick preventDefault already */}
+                                      <button
+                                        type="button"
+                                        onClick={() => handleAddToCart(product)}
                                         data-bs-toggle="tooltip"
                                         data-placement="top"
                                         title="Add To Cart"
+                                        className="btn-icon"
                                       >
                                         <i className="icon-bag2" />
-                                      </Link>
+                                      </button>
                                     </li>
                                     <li>
-                                      <Link
-                                        href="/whishlist"
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleAddToWishList(product)
+                                        }
                                         data-bs-toggle="tooltip"
                                         data-placement="top"
-                                        title="Add to Wishlist"
+                                        title="Add To Wishlist"
+                                        className="btn-icon"
                                       >
                                         <i className="icon-heart" />
-                                      </Link>
+                                      </button>
                                     </li>
                                   </ul>
                                 </div>
 
-                                {/* Product Info */}
                                 <div className="ps-product__container">
-                                  <a className="ps-product__vendor" href="#">
+                                  {/* vendor anchor had href="#" previously — avoid anchors without handlers */}
+                                  <Link
+                                    href={`/product-details/${product.slug}`}
+                                    className="ps-product__vendor"
+                                  >
                                     {product.vendor}
-                                  </a>
+                                  </Link>
+
                                   <div className="ps-product__content">
-                                    <a
+                                    <Link
                                       className="ps-product__title"
                                       href={`/product-details/${product.slug}`}
                                     >
                                       {product.name}
-                                    </a>
+                                    </Link>
                                     <p className="ps-product__price">
                                       {product.discount_price ? (
                                         <>
@@ -221,12 +427,12 @@ export default function AboutPage() {
                                   </div>
 
                                   <div className="ps-product__content hover">
-                                    <a
+                                    <Link
                                       className="ps-product__title"
                                       href={`/product-details/${product.slug}`}
                                     >
                                       {product.name}
-                                    </a>
+                                    </Link>
                                     <p className="ps-product__price">
                                       {product.discount_price ? (
                                         <>
@@ -249,8 +455,31 @@ export default function AboutPage() {
                               </div>
                             </div>
                           ))}
+                          {hasMore && !loading && (
+                            <div className="text-center mt-5 mb-5">
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  loadMore();
+                                }}
+                                className="btn-load-more"
+                              >
+                                Load More
+                              </button>
+                            </div>
+                          )}
 
-                          {/* Add more grid products here */}
+                          {loading && products.length > 0 && (
+                            <div className="text-center mt-3 text-muted">
+                              Loading more products...
+                            </div>
+                          )}
+
+                          {!hasMore && (
+                            <p className="text-center mt-3 text-secondary">
+                              No more products available.
+                            </p>
+                          )}
                         </div>
                       </div>
                     )}
@@ -263,7 +492,6 @@ export default function AboutPage() {
                             className="ps-product ps-product--wide"
                             key={product.id}
                           >
-                            {/* Thumbnail */}
                             <div className="ps-product__thumbnail">
                               <Link href={`/shop/details/${product.slug}`}>
                                 <img
@@ -275,7 +503,6 @@ export default function AboutPage() {
                               </Link>
                             </div>
 
-                            {/* Content */}
                             <div className="ps-product__container">
                               <div className="ps-product__content">
                                 <Link
@@ -287,9 +514,12 @@ export default function AboutPage() {
 
                                 <p className="ps-product__vendor">
                                   Sold by:{" "}
-                                  <a href="#" className="text-primary">
+                                  <Link
+                                    href={`/product-details/${product.slug}`}
+                                    className="text-primary btn-as-link"
+                                  >
                                     {product.vendor}
-                                  </a>
+                                  </Link>
                                 </p>
 
                                 <div
@@ -306,7 +536,6 @@ export default function AboutPage() {
                                 />
                               </div>
 
-                              {/* Shopping Actions */}
                               <div className="ps-product__shopping">
                                 <p className="ps-product__price">
                                   {product.discount_price ? (
@@ -326,12 +555,15 @@ export default function AboutPage() {
                                   )}
                                 </p>
 
-                                <Link
+                                <button
                                   className="ps-btn"
-                                  href={`/shop/details/${product.slug}`}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAddToCart(product);
+                                  }}
                                 >
                                   Add to cart
-                                </Link>
+                                </button>
 
                                 <ul className="ps-product__actions">
                                   <li>
@@ -344,7 +576,32 @@ export default function AboutPage() {
                             </div>
                           </div>
                         ))}
-                        {/* Add more list products here */}
+
+                        {hasMore && !loading && (
+                          <div className="text-center mt-5 mb-5">
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                loadMore();
+                              }}
+                              className="btn-load-more"
+                            >
+                              Load More
+                            </button>
+                          </div>
+                        )}
+
+                        {loading && products.length > 0 && (
+                          <div className="text-center mt-3 text-muted">
+                            Loading more products...
+                          </div>
+                        )}
+
+                        {!hasMore && (
+                          <p className="text-center mt-3 text-secondary">
+                            No more products available.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>
@@ -357,6 +614,32 @@ export default function AboutPage() {
       </div>
 
       {/* END */}
+      <style jsx>{`
+        .btn-icon {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          padding: 0;
+        }
+        /* make button look like links where used */
+        .btn-as-link {
+          background: none;
+          border: none;
+          padding: 0;
+          color: inherit;
+          cursor: pointer;
+          text-decoration: underline;
+        }
+        .category-btn {
+          background: none;
+          border: none;
+          padding: 0;
+          color: inherit;
+          cursor: pointer;
+          font: inherit;
+          text-align: left;
+        }
+      `}</style>
     </div>
   );
 }

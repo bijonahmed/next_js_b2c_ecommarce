@@ -16,9 +16,46 @@ const responsive = {
 
 export default function ProductsSliders() {
   const { products, loading } = useProductsLimit();
-  const { cart, updateQty, removeFromCart } = useCart();
+  const { cart, addToWishlist, wishlist, removeFromCart } = useCart();
 
   const { addToCart } = useCart();
+
+  const handleAddToWishList = (productRow) => {
+    console.log("Adding to wishlist:", productRow);
+    const product = {
+      id: productRow.id,
+      slug: productRow.slug,
+      name: productRow.name,
+      price: productRow.price,
+      thumnail_img: productRow.thumnail_img,
+      selectedAttr: [],
+    };
+
+    // ✅ Check duplicates in wishlist
+    const isDuplicate = wishlist.some((item) => item.id === product.id);
+
+    if (isDuplicate) {
+      Swal.fire({
+        icon: "warning",
+        title: "<span style='font-size:18px;'>Already in Wishlist</span>",
+        html: "<span style='font-size:16px;'>This product is already in your wishlist.</span>",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      return;
+    }
+
+    // ✅ Add to wishlist
+    addToWishlist(product);
+
+    Swal.fire({
+      icon: "success",
+      title: "<span style='font-size:18px;'>Added to Wishlist</span>",
+      html: `<span style='font-size:16px;'>${product.name} has been added to your wishlist.</span>`,
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
 
   const handleAddToCart = (productRow) => {
     const product = {
@@ -118,7 +155,9 @@ export default function ProductsSliders() {
                       </Link>
                     </li>
                     <li>
-                      <a href="#" title="Add to Wishlist">
+                      <a href="#" title="Add to Wishlist" onClick={() =>
+                                          handleAddToWishList(product)
+                                        }>
                         <i className="icon-heart" />
                       </a>
                     </li>

@@ -2,23 +2,17 @@
 "use client";
 import { useEffect, useState } from "react";
 
-export default function getAllProducts() {
+export default function useProductsCategoriesAllData() {
 
-  const [products, setProductData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE}/public/getsAllproducts`
-        );
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/public/productsCategoryAllData`);
         const result = await res.json();
-        setProductData(result.product || []);
-        console.log("get products" + result.product);
-
-
+        setCategoryData(result.data || []);
       } catch (err) {
         console.error("Fetch failed:", err);
       } finally {
@@ -28,5 +22,5 @@ export default function getAllProducts() {
     fetchCategories();
   }, []);
 
-  return { products, loading };
+  return { categoryData, loading };
 }

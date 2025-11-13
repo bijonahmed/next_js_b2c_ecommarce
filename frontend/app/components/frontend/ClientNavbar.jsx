@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Swal from "sweetalert2";
-
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import useCategories from "../../hooks/useCategories";
-
+import useProductSearch from "../../hooks/useProductSearch";
+import "../../components/styles/autocmplete.css";
+import "../../components/styles/autocmpleteMobile.css";
 import TopNavbar from "./TopNavbar";
 import InsideHeader from "../frontend/InsideHeader";
 
@@ -17,12 +18,20 @@ export default function ClientNavbar() {
   // ✅ Hooks at top level — never inside conditions
   const router = useRouter();
   const pathname = usePathname();
-  const { cart, updateQty, removeFromCart } = useCart();
+  const { cart, wishlist, updateQty, removeFromCart } = useCart();
   const { topBannerData } = useCategories();
+  const { query, setQuery, products, loading, clearSearch } =
+    useProductSearch();
   //const { user } = useAuth?.() || {}; // optional chaining if AuthContext is optional
-
+  const [isFocused, setIsFocused] = useState(false);
   const [token, setToken] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handleSelectProduct = (product) => {
+    clearSearch(); // clear input and hide results
+    setShowDropdown(false);
+  };
 
   // ✅ Hydration-safe mount check
   useEffect(() => {
@@ -144,38 +153,59 @@ export default function ClientNavbar() {
 
                 {/* ---------- Search Bar ---------- */}
                 <div className="header__content-center">
-                  <form
-                    className="ps-form--quick-search"
-                    action="#"
-                    method="get"
-                  >
-                    <div className="form-group--icon">
-                      <i className="icon-chevron-down" />
-                      <select className="form-control" defaultValue="all">
-                        <option value="all">All</option>
-                        <option value="tools">Tools</option>
-                        <option value="hardware">Hardware</option>
-                        <option value="kpms">KPMS</option>
-                        <option value="bmi">BMI</option>
-                        <option value="bcel">BCEL</option>
-                      </select>
-                    </div>
+                  <div className="ps-form--quick-search">
                     <input
                       className="form-control"
                       type="text"
                       placeholder="I'm shopping for..."
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onFocus={() => setIsFocused(true)}
+                      onBlur={() => setTimeout(() => setIsFocused(false), 200)}
                     />
-                    <button>Search</button>
-                  </form>
+                    <button type="button" className="search-btn">
+                      Search
+                    </button>
+
+                    {loading && <p className="search-loading">Loading...</p>}
+
+                    {products.length > 0 && isFocused && (
+                      <ul className="search-results-dropdown">
+                        {products.map((product) => (
+                          <li key={product.id} className="search-result-item">
+                            <Link href={`/product-details/${product.slug}`}>
+                              <img
+                                src={product.thumnail_img}
+                                alt={product.name}
+                                className="search-result-thumb"
+                              />
+                              <span className="search-result-name">
+                                {product.name}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+
+                    {!loading &&
+                      isFocused &&
+                      query &&
+                      products.length === 0 && (
+                        <div className="search-no-results">
+                          No products found
+                        </div>
+                      )}
+                  </div>
                 </div>
 
                 {/* ---------- Header Right ---------- */}
                 <div className="header__content-right">
                   <div className="header__actions">
-                    <Link className="header__extra" href="/wishlist">
+                    <Link className="header__extra" href="/whishlist">
                       <i className="icon-heart" />
                       <span>
-                        <i>0</i>
+                        <i>{wishlist?.length || 0}</i>
                       </span>
                     </Link>
 
@@ -368,20 +398,57 @@ export default function ClientNavbar() {
           </div>
         </div>
 
+        {/* Start mobile search */}
         <div className="ps-search--mobile">
-          <form className="ps-form--search-mobile" action="#" method="get">
+          <form
+            className="ps-form--search-mobile"
+            action="#"
+            method="get"
+            onSubmit={(e) => e.preventDefault()}
+          >
             <div className="form-group--nest">
               <input
                 className="form-control"
                 type="text"
                 placeholder="Search something..."
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => query && setShowDropdown(true)}
               />
-              <button>
+              <button type="button">
                 <i className="icon-magnifier" />
               </button>
+
+              {/* Dropdown results */}
+              {showDropdown && products.length > 0 && (
+                <ul className="search-results-mobile">
+                  {products.map((product) => (
+                    <li
+                      key={product.id}
+                      className="search-result-item-mobile"
+                      onClick={() => handleSelectProduct(product)}
+                    >
+                      <Link href={`/product-details/${product.slug}`}>
+                        <div className="search-result-content-mobile">
+                          <span className="search-result-name-mobile">
+                            {product.name.split(" ").slice(0, 20).join(" ")}
+                          </span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {loading && <p className="search-loading-mobile">Loading...</p>}
             </div>
           </form>
         </div>
+
+        {/* END */}
       </header>
     </div>
   );
