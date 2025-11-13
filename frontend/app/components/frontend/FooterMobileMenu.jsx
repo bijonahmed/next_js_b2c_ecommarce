@@ -1,17 +1,43 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import useCategories from "../../hooks/useCategories";
+import useProductSearch from "../../hooks/useProductSearch";
+import "../../components/styles/autocmpleteMobile.css";
+import { useCart } from "../../context/CartContext";
 
 export default function SidebarSystem() {
   const [activePanel, setActivePanel] = useState(null);
   const { categoryData, loading } = useCategories();
-  //const [categoriesItems, setCategoriesItems] = useState([]);
+  const { query, setQuery, products, clearSearch } = useProductSearch();
   const [openParentId, setOpenParentId] = useState(null);
-
-  const toggleParent = (id) => {
-    setOpenParentId(openParentId === id ? null : id);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const { cart, wishlist, updateQty, removeFromCart } = useCart();
+  // Calculate subtotal
+  const subtotal = cart.reduce(
+    (total, item) => total + item.qty * item.price,
+    0
+  );
+  const closeSidebar = () => {
+    const sidebar = document.getElementById("search-sidebar");
+    const overlay = document.querySelector(".ps-site-overlay");
+    sidebar?.classList.remove("active");
+    overlay?.classList.remove("active");
   };
+
+  const handleSelectProduct = (product) => {
+    clearSearch();
+    setShowDropdown(false);
+    closeSidebar();
+  };
+
+  useEffect(() => {
+    const overlay = document.querySelector(".ps-site-overlay");
+    if (!overlay) return;
+    const handleClick = () => closeSidebar();
+    overlay.addEventListener("click", handleClick);
+    return () => overlay.removeEventListener("click", handleClick);
+  }, []);
 
   const menuItems = [
     { name: "Home", link: "/" },
@@ -28,6 +54,15 @@ export default function SidebarSystem() {
       prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
     );
   };
+
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch by rendering after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
 
   return (
     <div>
@@ -187,43 +222,95 @@ export default function SidebarSystem() {
             <div className="navigation__content">
               <div className="ps-cart--mobile">
                 <div className="ps-cart__content">
-                  <div className="ps-product--cart-mobile">
-                    <div className="ps-product__thumbnail">
-                      <a href="#">
-                        <img
-                          loading="lazy"
-                          src="/frontend_theme/img/products/clothing/7.jpg"
-                          alt="test"
-                        />
-                      </a>
+                  {cart && cart.length > 0 ? (
+                    cart.map((item) => {
+                      const key = `${item.id}-${JSON.stringify(
+                        item.selectedAttr || {}
+                      )}`;
+                      return (
+                        <div
+                          className="ps-product--cart-mobile d-flex align-items-start mb-3"
+                          key={key}
+                        >
+                          {/* Product Thumbnail */}
+                          <div className="ps-product__thumbnail me-3">
+                            <Link href={`/product-details/${item.slug}`}>
+                              <img
+                                loading="lazy"
+                                src={
+                                  item.thumnail_img ||
+                                  "/frontend_theme/img/default-product.jpg"
+                                }
+                                alt={item.name || "Product image"}
+                                className="img-fluid rounded"
+                                style={{
+                                  width: "60px",
+                                  height: "60px",
+                                  objectFit: "cover",
+                                }}
+                              />
+                            </Link>
+                          </div>
+
+                          {/* Product Content */}
+                          <div className="ps-product__content flex-grow-1 position-relative">
+                            <a
+                              href="#"
+                              className="ps-product__remove text-danger position-absolute top-0 end-0"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                removeFromCart(item);
+                              }}
+                            >
+                              <i className="icon-cross" />
+                            </a>
+
+                            <Link
+                              href={`/product-details/${item.slug}`}
+                              className="d-block fw-semibold text-truncate"
+                              title={item.name}
+                            >
+                              {item.name}
+                            </Link>
+                            <p className="mb-1 text-muted">
+                              <strong>Sold by:</strong>{" "}
+                              {item.seller || "YOUNG SHOP"}
+                            </p>
+                            <small className="text-muted">
+                              {item.qty} ×{" "}
+                              <span>
+                                {item.price} =  Tk.{item.qty * item.price}
+                              </span>
+                            </small>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="text-center py-4">
+                      <i
+                        className="icon-bag2 d-block mb-2"
+                        style={{ fontSize: "32px", color: "#ccc" }}
+                      />
+                      <p className="mb-0 text-muted">Your cart is empty</p>
                     </div>
-                    <div className="ps-product__content">
-                      <a className="ps-product__remove" href="#">
-                        <i className="icon-cross" />
-                      </a>
-                      <a href="product-default.html">
-                        MVMTH Classical Leather Watch In Black
-                      </a>
-                      <p>
-                        <strong>Sold by:</strong> YOUNG SHOP
-                      </p>
-                      <small>1 x $59.99</small>
-                    </div>
+                  )}
+                </div>
+                {cart && cart.length > 0 && (
+                  <div className="ps-cart__footer mt-3">
+                    <h3>
+                      Sub Total: <strong>Tk.{subtotal.toFixed(2)}</strong>
+                    </h3>
+                    <figure>
+                      <Link className="ps-btn me-2" href="/cart">
+                        View Cart
+                      </Link>
+                      <Link className="ps-btn" href="/checkout">
+                        Checkout
+                      </Link>
+                    </figure>
                   </div>
-                </div>
-                <div className="ps-cart__footer">
-                  <h3>
-                    Sub Total:<strong>$59.99</strong>
-                  </h3>
-                  <figure>
-                    <a className="ps-btn" href="/cart">
-                      View Cart
-                    </a>
-                    <a className="ps-btn" href="checkout.html">
-                      Checkout
-                    </a>
-                  </figure>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -235,18 +322,48 @@ export default function SidebarSystem() {
           <div className="ps-panel__header">
             <form
               className="ps-form--search-mobile"
-              action="https://nouthemes.net/html/martfury/index.html"
+              action="#"
               method="get"
+              onSubmit={(e) => e.preventDefault()}
             >
               <div className="form-group--nest">
                 <input
                   className="form-control"
                   type="text"
                   placeholder="Search something..."
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                  onFocus={() => query && setShowDropdown(true)}
                 />
-                <button>
+                <button type="button">
                   <i className="icon-magnifier" />
                 </button>
+
+                {/* ✅ Autocomplete Dropdown */}
+                {showDropdown && products.length > 0 && (
+                  <ul className="search-results-mobile">
+                    {products.map((product) => (
+                      <li
+                        key={product.id}
+                        className="search-result-item-mobile"
+                        onClick={() => handleSelectProduct(product)}
+                      >
+                        <Link href={`/product-details/${product.slug}`}>
+                          <div className="search-result-content-mobile">
+                            <span className="search-result-name-mobile">
+                              {product.name.split(" ").slice(0, 20).join(" ")}
+                            </span>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {loading && <p className="search-loading-mobile">Loading...</p>}
               </div>
             </form>
           </div>
