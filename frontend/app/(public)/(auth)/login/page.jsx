@@ -5,7 +5,7 @@ import { useAuth } from "../../../context/AuthContext"; // Adjust the path as ne
 import { useState } from "react";
 
 export default function LoginPage() {
-  const router = useRouter(); // ✅ Next.js Router
+  const router = useRouter(); //  Next.js Router
   const [email, setemail] = useState("mdbijon@gmail.com");
   const [password, setPassword] = useState("12345");
   const [loading, setLoading] = useState(false);

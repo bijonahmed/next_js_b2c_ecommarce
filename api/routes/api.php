@@ -33,6 +33,9 @@ Route::prefix('public')->group(function () {
     Route::get('/getsAllproductsByCategories', [PublicController::class, 'getsAllproductsByCategories']);
     Route::get('/getsAllproductsBySubCategories', [PublicController::class, 'getsAllproductsBySubCategories']);
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
+    Route::get('/getsPost', [PublicController::class, 'getsPost']);
+    Route::get('/getSetting', [PublicController::class, 'getSetting']);
+    Route::post('/confirm-order', [PublicController::class, 'confirmOrder']);
 });
 Route::middleware(['auth:api'])->group(function () {
     // User

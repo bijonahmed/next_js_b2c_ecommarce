@@ -22,6 +22,7 @@
     "react-hot-toast": "^2.6.0",
     "react-multi-carousel": "^2.8.6",
     "react-owl-carousel2": "^0.3.0",
+    "react-qr-code": "^2.0.18",
     "react-quill": "^2.0.0",
     "react-slick": "^0.31.0",
     "slick-carousel": "^1.8.1",
