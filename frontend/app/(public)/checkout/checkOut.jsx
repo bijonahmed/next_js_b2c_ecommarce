@@ -6,17 +6,19 @@ import QRCode from "react-qr-code";
 import "../../components/styles/checkout.css";
 import toast, { Toaster } from "react-hot-toast";
 import useSetting from "../../hooks/useSetting";
-//import "../styles/beforeLoading.css";
 import { useRouter } from "next/navigation";
 import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 
 export default function CheckoutPage() {
+  // Router
+  const router = useRouter();
+
   // Form state
-  const router = useRouter(); //  Next.js Router
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [emailerror, setEmailError] = useState(false);
+  const [userdata, setUserdata] = useState(null);
   const [address, setAddress] = useState("");
   const [shippingPhone, setShippingPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -29,18 +31,48 @@ export default function CheckoutPage() {
   const [grandTotal, setGrandTotal] = useState(0);
   const [selectedDeliveryCharge, setSelectedDeliveryCharge] = useState(0);
   const [orderNotes, setOrderNotes] = useState("");
-  // Client-only cart state
+
+  const { token } = useAuth();
   const { cart, clearCart } = useCart();
-
   const { settingData, loading } = useSetting();
-  // const { categoryData } = useCategories();
 
+  // Mount check to prevent hydration mismatch
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Subtotal and total calculation
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
   const total =
     discount > 0
       ? subtotal - disAmt + selectedDeliveryCharge
       : subtotal + selectedDeliveryCharge;
 
+  // Fetch userdata if token exists
+  useEffect(() => {
+    if (!token) return;
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/profile`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (res.ok) setUserdata(data.user);
+      } catch (err) {
+        console.error("API error:", err);
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+  // Coupon application
   const applyCoupon = () => {
     if (couponCode === "DISCOUNT10") {
       const amt = subtotal * 0.1;
@@ -55,28 +87,20 @@ export default function CheckoutPage() {
     }
   };
 
+  // Validation and confirm order
   const confirmOrder = async (e) => {
     e.preventDefault();
-    if (typeof window === "undefined") return;
+    if (!mounted) return;
 
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    if (cart.length === 0) {
-      showValidationError("Cart is empty", "Please add items to cart.");
+    const localCart = JSON.parse(localStorage.getItem("cart")) || [];
+    if (localCart.length === 0) {
+      toast.error("Cart is empty. Please add items.");
       return;
     }
 
     if (paymentMethod === "bkash") {
-      if (!your_bkash_number?.trim()) {
-        showValidationError("Bkash Number Required", "Enter bkash number.");
-        return;
-      }
-      if (!bkash_transaction_id?.trim()) {
-        showValidationError(
-          "Bkash Transaction Required",
-          "Enter transaction number."
-        );
-
+      if (!your_bkash_number?.trim() || !bkash_transaction_id?.trim()) {
+        toast.error("Please provide Bkash number and transaction ID.");
         return;
       }
     }
@@ -88,16 +112,6 @@ export default function CheckoutPage() {
 
     if (!email?.trim()) {
       showValidationError("Email Required", "Please enter your email address.");
-      return;
-    }
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(email.trim())) {
-      showValidationError(
-        "Invalid Email",
-        "Please enter a valid email address."
-      );
       return;
     }
 
@@ -136,6 +150,31 @@ export default function CheckoutPage() {
       return;
     }
 
+    /*
+    if (
+      !name?.trim() ||
+      !email?.trim() ||
+      !phone?.trim() ||
+      !address?.trim() ||
+      !shippingPhone?.trim() ||
+      !paymentMethod?.trim()
+    ) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+      */
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email.trim())) {
+      toast.error("Invalid email address.");
+      return;
+    }
+
+    if (!/^[0-9]{11}$/.test(phone) || !/^[0-9]{11}$/.test(shippingPhone)) {
+      toast.error("Phone numbers must be exactly 11 digits.");
+      return;
+    }
+
     const coupon = localStorage.getItem("apply_coupon") || null;
     const couponoffer = localStorage.getItem("coupon-offer") || null;
 
@@ -149,7 +188,7 @@ export default function CheckoutPage() {
       bkash_number: your_bkash_number,
       transaction_id: bkash_transaction_id,
       paymentMethod,
-      cart,
+      cart: localCart,
       coupon,
       couponoffer,
     };
@@ -159,114 +198,97 @@ export default function CheckoutPage() {
         `${process.env.NEXT_PUBLIC_API_BASE}/public/confirm-order`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            cart,
-            coupon,
-            couponoffer,
-            data,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cart: localCart, coupon, couponoffer, data }),
         }
       );
 
       const result = await response.json();
-
       if (result.success) {
         toast.success("Order Confirmed!");
-        // Clear
         clearCart();
         localStorage.removeItem("apply_coupon");
         localStorage.removeItem("coupon-offer");
         window.dispatchEvent(new Event("cart-updated"));
-
-        const email = result.checkEmail;
-        const password = result.password;
-        const order_id = result.order_id;
         router.push(
-          "/order-confirm/?email=" +
-            email +
-            "&password=" +
-            password +
-            "&order_id=" +
-            order_id
+          `/order-confirm/?email=${result.checkEmail}&password=${result.password}&order_id=${result.order_id}`
         );
       } else {
         toast.error(result.message || "Order failed.");
       }
-    } catch (error) {
-      toast.error("Network Error. Try again.");
-      console.error("Order Error:", error);
+    } catch (err) {
+      toast.error("Network error. Try again.");
+      console.error(err);
     }
   };
-
   function showValidationError(title, message) {
     toast.error(`${title}: ${message}`);
   }
 
+  if (!mounted) return null; // Prevent SSR mismatch
+
   return (
     <div className="checkout-page">
       <div className="checkout-container">
-        <form className="checkout-form">
+        <form className="checkout-form" onSubmit={confirmOrder}>
           <div className="checkout-row">
-            {/* Billing & Shipping */}
             <Toaster position="top-right" />
             <div className="checkout-billing">
               <h4>Billing Details</h4>
-
-              <div className="form-group">
-                {/* <label>Full Name<sup>*</sup></label> */}
-                <input
-                  type="text"
-                  className="form-control"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Enter your full name"
-                />
-              </div>
-
-              <div className="form-group">
-                {/* <label>Email<sup>*</sup></label> */}
-                <input
-                  type="email"
-                  className="form-control"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                />
-              </div>
-
-              <div className="form-group">
-                {/* <label>Phone</label> */}
-                <input
-                  type="text"
-                  className="form-control"
-                  value={phone}
-                  onChange={(e) => {
-                    const value = e.target.value;
-
-                    // Allow only numbers
-                    if (!/^[0-9]*$/.test(value)) return;
-
-                    // If typing more than 11 digits → show alert and STOP
-                    if (value.length > 11) {
-                      showValidationError(
-                        "Invalid Phone Number",
-                        "Only 11 digit phone numbers are allowed."
-                      );
-                      return;
-                    }
-
-                    setPhone(value);
-                  }}
-                  placeholder="Enter your phone number"
-                  maxLength={11}
-                />
-              </div>
+              {token && userdata ? (
+                <>
+                  <div className="form-group">
+                    <label>Full Name</label>
+                    <b>{userdata?.name || ""}</b>
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <b>{userdata?.email || ""}</b>
+                  </div>
+                  <div className="form-group">
+                    <label>Phone</label>
+                    <b>{userdata?.phone_number || ""}</b>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={phone}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (!/^[0-9]*$/.test(value) || value.length > 11)
+                          return;
+                        setPhone(value);
+                      }}
+                      placeholder="Enter your phone number"
+                      maxLength={11}
+                    />
+                  </div>
+                </>
+              )}
 
               <h4>Shipping Address</h4>
-
               <div className="form-group">
                 <input
                   type="text"
@@ -274,28 +296,14 @@ export default function CheckoutPage() {
                   value={shippingPhone}
                   onChange={(e) => {
                     const value = e.target.value;
-                    // Allow only numbers
-                    if (!/^[0-9]*$/.test(value)) return;
-
-                    // If typing more than 11 digits → show alert and STOP
-                    if (value.length > 11) {
-                      showValidationError(
-                        "Invalid Phone Number",
-                        "Only 11 digit phone numbers are allowed."
-                      );
-                      return;
-                    }
-
+                    if (!/^[0-9]*$/.test(value) || value.length > 11) return;
                     setShippingPhone(value);
                   }}
                   placeholder="Enter your shipping phone number"
                   maxLength={11}
                 />
               </div>
-
               <div className="form-group">
-                {/* <label>Address<sup>*</sup></label> */}
-
                 <input
                   type="text"
                   className="form-control"
@@ -306,9 +314,7 @@ export default function CheckoutPage() {
               </div>
 
               <h4>Payment method</h4>
-
               <div className="form-group">
-                {/* <label>Order Notes</label> */}
                 <select
                   className="form-control"
                   value={paymentMethod}
@@ -320,61 +326,48 @@ export default function CheckoutPage() {
                 </select>
               </div>
 
-              <div className="form-group">
-                {paymentMethod === "bkash" && (
-                  <div>
-                    <hr />
-                    <div style={{ textAlign: "center" }}>
-                      <QRCode
-                        value={
-                          settingData.bkash_number || "No number available"
-                        }
-                        size={150}
-                        className="forqrcode"
-                      />
-                      <br />
-                      <strong>Account Type:</strong> Personal <br />
-                      <strong>Account Number:</strong>{" "}
-                      {settingData.bkash_number}
-                    </div>
-                    <hr />
-
-                    <div className="form-group">
-                      <input
-                        className="form-control"
-                        placeholder="Your Bkash Account Number"
-                        value={your_bkash_number}
-                        onChange={(e) => {
-                          const input = e.target.value;
-                          // Allow only digits and max 11 characters
-                          if (/^\d{0,11}$/.test(input)) {
-                            setYourBkashNumber(input);
-                          }
-                        }}
-                        type="text"
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <input
-                        className="form-control"
-                        placeholder="Your Bkash Transaction ID"
-                        value={bkash_transaction_id}
-                        type="text"
-                        onChange={(e) => setBkashTransactionId(e.target.value)}
-                      />
-                    </div>
+              {paymentMethod === "bkash" && mounted && (
+                <div>
+                  <hr />
+                  <div style={{ textAlign: "center" }}>
+                    <QRCode
+                      value={settingData?.bkash_number || "No number available"}
+                      size={150}
+                    />
+                    <br />
+                    <strong>Account Type:</strong> Personal <br />
+                    <strong>Account Number:</strong> {settingData?.bkash_number}
                   </div>
-                )}
-              </div>
+                  <hr />
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Your Bkash Account Number"
+                      value={your_bkash_number}
+                      onChange={(e) => {
+                        const input = e.target.value;
+                        if (/^\d{0,11}$/.test(input)) setYourBkashNumber(input);
+                      }}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Your Bkash Transaction ID"
+                      value={bkash_transaction_id}
+                      onChange={(e) => setBkashTransactionId(e.target.value)}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Order Summary */}
             <div className="checkout-summary">
               <h3 className="checkout-heading">Your Order</h3>
-
               <div className="order-content">
-                {cart.length === 0 ? (
+                {cart?.length === 0 ? (
                   <p className="empty-cart text-center">Your cart is empty</p>
                 ) : (
                   <>
@@ -382,9 +375,7 @@ export default function CheckoutPage() {
                       <tbody>
                         {cart.map((item) => (
                           <tr
-                            key={`${item.id}-${
-                              item.selectedAttr ? item.selectedAttr : item.id
-                            }`}
+                            key={`${item.id}-${item.selectedAttr || item.id}`}
                           >
                             <td className="product-info">
                               <div className="product-item">
@@ -397,10 +388,8 @@ export default function CheckoutPage() {
                                   <p className="product-name">
                                     {item.name} ({item.qty} × Tk.{item.price})
                                   </p>
-
                                   {item.selectedAttrName && (
                                     <p
-                                      className="text-muted text-bold"
                                       style={{
                                         fontSize: "13px",
                                         fontWeight: "bold",
@@ -412,7 +401,6 @@ export default function CheckoutPage() {
                                 </div>
                               </div>
                             </td>
-
                             <td className="product-price">
                               Tk.{(item.price * item.qty).toFixed(2)}
                             </td>
@@ -420,24 +408,21 @@ export default function CheckoutPage() {
                         ))}
                       </tbody>
                     </table>
-
                     <div className="order-totals">
                       <p className="subtotal">
                         Subtotal: <span>Tk.{subtotal.toFixed(2)}</span>
                       </p>
                       <p className="total">
-                        Total: <span>Tk.{subtotal.toFixed(2)}</span>
+                        Total: <span>Tk.{total.toFixed(2)}</span>
                       </p>
                     </div>
                   </>
                 )}
-
                 <button
                   type="submit"
                   className="checkout-btn"
-                  onClick={confirmOrder}
                   style={{
-                    backgroundColor: "#f7c948", // Yellowish
+                    backgroundColor: "#f7c948",
                     border: "none",
                     color: "#000",
                   }}

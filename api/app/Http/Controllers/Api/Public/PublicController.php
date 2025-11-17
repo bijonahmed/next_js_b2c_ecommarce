@@ -633,25 +633,37 @@ class PublicController extends Controller
 
         foreach ($cart as $item) {
 
-            $selectedAttrId = isset($item['selectedAttr']) ? $item['selectedAttr'] : null;
+            // Safely get selected attribute id
+            $selectedAttrId = null;
+            if (isset($item['selectedAttr'])) {
+                if (is_array($item['selectedAttr']) && count($item['selectedAttr']) > 0) {
+                    $selectedAttrId = $item['selectedAttr'][0];
+                } elseif (!is_array($item['selectedAttr'])) {
+                    $selectedAttrId = $item['selectedAttr'];
+                }
+            }
 
-            $checkAttr = $selectedAttrId
-                ? ProductsAttribues::find($selectedAttrId)
-                : null;
+            // Get attribute name
+            $checkAttr = $selectedAttrId ? ProductsAttribues::find($selectedAttrId) : null;
+            $selectedAttrName = '';
+            if ($checkAttr) {
+                $selectedAttrName = is_array($checkAttr->attributeName)
+                    ? implode(', ', $checkAttr->attributeName)
+                    : $checkAttr->attributeName;
+            }
 
-            $selectedAttrName = $checkAttr ? $checkAttr->attributeName : '';
-
-
+            // Create order history
             OrderHistory::create([
-                'order_id'          => $orderId,
-                'product_id'        => $item['id'],
-                'attribue_id'       => $selectedAttrId, // Size as variation
-                'variation_value'   => $selectedAttrName,
-                'qty'               => $item['qty'],
-                'price'             => $item['price'],
-                'total_price'       => $item['price'] * $item['qty'],
+                'order_id'        => $orderId,
+                'product_id'      => $item['id'],
+                'attribue_id'     => $selectedAttrId,
+                'variation_value' => $selectedAttrName,
+                'qty'             => $item['qty'],
+                'price'           => $item['price'],
+                'total_price'     => $item['price'] * $item['qty'],
             ]);
         }
+
 
         $customerPhone = $requestdata['shipping_phone'];
         if ($couponoffer == 'couponoffer') {

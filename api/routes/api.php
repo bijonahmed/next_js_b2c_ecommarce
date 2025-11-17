@@ -41,6 +41,7 @@ Route::middleware(['auth:api'])->group(function () {
     // User
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/updateProfile', [AuthController::class, 'updateProfile']);
+    Route::put('/updateCustomerProfile', [AuthController::class, 'updateCustomerProfile']);
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
 
 
@@ -56,6 +57,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::prefix('customer')->group(function () {
         Route::get('/index', [CustomerController::class, 'index']);
+        Route::get('/getOrderCustomer', [CustomerController::class, 'getOrderCustomer']);
     });
 
     Route::prefix('banner')->group(function () {

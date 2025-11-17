@@ -3,24 +3,24 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext"; // Adjust the path as necessary
 import Sidebar from "../customer-dashboard/sidebar";
+import useOrderList from "../../../hooks/customerOrderList";
+
 import { useEffect, useState } from "react";
 
 export default function InvoicePage() {
-  const router = useRouter(); // ✅ Next.js Router
+  const { token, login } = useAuth();
+  const router = useRouter(); 
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    const token = localStorage.getItem("token"); // get your token
-    console.log("Token: " + token);
-    if (!token) {
-      router.replace("/"); // redirect home
-    } else {
-      setLoading(false); // token exists, show dashboard
-    }
-  }, [router]);
 
-  if (loading) {
-    return <p>Redirecting...</p>; // optional loading state
-  }
+  const { orderData } = useOrderList();
+
+  useEffect(() => {
+    if (!token) {
+      router.push("/login");
+      return;
+    }
+  }, []);
+  const toUpperSafe = (text) => (text ? text.toUpperCase() : "");
 
   return (
     <main className="ps-page--my-account">
@@ -56,36 +56,45 @@ export default function InvoicePage() {
                       <table className="table ps-table ps-table--invoices">
                         <thead>
                           <tr>
-                            <th>Id</th>
-                            <th>Title</th>
-                            <th>Date</th>
+                            <th>OrderID</th>
+                            <th>Order Date</th>
+                            <th>Payment Method</th>
+                            <th>Shipping Phone</th>
                             <th>Amount</th>
                             <th>Status</th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td>
-                              <Link href="/invoice/500884010">500884010</Link>
-                            </td>
-                            <td>
-                              <Link href="/product/1">
-                                Marshall Kilburn Portable Wireless Speaker
-                              </Link>
-                            </td>
-                            <td>20-1-2020</td>
-                            <td>42.99</td>
-                            <td>Successful delivery</td>
-                            <td>
-                              <Link
-                                href="/invoice/500884010"
-                                className="btn btn-warning btn-lg text-white fw-semibold"
-                              >
-                                View Invoice
-                              </Link>
-                            </td>
-                          </tr>
+                          {orderData.map((order) => (
+                            <tr key={order.order_id}>
+                              <td>
+                                <Link href={`/invoice/${order.order_id}`}>
+                                  {order.orderId}
+                                </Link>
+                              </td>
+                              <td>{order.order_date}</td>
+                              <td className="text-center">
+                                {toUpperSafe(order?.paymentMethod)}
+                              </td>
+                              <td>
+                                <Link href={`/invoice/${order.order_id}`}>
+                                  {order.shipping_phone}
+                                </Link>
+                              </td>
+
+                              <td>Tk.{order.subtotal}</td>
+                              <td>{order.status_name}</td>
+                              <td>
+                                <Link
+                                  href={`/invoice/${order.order_id}`}
+                                  className="btn btn-warning btn-lg text-white fw-semibold"
+                                >
+                                  View
+                                </Link>
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     </div>

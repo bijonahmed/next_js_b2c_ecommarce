@@ -1,30 +1,84 @@
 "use client"; // required for client components
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../../context/AuthContext"; // Adjust the path as necessary
+import { useAuth } from "../../../context/AuthContext"; 
 import Sidebar from "../customer-dashboard/sidebar";
 import { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
-export default function LoginPage() {
-  const router = useRouter(); // ✅ Next.js Router
+export default function customerDhasboardPage() {
+  const router = useRouter(); //
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const { login } = useAuth();
-
+  const [userdata, setUserdata] = useState(null);
+  const { token, permissions } = useAuth();
+  const [updating, setUpdating] = useState(false);
+  
   useEffect(() => {
-    const token = localStorage.getItem("token"); // get your token
-    console.log("Token: " + token);
     if (!token) {
-      router.replace("/"); // redirect home
-    } else {
-      setLoading(false); // token exists, show dashboard
+      router.push("/login");
+      return;
     }
-  }, [router]);
 
-  if (loading) {
-    return <p>Redirecting...</p>; // optional loading state
-  }
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/profile`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (res.ok) {
+          setUserdata(data.user);
+        } else {
+          console.error("Auth error:", data.message);
+        }
+      } catch (err) {
+        console.error("API error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Handle form submit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setUpdating(true);
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/updateCustomerProfile`,
+        {
+          method: "PUT", // or PATCH depending on your API
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(userdata),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok) {
+        toast.success("Profile updated successfully!");
+        //  setUserdata(data); // update local state
+        window.location.reload();
+      } else {
+        toast.error(data.message || "Failed to update profile");
+      }
+    } catch (err) {
+      toast.error("API error: " + err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
 
   return (
     <main className="ps-page--my-account">
@@ -50,11 +104,11 @@ export default function LoginPage() {
               <div className="ps-section__right">
                 <form
                   className="ps-form--account-setting"
-                  action="https://nouthemes.net/html/martfury/index.html"
-                  method="get"
+                  onSubmit={handleSubmit}
                 >
+                  <Toaster position="top-right" />
                   <div className="ps-form__header">
-                    <h3> User Information</h3>
+                    <h3>User Information</h3>
                   </div>
                   <div className="ps-form__content">
                     <div className="form-group">
@@ -63,6 +117,10 @@ export default function LoginPage() {
                         className="form-control"
                         type="text"
                         placeholder="Please enter your name..."
+                        value={userdata?.name || ""}
+                        onChange={(e) =>
+                          setUserdata({ ...userdata, name: e.target.value })
+                        }
                       />
                     </div>
                     <div className="row">
@@ -73,6 +131,13 @@ export default function LoginPage() {
                             className="form-control"
                             type="text"
                             placeholder="Please enter phone number..."
+                            value={userdata?.phone_number || ""}
+                            onChange={(e) =>
+                              setUserdata({
+                                ...userdata,
+                                phone_number: e.target.value,
+                              })
+                            }
                           />
                         </div>
                       </div>
@@ -83,33 +148,27 @@ export default function LoginPage() {
                             className="form-control"
                             type="text"
                             placeholder="Please enter your email..."
+                            value={userdata?.email || ""}
+                            onChange={(e) =>
+                              setUserdata({
+                                ...userdata,
+                                email: e.target.value,
+                              })
+                            }
                           />
-                        </div>
-                      </div>
-                      <div className="col-sm-6">
-                        <div className="form-group">
-                          <label>Birthday</label>
-                          <input
-                            className="form-control"
-                            type="text"
-                            placeholder="Please enter your birthday..."
-                          />
-                        </div>
-                      </div>
-                      <div className="col-sm-6">
-                        <div className="form-group">
-                          <label>Gender</label>
-                          <select className="form-control">
-                            <option value={1}>Male</option>
-                            <option value={2}>Female</option>
-                            <option value={3}>Other</option>
-                          </select>
                         </div>
                       </div>
                     </div>
                   </div>
+
                   <div className="form-group submit">
-                    <button className="ps-btn">Update</button>
+                    <button
+                      className="ps-btn"
+                      type="submit"
+                      disabled={updating}
+                    >
+                      {updating ? "Updating..." : "Update"}
+                    </button>
                   </div>
                 </form>
               </div>

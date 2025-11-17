@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Api;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Setting;
@@ -7,6 +9,7 @@ use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -83,6 +86,39 @@ class AuthController extends Controller
             'permissions' => $user->getAllPermissions()->pluck('name'),  // Spatie Permissions
         ]);
     }
+
+    public function updateCustomerProfile(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'name'          => 'required',
+            'email'         => 'required',
+            'phone_number'  => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+        $data = [
+            'name'           => ! empty($request->name) ? $request->name : '',
+            'email'          => ! empty($request->email) ? $request->email : '',
+            'phone_number'   => ! empty($request->phone_number) ? $request->phone_number : '',
+            'address'        => ! empty($request->address) ? $request->address : '',
+            'website'        => ! empty($request->website) ? $request->website : '',
+            'github'         => ! empty($request->github) ? $request->github : '',
+            'twitter'        => ! empty($request->twitter) ? $request->twitter : '',
+            'instagram'      => ! empty($request->instagram) ? $request->instagram : '',
+            'facebook'       => ! empty($request->facebook) ? $request->facebook : '',
+        ];
+        User::where('id', $request->id)->update($data);
+        $response = [
+            'imagelink' => ! empty($user) ? url($user->image) : '',
+            'message' => 'User successfully update',
+        ];
+        return response()->json($response);
+    }
+
+
+
     public function updateProfile(Request $request)
     {
         // dd($request->all());

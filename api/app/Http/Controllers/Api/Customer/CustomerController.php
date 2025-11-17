@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\OrderHistory;
+use App\Models\Orders;
+use App\Models\OrderStatus;
 use App\Models\RuleModel;
 use App\Models\User;
 use DB;
@@ -18,44 +21,52 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $user = Auth::user();
-        //dd($user);
-        if (! $user->can('view users')) {
-            return response()->json([
-                'message' => 'Unauthorized: You do not have permission to view users',
-            ], 403);
-        }
-        $page = $request->input('page', 1);
-        $pageSize = $request->input('pageSize', 10);
-        $searchQuery    = $request->searchQuery;
-        $selectedFilter = (int) $request->selectedFilter;
-        $query = User::where('role_type', 4)->orderBy('users.id', 'desc')->select('users.*');
-        if ($searchQuery !== null) {
-            $query->where('users.name', 'like', '%' . $searchQuery . '%');
-        }
-        if ($selectedFilter !== null) {
-            $query->where('users.status', $selectedFilter);
-        }
-        // $query->where('users.role_id', 1);
-        $paginator = $query->paginate($pageSize, ['*'], 'page', $page);
-        $modifiedCollection = $paginator->getCollection()->map(function ($item) {
-            $status = $item->status == 1 ? 'Active' : 'None';
-            return [
-                'id'            => $item->id,
-                'name'          => $item->name,
-                'rulename'      => 'N/A',
-                'email'         => $item->email,
-                'phone_number'  => $item->phone_number,
-                'show_password' => $item->show_password,
-                'status'        => $status,
+        $user           = Auth::user();
+        $chkCustomerId  = $user->id;
+
+        $orders = Orders::where('customer_id', $chkCustomerId)
+            ->orderBy('id', 'desc')
+            ->get();
+
+        // Prepare JSON array
+        $orderJson = [];
+        foreach ($orders as $order) {
+            // Find matching status
+            $statusName = OrderStatus::where('status', 1)->first();
+
+            $orderJson[] = [
+                'order_id'          => $order->id,
+                'orderId'           => $order->orderId,
+                'order_date'        => $order->order_date,
+                'shipping_phone'    => $order->shipping_phone,
+                'paymentMethod'     => $order->paymentMethod,
+                'subtotal'          => $order->subtotal,
+                'status_name'       => $statusName ? $statusName->name : "",
             ];
-        });
-        // Return the modified collection along with pagination metadata
+        }
+
         return response()->json([
-            'data' => $modifiedCollection,
-            'current_page' => $paginator->currentPage(),
-            'total_pages' => $paginator->lastPage(),
-            'total_records' => $paginator->total(),
+            'data' => $orderJson,
+        ], 200);
+    }
+
+    public function getOrderCustomer(Request $request)
+    {
+
+        $checkOrder   = Orders::join('order_status', 'order_status.id', '=', 'orders.order_status')
+            ->where('orders.id', $request->id)
+            ->select(
+                'orders.*',
+                'order_status.name as status_name'
+            )
+            ->first();
+        $orderDetails = OrderHistory::where('order_id', $checkOrder->id)->get();
+
+        $data['orderRow']    = $checkOrder;
+        $data['orderHistory'] = $orderDetails;
+
+        return response()->json([
+            'data' => $data,
         ], 200);
     }
 }

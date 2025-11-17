@@ -1,13 +1,22 @@
 "use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function Sidebar() {
   const router = useRouter();
-  const pathname = usePathname(); // may be undefined briefly on hydration
+  const pathname = usePathname();
+  const { token, username } = useAuth();
+  
+  const [mounted, setMounted] = useState(false);
 
-  // Normalize pathname so comparisons are stable:
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const getNormalized = (p = "") => {
     const noQuery = p.split("?")[0].split("#")[0];
     if (noQuery === "/") return "/";
@@ -16,20 +25,14 @@ export default function Sidebar() {
 
   const current = useMemo(() => getNormalized(pathname || "/"), [pathname]);
 
-  // helper to check active: exact match OR parent (startsWith) for nested routes
   const isActive = (href, { allowSubroutes = true } = {}) => {
     const normHref = getNormalized(href);
-    if (normHref === "/") return current === "/"; // home exact
+    if (normHref === "/") return current === "/";
     if (allowSubroutes) {
       return current === normHref || current.startsWith(normHref + "/");
     }
     return current === normHref;
   };
-
-  // --- DEBUG: remove logs when working ---
-  if (typeof window !== "undefined") {
-    console.log("[Sidebar] pathname:", pathname, "=> normalized:", current);
-  }
 
   return (
     <aside className="ps-widget--account-dashboard">
@@ -37,9 +40,7 @@ export default function Sidebar() {
         <img loading="lazy" src="/frontend_theme/img/users/1.png" alt="image" />
         <figure>
           <figcaption>Hello</figcaption>
-          <p>
-            <a href="#">username@gmail.com</a>
-          </p>
+          <p>{mounted ? username : null}</p>
         </figure>
       </div>
       <div className="ps-widget__content">
@@ -49,28 +50,25 @@ export default function Sidebar() {
               <i className="icon-user" /> Account Information
             </Link>
           </li>
-
           <li className={isActive("/invoice") ? "active" : ""}>
             <Link href="/invoice">
               <i className="icon-papers" /> Invoices
             </Link>
           </li>
-
-          <li className={isActive("/wishlist") ? "active" : ""}>
-            <Link href="/wishlist">
+          <li className={isActive("/whishlist") ? "active" : ""}>
+            <Link href="/whishlist">
               <i className="icon-heart" /> Wishlist
             </Link>
           </li>
-
           <li>
             <a
               href="#"
               onClick={(e) => {
                 e.preventDefault();
                 try {
-                  // do your logout steps here (localStorage, api call, etc.)
+                  // logout steps here
                 } finally {
-                  router.push("/login"); // or wherever
+                  router.push("/login");
                 }
               }}
             >
