@@ -62,7 +62,7 @@ export default function CheckoutPage() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     if (cart.length === 0) {
-      console.log("Cart is empty!", "Please add items to cart.");
+      showValidationError("Cart is empty", "Please add items to cart.");
       return;
     }
 
@@ -103,6 +103,15 @@ export default function CheckoutPage() {
 
     if (!phone?.trim()) {
       showValidationError("Phone Required", "Please enter your phone number.");
+      return;
+    }
+
+    // Only digits allowed + Must be exactly 11 digits
+    if (!/^[0-9]{11}$/.test(phone)) {
+      showValidationError(
+        "Invalid Phone Number",
+        "Phone number must be exactly 11 digits."
+      );
       return;
     }
 
@@ -234,8 +243,25 @@ export default function CheckoutPage() {
                   type="text"
                   className="form-control"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    // Allow only numbers
+                    if (!/^[0-9]*$/.test(value)) return;
+
+                    // If typing more than 11 digits → show alert and STOP
+                    if (value.length > 11) {
+                      showValidationError(
+                        "Invalid Phone Number",
+                        "Only 11 digit phone numbers are allowed."
+                      );
+                      return;
+                    }
+
+                    setPhone(value);
+                  }}
                   placeholder="Enter your phone number"
+                  maxLength={11}
                 />
               </div>
 
@@ -246,8 +272,24 @@ export default function CheckoutPage() {
                   type="text"
                   className="form-control"
                   value={shippingPhone}
-                  onChange={(e) => setShippingPhone(e.target.value)}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    // Allow only numbers
+                    if (!/^[0-9]*$/.test(value)) return;
+
+                    // If typing more than 11 digits → show alert and STOP
+                    if (value.length > 11) {
+                      showValidationError(
+                        "Invalid Phone Number",
+                        "Only 11 digit phone numbers are allowed."
+                      );
+                      return;
+                    }
+
+                    setShippingPhone(value);
+                  }}
                   placeholder="Enter your shipping phone number"
+                  maxLength={11}
                 />
               </div>
 
@@ -333,7 +375,7 @@ export default function CheckoutPage() {
 
               <div className="order-content">
                 {cart.length === 0 ? (
-                  <p className="empty-cart">Your cart is empty</p>
+                  <p className="empty-cart text-center">Your cart is empty</p>
                 ) : (
                   <>
                     <table className="order-table">
@@ -341,9 +383,7 @@ export default function CheckoutPage() {
                         {cart.map((item) => (
                           <tr
                             key={`${item.id}-${
-                              item.selectedAttr
-                                ? JSON.stringify(item.selectedAttr)
-                                : item.id
+                              item.selectedAttr ? item.selectedAttr : item.id
                             }`}
                           >
                             <td className="product-info">
@@ -355,12 +395,24 @@ export default function CheckoutPage() {
                                 />
                                 <div className="product-details">
                                   <p className="product-name">
-                                    {item.name}&nbsp;({item.qty} × Tk.
-                                    {item.price})
+                                    {item.name} ({item.qty} × Tk.{item.price})
                                   </p>
+
+                                  {item.selectedAttrName && (
+                                    <p
+                                      className="text-muted text-bold"
+                                      style={{
+                                        fontSize: "13px",
+                                        fontWeight: "bold",
+                                      }}
+                                    >
+                                      {item.selectedAttrName}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </td>
+
                             <td className="product-price">
                               Tk.{(item.price * item.qty).toFixed(2)}
                             </td>
@@ -384,6 +436,11 @@ export default function CheckoutPage() {
                   type="submit"
                   className="checkout-btn"
                   onClick={confirmOrder}
+                  style={{
+                    backgroundColor: "#f7c948", // Yellowish
+                    border: "none",
+                    color: "#000",
+                  }}
                 >
                   Proceed to checkout
                 </button>

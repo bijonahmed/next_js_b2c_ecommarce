@@ -33,7 +33,9 @@ export default function ProductDetailsClient({ slug }) {
       price: price,
       qty: qty,
       thumnail_img: productRow.thumnail_img,
-      selectedAttr: selectedAttr,
+      //selectedAttr: selectedAttr,
+      selectedAttr: selectedAttr?.id ?? null,
+      selectedAttrName: selectedAttr?.name ?? null,
     };
 
     const isDuplicate = cart.some(
@@ -166,16 +168,30 @@ export default function ProductDetailsClient({ slug }) {
                         </label>
                         <select
                           className="form-select form-select-lg border-2 shadow-sm"
-                          style={{
-                            fontSize: "15px",
-                            padding: "0.75rem 1rem",
+                          style={{ fontSize: "15px", padding: "0.75rem 1rem" }}
+                          value={
+                            selectedAttr ? JSON.stringify(selectedAttr) : ""
+                          }
+                          onChange={(e) => {
+                            const value = e.target.value;
+
+                            if (!value) {
+                              setSelectedAttr(null); // No selection → NULL
+                            } else {
+                              setSelectedAttr(JSON.parse(value)); // {id, name}
+                            }
                           }}
-                          value={selectedAttr || ""}
-                          onChange={(e) => setSelectedAttr(e.target.value)}
                         >
                           <option value="">Select option</option>
+
                           {attributesData.map((attr) => (
-                            <option key={attr.id} value={attr.id}>
+                            <option
+                              key={attr.id}
+                              value={JSON.stringify({
+                                id: attr.id,
+                                name: attr.attributeName,
+                              })}
+                            >
                               {attr.attributeName}
                             </option>
                           ))}
