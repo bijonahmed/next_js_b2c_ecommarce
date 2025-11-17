@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Banner\BannerController;
 use App\Http\Controllers\Api\Categories\CategoryController;
+use App\Http\Controllers\Api\ConfirmOrders\ConfirmOrdersController;
 use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
 use App\Http\Controllers\Api\Post\PostCategoryController;
@@ -35,14 +36,21 @@ Route::prefix('public')->group(function () {
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
     Route::get('/getsPost', [PublicController::class, 'getsPost']);
     Route::get('/getSetting', [PublicController::class, 'getSetting']);
-    Route::post('/confirm-order', [PublicController::class, 'confirmOrder']);
 });
+
+
+
+Route::prefix('confirOrders')->group(function () {
+    Route::post('/confirm-order', [ConfirmOrdersController::class, 'confirmOrder']);
+});
+
 Route::middleware(['auth:api'])->group(function () {
     // User
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/updateProfile', [AuthController::class, 'updateProfile']);
     Route::put('/updateCustomerProfile', [AuthController::class, 'updateCustomerProfile']);
     Route::post('/changePassword', [AuthController::class, 'changePassword']);
+    Route::post('/customerChangePassword', [AuthController::class, 'customerChangePassword']);
 
 
     Route::prefix('setting')->group(function () {

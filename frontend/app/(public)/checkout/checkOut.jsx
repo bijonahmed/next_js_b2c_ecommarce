@@ -33,6 +33,7 @@ export default function CheckoutPage() {
   const [orderNotes, setOrderNotes] = useState("");
 
   const { token } = useAuth();
+
   const { cart, clearCart } = useCart();
   const { settingData, loading } = useSetting();
 
@@ -98,6 +99,7 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Bkash validation (for all users)
     if (paymentMethod === "bkash") {
       if (!your_bkash_number?.trim() || !bkash_transaction_id?.trim()) {
         toast.error("Please provide Bkash number and transaction ID.");
@@ -105,82 +107,107 @@ export default function CheckoutPage() {
       }
     }
 
-    if (!name?.trim()) {
-      showValidationError("Name Required", "Please enter your full name.");
-      return;
+    // ==========================
+    // 🔥 MAIN TOKEN VALIDATION
+    // ==========================
+    if (token) {
+      // Logged-in users → only shipping info required
+      if (!shippingPhone?.trim()) {
+        showValidationError(
+          "Shipping Phone Required",
+          "Please enter your shipping phone."
+        );
+        return;
+      }
+
+      if (!address?.trim()) {
+        showValidationError("Address Required", "Please enter your address.");
+        return;
+      }
+
+      if (!paymentMethod?.trim()) {
+        showValidationError(
+          "Payment Method Required",
+          "Please select a payment method."
+        );
+        return;
+      }
+    } else {
+      // Guest checkout → ALL fields required
+      if (!name?.trim()) {
+        showValidationError("Name Required", "Please enter your full name.");
+        return;
+      }
+
+      if (!email?.trim()) {
+        showValidationError(
+          "Email Required",
+          "Please enter your email address."
+        );
+        return;
+      }
+
+      if (!phone?.trim()) {
+        showValidationError(
+          "Phone Required",
+          "Please enter your phone number."
+        );
+        return;
+      }
+
+      // Phone must be 11 digits
+      if (!/^[0-9]{11}$/.test(phone)) {
+        showValidationError(
+          "Invalid Phone Number",
+          "Phone number must be exactly 11 digits."
+        );
+        return;
+      }
+
+      if (!address?.trim()) {
+        showValidationError("Address Required", "Please enter your address.");
+        return;
+      }
+
+      if (!shippingPhone?.trim()) {
+        showValidationError(
+          "Shipping Phone Required",
+          "Please enter your shipping phone."
+        );
+        return;
+      }
+
+      if (!paymentMethod?.trim()) {
+        showValidationError(
+          "Payment Method Required",
+          "Please select a payment method."
+        );
+        return;
+      }
     }
 
-    if (!email?.trim()) {
-      showValidationError("Email Required", "Please enter your email address.");
-      return;
+    if (!token) {
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email.trim())) {
+        toast.error("Invalid email address.");
+        return;
+      }
+
+      if (!/^[0-9]{11}$/.test(phone) || !/^[0-9]{11}$/.test(shippingPhone)) {
+        toast.error("Phone numbers must be exactly 11 digits.");
+        return;
+      }
     }
 
-    if (!phone?.trim()) {
-      showValidationError("Phone Required", "Please enter your phone number.");
-      return;
-    }
-
-    // Only digits allowed + Must be exactly 11 digits
-    if (!/^[0-9]{11}$/.test(phone)) {
-      showValidationError(
-        "Invalid Phone Number",
-        "Phone number must be exactly 11 digits."
-      );
-      return;
-    }
-
-    if (!address?.trim()) {
-      showValidationError("Address Required", "Please enter your address.");
-      return;
-    }
-
-    if (!shippingPhone?.trim()) {
-      showValidationError(
-        "Shipping Phone Required",
-        "Please enter your shipping phone."
-      );
-      return;
-    }
-
-    if (!paymentMethod?.trim()) {
-      showValidationError(
-        "Payment Method Required",
-        "Please select a payment method."
-      );
-      return;
-    }
-
-    /*
-    if (
-      !name?.trim() ||
-      !email?.trim() ||
-      !phone?.trim() ||
-      !address?.trim() ||
-      !shippingPhone?.trim() ||
-      !paymentMethod?.trim()
-    ) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
-      */
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(email.trim())) {
-      toast.error("Invalid email address.");
-      return;
-    }
-
-    if (!/^[0-9]{11}$/.test(phone) || !/^[0-9]{11}$/.test(shippingPhone)) {
-      toast.error("Phone numbers must be exactly 11 digits.");
-      return;
-    }
-
+    // ====================
+    // BUILD ORDER DATA
+    // ====================
     const coupon = localStorage.getItem("apply_coupon") || null;
     const couponoffer = localStorage.getItem("coupon-offer") || null;
-
+    const finalEmail = token ? userdata?.email : email;
     const data = {
       name,
-      email,
+      email: finalEmail,
       phone,
       address,
       shipping_phone: shippingPhone,
@@ -195,7 +222,7 @@ export default function CheckoutPage() {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/public/confirm-order`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/confirOrders/confirm-order`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -210,6 +237,7 @@ export default function CheckoutPage() {
         localStorage.removeItem("apply_coupon");
         localStorage.removeItem("coupon-offer");
         window.dispatchEvent(new Event("cart-updated"));
+
         router.push(
           `/order-confirm/?email=${result.checkEmail}&password=${result.password}&order_id=${result.order_id}`
         );
@@ -221,6 +249,7 @@ export default function CheckoutPage() {
       console.error(err);
     }
   };
+
   function showValidationError(title, message) {
     toast.error(`${title}: ${message}`);
   }

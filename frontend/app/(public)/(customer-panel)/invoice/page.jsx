@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 export default function InvoicePage() {
   const { token, login } = useAuth();
-  const router = useRouter(); 
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const { orderData } = useOrderList();
@@ -20,6 +20,13 @@ export default function InvoicePage() {
       return;
     }
   }, []);
+
+  useEffect(() => {
+    const base = "Customer Invoice List";
+
+    document.title = base;
+  }, []);
+
   const toUpperSafe = (text) => (text ? text.toUpperCase() : "");
 
   return (

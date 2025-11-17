@@ -1,7 +1,7 @@
 "use client"; // required for client components
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "../../../context/AuthContext"; 
+import { useAuth } from "../../../context/AuthContext";
 import Sidebar from "../customer-dashboard/sidebar";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
@@ -14,7 +14,16 @@ export default function customerDhasboardPage() {
   const [userdata, setUserdata] = useState(null);
   const { token, permissions } = useAuth();
   const [updating, setUpdating] = useState(false);
-  
+
+  useEffect(() => {
+    const base = "Customer Dashboard";
+    if (userdata && userdata.name) {
+      document.title = `${base} — ${userdata.name}`;
+    } else {
+      document.title = base;
+    }
+  }, [userdata]);
+
   useEffect(() => {
     if (!token) {
       router.push("/login");
@@ -75,6 +84,70 @@ export default function customerDhasboardPage() {
       }
     } catch (err) {
       toast.error("API error: " + err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const [formData, setFormData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "", // frontend confirm
+    newPassword_confirmation: "", // required for Laravel
+  });
+
+  const handleSubmitChatPassword = async (e) => {
+    e.preventDefault();
+
+    // ✅ Validation
+    if (
+      !formData.currentPassword ||
+      !formData.newPassword ||
+      !formData.confirmPassword
+    ) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    if (formData.newPassword !== formData.confirmPassword) {
+      toast.error("New Password and Confirm Password do not match");
+      return;
+    }
+
+    setUpdating(true);
+
+    try {
+      // 🔹 Make API call to update password
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/customerChangePassword`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currentPassword: formData.currentPassword,
+            newPassword: formData.newPassword,
+            newPassword_confirmation: formData.confirmPassword,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success("Password updated successfully!");
+        setFormData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      } else {
+        toast.error(data.message || "Failed to update password");
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
     } finally {
       setUpdating(false);
     }
@@ -168,6 +241,79 @@ export default function customerDhasboardPage() {
                       disabled={updating}
                     >
                       {updating ? "Updating..." : "Update"}
+                    </button>
+                  </div>
+                </form>
+
+                <hr />
+
+                <form
+                  className="ps-form--account-setting"
+                  onSubmit={handleSubmitChatPassword}
+                >
+                  <Toaster position="top-right" />
+                  <div className="ps-form__header">
+                    <h3>Change Password</h3>
+                  </div>
+
+                  <div className="ps-form__content">
+                    <div className="form-group">
+                      <label>Current Password</label>
+                      <input
+                        className="form-control"
+                        type="password"
+                        placeholder="Enter current password"
+                        value={formData.currentPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            currentPassword: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>New Password</label>
+                      <input
+                        className="form-control"
+                        type="password"
+                        placeholder="Enter new password"
+                        value={formData.newPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            newPassword: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label>Confirm New Password</label>
+                      <input
+                        className="form-control"
+                        type="password"
+                        placeholder="Confirm new password"
+                        value={formData.confirmPassword}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            confirmPassword: e.target.value,
+                            newPassword_confirmation: e.target.value, // <-- important
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group submit">
+                    <button
+                      className="ps-btn"
+                      type="submit"
+                      disabled={updating}
+                    >
+                      {updating ? "Updating..." : "Update Password"}
                     </button>
                   </div>
                 </form>

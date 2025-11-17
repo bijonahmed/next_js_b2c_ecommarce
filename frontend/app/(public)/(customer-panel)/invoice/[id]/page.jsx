@@ -9,9 +9,10 @@ import { useAuth } from "../../../../context/AuthContext";
 import { routerServerGlobal } from "next/dist/server/lib/router-utils/router-server-context";
 
 export default function InvoiceDetailPage() {
-  const router = useRouter(); //
+  const router = useRouter();
   const { id } = useParams();
   const [invoice, setInvoice] = useState("");
+  const [orderHistory, setOrderHistory] = useState([]);
   const { token } = useAuth();
 
   const fetchInvoice = async () => {
@@ -31,6 +32,7 @@ export default function InvoiceDetailPage() {
         //console.log("Invoice data:", data.data.orderRow.id);
 
         setInvoice(data.data.orderRow);
+        setOrderHistory(data.data.orderHistory);
       } else {
         console.error("Auth error:", data.message);
       }
@@ -58,6 +60,9 @@ export default function InvoiceDetailPage() {
     window.location.reload();
   };
   const toUpperSafe = (text) => (text ? text.toUpperCase() : "");
+  const totalAmount = orderHistory.reduce((sum, order) => {
+    return sum + order.qty * order.price;
+  }, 0);
 
   return (
     <main className="ps-page--my-account">
@@ -94,7 +99,7 @@ export default function InvoiceDetailPage() {
                           <strong>Order ID:</strong> {invoice.orderId}
                         </td>
                         <td>
-                          <strong>Date:</strong>
+                          <strong>Date:&nbsp;</strong>
                           {invoice.order_date}
                         </td>
                       </tr>
@@ -140,36 +145,36 @@ export default function InvoiceDetailPage() {
                     <tbody>
                       <tr>
                         <th>Product Name</th>
-                        <th>Unit Price</th>
-                        <th>Qty</th>
-                        <th>Total</th>
+                        <th className="text-center">Qty</th>
+                        <th className="text-center">Unit Price</th>
+                        <th className="text-center">Total</th>
                       </tr>
 
-                      <tr>
-                        <td>Sample Product</td>
-                        <td>Tk. 500</td>
-                        <td>2</td>
-                        <td>Tk. 1000</td>
-                      </tr>
-
-                      <tr>
-                        <td>Another Product</td>
-                        <td>Tk. 300</td>
-                        <td>1</td>
-                        <td>Tk. 300</td>
-                      </tr>
+                      {orderHistory.map((order) => (
+                        <tr key={order.id}>
+                          <td>{order.product_name || ""}</td>
+                          <td className="text-center">{order.qty || ""}</td>
+                          <td className="text-center">
+                            Tk. {order.price || ""}
+                          </td>
+                          <td className="text-center">
+                            Tk. {order.qty * order.price}{" "}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
 
                   <div className="total-section">
                     <p>
-                      <strong>Subtotal:</strong> Tk. 1300
+                      <strong>Subtotal:</strong> Tk. {totalAmount}
                     </p>
-                    <p>
+                    <p className="d-none">
                       <strong>Shipping:</strong> Tk. 80
                     </p>
                     <p>
-                      <strong>Grand Total:</strong> <strong>Tk. 1380</strong>
+                      <strong>Grand Total:</strong>{" "}
+                      <strong>Tk. {totalAmount}</strong>
                     </p>
                   </div>
 

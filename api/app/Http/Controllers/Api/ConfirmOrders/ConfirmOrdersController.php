@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Customer;
+namespace App\Http\Controllers\Api\ConfirmOrders;
 
 use App\Http\Controllers\Controller;
 use App\Models\OrderHistory;
@@ -21,68 +21,13 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Validator;
 
-class CustomerController extends Controller
+class ConfirmOrdersController extends Controller
 {
-    public function index(Request $request)
-    {
-        $user           = Auth::user();
-        $chkCustomerId  = $user->id;
-
-        $orders = Orders::where('customer_id', $chkCustomerId)
-            ->orderBy('id', 'desc')
-            ->get();
-
-        // Prepare JSON array
-        $orderJson = [];
-        foreach ($orders as $order) {
-            // Find matching status
-            $statusName = OrderStatus::where('status', 1)->first();
-
-            $orderJson[] = [
-                'order_id'          => $order->id,
-                'orderId'           => $order->orderId,
-                'order_date'        => $order->order_date,
-                'shipping_phone'    => $order->shipping_phone,
-                'paymentMethod'     => $order->paymentMethod,
-                'subtotal'          => $order->subtotal,
-                'status_name'       => $statusName ? $statusName->name : "",
-            ];
-        }
-
-        return response()->json([
-            'data' => $orderJson,
-        ], 200);
-    }
-
-    public function getOrderCustomer(Request $request)
-    {
-
-        $checkOrder   = Orders::join('order_status', 'order_status.id', '=', 'orders.order_status')
-            ->where('orders.id', $request->id)
-            ->select(
-                'orders.*',
-                'order_status.name as status_name'
-            )
-            ->first();
-        $orderDetails = OrderHistory::where('order_id', $checkOrder->id)
-            ->join('product', 'order_history.product_id', '=', 'product.id')
-            ->select('order_history.*', 'product.name as product_name') // select fields you need
-            ->get();
-
-        $data['orderRow']    = $checkOrder;
-        $data['orderHistory'] = $orderDetails;
-
-        return response()->json([
-            'data' => $data,
-        ], 200);
-    }
 
     public function confirmOrder(Request $request)
     {
 
-
-        $user = Auth::user();
-        dd($user);
+        //    dd($request->all());
 
         $cart = $request->cart;
         if (empty($cart)) {
@@ -95,33 +40,55 @@ class CustomerController extends Controller
 
         // dd($couponoffer);
         // Validation rules
+        $rdata = $request->input('data');
+        $checkFirstEmail = $rdata['email'] ?? '';
 
+        $checkUserData = User::whereRaw('LOWER(email) = ?', [strtolower($checkFirstEmail)])->first();
+        //dd($chkUserMail);
 
-        $rules = [
-            'data.name'            => 'required|string|max:255',
-            'data.email'           => 'required|email|max:255',
-            'data.phone'           => ['required', 'regex:/^[0-9+\-\s]+$/', 'max:12'],
-            'data.shipping_phone'  => ['required', 'regex:/^[0-9+\-\s]+$/', 'max:20'],
-            'data.address'         => 'required',
-            'data.paymentMethod'   => 'required',
-            'cart'                 => 'required|array|min:1',
-            // other rules as needed
-        ];
+        if ($checkUserData) {
+            // EXISTING USER → Only shipping info required
+            $rules = [
+                'data.shipping_phone'  => ['required', 'regex:/^[0-9+\-\s]+$/', 'max:20'],
+                'data.address'         => 'required',
+                'data.paymentMethod'   => 'required',
+                'cart'                 => 'required|array|min:1',
+            ];
 
-        // Custom messages (optional)
-        $messages = [
-            'data.name.required'        => 'Name is required.',
-            'data.email.required'       => 'Email is required.',
-            'data.email.email'          => 'Email must be a valid email address.',
-            'data.phone.required'       => 'Phone number is required.',
-            'data.phone.regex'          => 'Phone number format is invalid.',
-            'data.shipping_phone.required' => 'Shipping phone number is required.',
-            'data.shipping_phone.regex'    => 'Shipping phone number format is invalid.',
-            'data.address'                 => 'Shipping address is required.',
-            'data.paymentMethod'           => 'Payment method is required.',
-            'cart.required'                => 'Cart cannot be empty.',
-        ];
+            $messages = [
+                'data.shipping_phone.required' => 'Shipping phone number is required.',
+                'data.shipping_phone.regex'    => 'Shipping phone number format is invalid.',
+                'data.address.required'        => 'Shipping address is required.',
+                'data.paymentMethod.required'  => 'Payment method is required.',
+                'cart.required'                => 'Cart cannot be empty.',
+            ];
+        } else {
+            // NEW USER → All fields required
+            $rules = [
+                'data.name'            => 'required|string|max:255',
+                'data.email'           => 'required|email|max:255',
+                'data.phone'           => ['required', 'regex:/^[0-9+\-\s]+$/', 'max:12'],
+                'data.shipping_phone'  => ['required', 'regex:/^[0-9+\-\s]+$/', 'max:20'],
+                'data.address'         => 'required',
+                'data.paymentMethod'   => 'required',
+                'cart'                 => 'required|array|min:1',
+            ];
 
+            $messages = [
+                'data.name.required'           => 'Name is required---.',
+                'data.email.required'          => 'Email is required.--',
+                'data.email.email'             => 'Email must be a valid email address.--',
+                'data.phone.required'          => 'Phone number is required.--',
+                'data.phone.regex'             => 'Phone number format is invalid.---',
+                'data.shipping_phone.required' => 'Shipping phone number is required.',
+                'data.shipping_phone.regex'    => 'Shipping phone number format is invalid.',
+                'data.address.required'        => 'Shipping address is required.',
+                'data.paymentMethod.required'  => 'Payment method is required.',
+                'cart.required'                => 'Cart cannot be empty.',
+            ];
+        }
+
+        // FINAL VALIDATION
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
@@ -134,14 +101,24 @@ class CustomerController extends Controller
 
 
 
-        echo "data";
-        exit;
 
         $requestdata = $request->input('data');
+        // dd($requestdata);
 
-        $data['name']    = $requestdata['name'];
-        $data['email']   = $requestdata['email'] ?? '';
-        $data['phone']   = $requestdata['phone'];
+        if ($checkUserData) {
+            $data['name']    = $checkUserData->name ?? '';
+            $data['email']   = $checkUserData->email ?? '';
+            $data['phone']   = $checkUserData->phone ?? '';
+           // $data['check'] = 'fetech from database';
+        } else {
+            $data['name']    = $requestdata['name'];
+            $data['email']   = $requestdata['email'] ?? '';
+            $data['phone']   = $requestdata['phone'];
+           // $data['check'] = 'request data';
+        }
+
+       // dd($data);
+
         $data['address'] = $requestdata['address'];
         $data['shipping_phone'] = $requestdata['shipping_phone'];
 

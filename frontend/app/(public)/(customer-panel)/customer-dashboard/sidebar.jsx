@@ -10,7 +10,7 @@ export default function Sidebar() {
   const router = useRouter();
   const pathname = usePathname();
   const { token, username } = useAuth();
-  
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -65,10 +65,22 @@ export default function Sidebar() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
+
                 try {
-                  // logout steps here
+                  // 🔹 Clear token / localStorage
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("user");
+
+                  // 🔹 If you have context logout:
+                  // logout();
                 } finally {
+                  // 🔹 Go to login page first
                   router.push("/login");
+
+                  // 🔹 Reload page after small delay
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 300); // 300ms delay so Next.js can redirect
                 }
               }}
             >
