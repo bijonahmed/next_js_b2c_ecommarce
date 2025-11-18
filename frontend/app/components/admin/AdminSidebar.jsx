@@ -123,8 +123,8 @@ export default function AdminSidebar() {
             icon: "bi-box-seam-fill",
             children: [
               {
-                label: "Product List",
-                href: "#",
+                label: "Order List",
+                href: "/order",
                 icon: "bi-circle",
               },
             ],

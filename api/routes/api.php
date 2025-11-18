@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Categories\CategoryController;
 use App\Http\Controllers\Api\ConfirmOrders\ConfirmOrdersController;
 use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
+use App\Http\Controllers\Api\Orders\OrdersController;
 use App\Http\Controllers\Api\Post\PostCategoryController;
 use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\User\UserController;
@@ -66,6 +67,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('/index', [CustomerController::class, 'index']);
         Route::get('/getOrderCustomer', [CustomerController::class, 'getOrderCustomer']);
+        Route::get('/getCustomerLists', [CustomerController::class, 'getCustomerLists']);
     });
 
     Route::prefix('banner')->group(function () {
@@ -106,6 +108,17 @@ Route::middleware(['auth:api'])->group(function () {
         Route::get('/index', [ProductsController::class, 'index']);
         // Route::get('/sendToTransferProduct/{id}', [PurchaseOrderController::class, 'sendToTransferProduct']);
         // Route::post('/create', [PurchaseOrderController::class, 'store']);
+        Route::DELETE('/delete/{id}', [ProductsController::class, 'destroy']);
+        Route::get('/productrow/{id}', [ProductsController::class, 'productrow']);
+        Route::post('/update', [ProductsController::class, 'update']);
+        Route::post('/gallery-delete', [ProductsController::class, 'deleteGalleryImage']);
+    });
+
+
+
+    Route::prefix('orders')->group(function () {
+        Route::get('/index', [OrdersController::class, 'index']);
+        Route::get('/getOrderStatusList', [OrdersController::class, 'getOrderStatusList']);
         Route::DELETE('/delete/{id}', [ProductsController::class, 'destroy']);
         Route::get('/productrow/{id}', [ProductsController::class, 'productrow']);
         Route::post('/update', [ProductsController::class, 'update']);
