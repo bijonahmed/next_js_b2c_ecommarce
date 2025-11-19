@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Models\Orders;
 use App\Models\PostCategory;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -27,6 +28,7 @@ class DashboardController extends Controller
             $data['baner']           = Banner::count();
             $data['customer']        = User::where('role_type', 4)->where('status', 1)->count();
             $data['supplier']        = Supplier::where('status', 1)->count();
+            $data['pendingOrders']   = Orders::where('order_status', 1)->count();
             $data['purchase']        = PurchaseOrderInvoice::count();
             $data['products']        = Product::count();
             // ✅ return data as JSON or view

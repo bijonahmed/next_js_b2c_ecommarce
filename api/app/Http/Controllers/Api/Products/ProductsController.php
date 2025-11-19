@@ -1,7 +1,5 @@
 <?php
-
 namespace App\Http\Controllers\Api\Products;
-
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -19,7 +17,6 @@ use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Validator;
-
 class ProductsController extends Controller
 {
     public function index(Request $request)
@@ -37,36 +34,28 @@ class ProductsController extends Controller
         $categoryId       = (int) $request->input('categoryId');
         $subcategoryId    = (int) $request->input('subcategoryId');
         $status           = (int) $request->input('status');
-
         if ($pageSize <= 0) {
             $pageSize = 10;
         }
-
         $query = Product::leftJoin('supplier', 'supplier.id', '=', 'product.supplier_id')
             ->select('product.*', 'supplier.name as supplierName')
             ->orderBy('product.id', 'desc');
-
         if (!empty($searchQuery)) {
             $query->where('product.name', 'like', '%' . $searchQuery . '%');
         }
-
         if (!empty($supplierId)) {
             $query->where('product.supplier_id', $supplierId);
         }
-
         if (!empty($categoryId)) {
             $query->where('product.categoryId', $categoryId);
         }
-
         if (!empty($subcategoryId)) {
             $query->where('product.subcategoryId', $subcategoryId);
         }
         if (!empty($status)) {
             $query->where('product.status', $status);
         }
-
         $paginator = $query->paginate($pageSize, ['*'], 'page', $page);
-
         $modifiedCollection = $paginator->getCollection()->map(function ($item) {
             $chkCat = ProductCategory::where('id', $item->categoryId)->select('name')->first();
             return [
@@ -80,7 +69,6 @@ class ProductsController extends Controller
                 'status'            => $item->status,
             ];
         });
-
         // Return the modified collection along with pagination metadata
         return response()->json([
             'data'           => $modifiedCollection,
@@ -89,7 +77,6 @@ class ProductsController extends Controller
             'total_records'  => $paginator->total(),
         ], 200);
     }
-
     public function productrow($id)
     {
         try {
@@ -97,19 +84,15 @@ class ProductsController extends Controller
                 ->leftJoin('supplier', 'supplier.id', '=', 'product.supplier_id')
                 ->where('product.id', $id)
                 ->first();
-
             $checkData->convert_thumbnail_url = url($checkData->thumnail_img);
             $galleryData = ProductsGallery::where('product_id', $id)->get();
-
             // ✅ Add full URL for each image
             $galleryData->transform(function ($item) {
                 $item->gallery_image_url = url($item->gallery_image);
                 return $item;
             });
-
             $chkSubCategory = ProductCategory::where('parent_id', $checkData->categoryId)->get();
             $chkAttrbute    = ProductsAttribues::where('product_id', $id)->get();
-
             return response()->json([
                 'status'        => true,
                 'data'          => $checkData,
@@ -117,22 +100,19 @@ class ProductsController extends Controller
                 'chkAttrbute'   => $chkAttrbute,
                 'galleryData'   => $galleryData
             ], 200); // 200 OK for data fetch
-
         } catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('Fetch Product Error: ' . $e->getMessage());
-
             return response()->json([
                 'status' => false,
                 'message' => 'Failed to fetch product data',
             ], 500); // 500 Internal Server Error
         }
     }
-
+    
     public function deleteGalleryImage(Request $request)
     {
         $user = Auth::user();
-
         // Check permission
         if (! $user->can('delete product')) {
             return response()->json([
@@ -140,52 +120,42 @@ class ProductsController extends Controller
                 'message' => 'Unauthorized: You do not have permission to delete',
             ], 403);
         }
-
         $productId = $request->product_id;
         $imageId   = $request->image_id;
-
         // Find the gallery image
         $gallery = ProductsGallery::where('product_id', $productId)
             ->where('id', $imageId)
             ->first();
-
         if (! $gallery) {
             return response()->json([
                 'status' => false,
                 'message' => 'Data not found',
             ], 404);
         }
-
         // Delete file from storage
         if (file_exists(public_path($gallery->gallery_image))) {
             unlink(public_path($gallery->gallery_image));
         }
-
         // Delete record from database
         $gallery->delete();
-
         return response()->json([
             'status' => true,
             'message' => 'Deleted successfully',
             'id' => $imageId,
         ], 200);
     }
-
+    
     public function update(Request $request)
     {
-
         $user = Auth::user();
         if (!$user->can('edit product')) {
             return response()->json([
                 'message' => 'Unauthorized: You do not have permission to edit product',
             ], 403);
         }
-
-
         $checkPoint = Product::where('id', $request->id)
             ->where('first_update', 0)
             ->first();
-
         if ($checkPoint) {
             // Full validation for first update
             $validator = Validator::make($request->all(), [
@@ -236,7 +206,6 @@ class ProductsController extends Controller
                 'status.required'         => 'Status is required.',
             ]);
         }
-
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
@@ -244,7 +213,6 @@ class ProductsController extends Controller
                 'errors' => $validator->errors()
             ], 422);
         }
-
         $data = [
             'name'                  => $request->name ?? "",
             'meta_title'            => $request->meta_title ?? "",
@@ -259,7 +227,6 @@ class ProductsController extends Controller
             'status'                => $request->status ?? "",
             'first_update'          => 1,
         ];
-
         // Handle main product image
         if ($request->hasFile('files')) {
             // Optional: delete old image if exists
@@ -268,21 +235,16 @@ class ProductsController extends Controller
             $file->move(public_path('uploads/products'), $filename);
             $data['thumnail_img'] = 'uploads/products/' . $filename;
         }
-
         $productData = Product::where('id', $request->id)->first();
-
         if (! $productData) {
             return response()->json([
                 'status' => false,
                 'message' => 'Product not found',
             ], 404);
         }
-
         //  dd($data);
         $productData->update($data);
-
         if ($request->hasFile('gallery')) {
-
             $galleryPaths = [];
             foreach ($request->file('gallery') as $file) {
                 $filename = time() . '_' . uniqid() . '_' . Str::slug($request->name) . '.' . $file->getClientOriginalExtension();
@@ -296,17 +258,11 @@ class ProductsController extends Controller
                 ]);
             }
         }
-
-
         $attributes = $request->input('attributes');
-
-
         if (is_string($attributes)) {
             $attributes = json_decode($attributes, true);
         }
-
         ProductsAttribues::where('product_id', $request->id)->delete();
-
         if (!empty($attributes) && is_array($attributes)) {
             foreach ($attributes as $attr) {
                 ProductsAttribues::create([
@@ -324,18 +280,14 @@ class ProductsController extends Controller
             'order_id' => $request->id,
         ], 200);
     }
-
-
     public function destroy($id)
     {
         $user = Auth::user();
-
         if (! $user->can('delete product')) {
             return response()->json([
                 'message' => 'Unauthorized: You do not have permission to delete',
             ], 403);
         }
-
         $pdata = Product::find($id);
         if (! $pdata) {
             return response()->json([
@@ -343,7 +295,6 @@ class ProductsController extends Controller
             ], 404);
         }
         //$pdata->delete();
-
         return response()->json([
             'message' => 'Deleted successfully',
             'id' => $id,

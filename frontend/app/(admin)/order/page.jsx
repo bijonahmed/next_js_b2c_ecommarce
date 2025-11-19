@@ -66,34 +66,6 @@ export default function ProductPage() {
     }
   };
 
-  // Delete handler
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/product/delete/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const result = await res.json();
-      if (!res.ok) {
-        toast.error(result.message || "Delete failed");
-        return;
-      }
-      toast.error("Unauthorized: You do not have permission to delete");
-      // toast.success("Product deleted successfully");
-      //setData((prev) => prev.filter((row) => row.id !== id));
-    } catch (err) {
-      console.error(err);
-      toast.error("Something went wrong");
-    }
-  };
-
   // DataTable columns
   const columns = [
     {
@@ -120,16 +92,37 @@ export default function ProductPage() {
     },
 
     {
-      name: "Status",
-      selector: (row) => row.status,
+      name: "Grand Total",
+      selector: (row) => row.grand_total,
       sortable: true,
     },
 
     {
+      name: "Order Update By",
+      selector: (row) => row.updateBy,
+      sortable: true,
+    },
+
+    {
+      name: "Status",
+      selector: (row) => row.status,
+      sortable: true,
+      cell: (row) => (
+        <span
+          style={{
+            color: row.order_status === 1 ? "#b71c1c" : "#000",
+            fontWeight: row.order_status === 1 ? "bold" : "normal",
+          }}
+        >
+          {row.status}
+        </span>
+      ),
+    },
+    {
       name: "Actions",
       cell: (row) => (
         <div className="d-flex gap-2">
-          {perms.includes("edit product") && (
+          {perms.includes("edit order") && (
             <button
               className="btn btn-sm btn-primary"
               onClick={() => router.push(`/order/preview/${row.id}`)}
@@ -156,7 +149,7 @@ export default function ProductPage() {
     },
   };
   // Permission check
-  if (!perms.includes("view posts")) {
+  if (!perms.includes("view order")) {
     router.replace("/dashboard");
     return null;
   }

@@ -37,6 +37,7 @@ class CustomerController extends Controller
         foreach ($orders as $order) {
             // Find matching status
             $statusName = OrderStatus::where('status', 1)->first();
+             $totalbill = $order->grand_total;
 
             $orderJson[] = [
                 'order_id'          => $order->id,
@@ -44,7 +45,7 @@ class CustomerController extends Controller
                 'order_date'        => $order->order_date,
                 'shipping_phone'    => $order->shipping_phone,
                 'paymentMethod'     => $order->paymentMethod,
-                'subtotal'          => $order->subtotal,
+                'subtotal'          => $totalbill,
                 'status_name'       => $statusName ? $statusName->name : "",
             ];
         }
@@ -59,17 +60,21 @@ class CustomerController extends Controller
 
         $checkOrder   = Orders::join('order_status', 'order_status.id', '=', 'orders.order_status')
             ->where('orders.id', $request->id)
-            ->select(
-                'orders.*',
-                'order_status.name as status_name'
-            )
-            ->first();
+            ->select('orders.*', 'order_status.name as status_name')->first();
+
+        $updateBy = "";
+
+        if ($checkOrder && $checkOrder->orderUpdateby) {
+            $updateBy = optional(User::find($checkOrder->orderUpdateby))->name ?? "";
+        }
+
         $orderDetails = OrderHistory::where('order_id', $checkOrder->id)
             ->join('product', 'order_history.product_id', '=', 'product.id')
             ->select('order_history.*', 'product.name as product_name') // select fields you need
             ->get();
 
-        $data['orderRow']    = $checkOrder;
+        $data['orderRow']     = $checkOrder;
+        $data['updateBy']     = strtoupper($updateBy);
         $data['orderHistory'] = $orderDetails;
 
         return response()->json([
@@ -83,7 +88,7 @@ class CustomerController extends Controller
     {
 
         $getCustomer             = User::where('role_type', 4)->get();
-        
+
         return response()->json([
             'data' => $getCustomer,
         ], 200);

@@ -199,9 +199,12 @@ export default function CheckoutPage() {
       }
     }
 
-    // ====================
-    // BUILD ORDER DATA
-    // ====================
+    // Shipping validation
+    if (!selectedDeliveryCharge) {
+      toast.error("Please select a shipping option.");
+      return;
+    }
+
     const coupon = localStorage.getItem("apply_coupon") || null;
     const couponoffer = localStorage.getItem("coupon-offer") || null;
     const finalEmail = token ? userdata?.email : email;
@@ -437,6 +440,53 @@ export default function CheckoutPage() {
                         ))}
                       </tbody>
                     </table>
+
+                    <div className="checkout__total--items d-flex justify-content-between align-items-start mb-3">
+                      <span className="checkout__total--title fw-bold">
+                        Shipping
+                      </span>
+
+                      <div className="checkout__total--amount text-end">
+                        <label style={{ display: "block", cursor: "pointer" }}>
+                          <input
+                            type="radio"
+                            name="shippingOption"
+                            value={settingData.devliery_charge_inside_dhk}
+                            checked={
+                              selectedDeliveryCharge ===
+                              Number(settingData.devliery_charge_inside_dhk)
+                            }
+                            onChange={() =>
+                              setSelectedDeliveryCharge(
+                                Number(settingData.devliery_charge_inside_dhk)
+                              )
+                            }
+                          />{" "}
+                          Inside Dhaka ({settingData.currency}
+                          {settingData.devliery_charge_inside_dhk})
+                        </label>
+
+                        <label style={{ display: "block", cursor: "pointer" }}>
+                          <input
+                            type="radio"
+                            name="shippingOption"
+                            value={settingData.devliery_charge_outside_dhk}
+                            checked={
+                              selectedDeliveryCharge ===
+                              Number(settingData.devliery_charge_outside_dhk)
+                            }
+                            onChange={() =>
+                              setSelectedDeliveryCharge(
+                                Number(settingData.devliery_charge_outside_dhk)
+                              )
+                            }
+                          />{" "}
+                          Outside Dhaka ({settingData.currency}
+                          {settingData.devliery_charge_outside_dhk})
+                        </label>
+                      </div>
+                    </div>
+
                     <div className="order-totals">
                       <p className="subtotal">
                         Subtotal: <span>Tk.{subtotal.toFixed(2)}</span>

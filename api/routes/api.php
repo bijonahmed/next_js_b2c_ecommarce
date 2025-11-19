@@ -119,10 +119,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('orders')->group(function () {
         Route::get('/index', [OrdersController::class, 'index']);
         Route::get('/getOrderStatusList', [OrdersController::class, 'getOrderStatusList']);
-        Route::DELETE('/delete/{id}', [ProductsController::class, 'destroy']);
-        Route::get('/productrow/{id}', [ProductsController::class, 'productrow']);
-        Route::post('/update', [ProductsController::class, 'update']);
-        Route::post('/gallery-delete', [ProductsController::class, 'deleteGalleryImage']);
+        Route::post('/orderUpdate', [OrdersController::class, 'orderUpdate']);
     });
 
 

@@ -169,12 +169,18 @@ export default function InvoiceDetailPage() {
                     <p>
                       <strong>Subtotal:</strong> Tk. {totalAmount}
                     </p>
-                    <p className="d-none">
-                      <strong>Shipping:</strong> Tk. 80
+                    <p>
+                      <strong>Shipping:</strong> Tk. {invoice.devliery_charge}
                     </p>
                     <p>
                       <strong>Grand Total:</strong>{" "}
-                      <strong>Tk. {totalAmount}</strong>
+                      <strong>
+                        Tk.{" "}
+                        {(
+                          parseFloat(totalAmount || 0) +
+                          parseFloat(invoice.devliery_charge || 0)
+                        ).toFixed(2)}
+                      </strong>
                     </p>
                   </div>
 
