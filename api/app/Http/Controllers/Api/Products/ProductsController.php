@@ -1,8 +1,11 @@
 <?php
+
 namespace App\Http\Controllers\Api\Products;
+
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ProductInventory;
 use App\Models\ProductsAttribues;
 use App\Models\ProductsGallery;
 use Illuminate\Support\Facades\Log;
@@ -17,6 +20,7 @@ use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Validator;
+
 class ProductsController extends Controller
 {
     public function index(Request $request)
@@ -109,7 +113,7 @@ class ProductsController extends Controller
             ], 500); // 500 Internal Server Error
         }
     }
-    
+
     public function deleteGalleryImage(Request $request)
     {
         $user = Auth::user();
@@ -144,7 +148,7 @@ class ProductsController extends Controller
             'id' => $imageId,
         ], 200);
     }
-    
+
     public function update(Request $request)
     {
         $user = Auth::user();
@@ -236,6 +240,72 @@ class ProductsController extends Controller
             $data['thumnail_img'] = 'uploads/products/' . $filename;
         }
         $productData = Product::where('id', $request->id)->first();
+
+        // dd($request->status);
+        if ($request->status == 1) {
+            $productId = $request->id;
+
+            // Check if product_id already exists
+            $checked = ProductInventory::where('product_id', $productId)->first();
+
+            if (empty($checked)) {
+
+                /*
+                $stockQty = $request->stock_qty ?? 0;
+                $pdata = [
+                    'product_id' => $productId,
+                    'variation'  => '',
+                    'qty_in'     => $stockQty,
+                    'stock_date' => date("Y-m-d"),
+                    // 'attribute_variation' => $request->product_attribute_id, // optional
+                ];
+
+
+                $attributes = $request->input('attributes');
+                if (is_string($attributes)) {
+                    $attributes = json_decode($attributes, true);
+                }
+
+                dd($attributes);
+                ProductInventory::create($pdata);
+                */
+
+                 $attributes = $request->input('attributes');
+                if (is_string($attributes)) {
+                    $attributes = json_decode($attributes, true);
+                }
+
+                if (!empty($attributes)) {
+                    foreach ($attributes as $attr) {
+                        $pdata = [
+                            'product_id'          => $productId,
+                            'attribute_variation' => $attr['attributeName'] ?? '',
+                            'qty_in'              => $attr['quantity'] ?? 0,
+                            'stock_date'          => date("Y-m-d"),
+                            // 'product_attribute_id' => $attr['id'] ?? null, // optional
+                        ];
+
+                        ProductInventory::create($pdata);
+                    }
+
+                }
+
+                // If attributes empty, insert default
+                $pdata = [
+                    'product_id'           => $productId,
+                    'attribute_variation'  => '',
+                    'qty_in'               => $request->stock_qty ?? 0,
+                    'stock_date'           => date("Y-m-d"),
+                ];
+                ProductInventory::create($pdata);
+                }
+            }
+        // exit;
+        // dd($productData);
+
+
+
+
         if (! $productData) {
             return response()->json([
                 'status' => false,

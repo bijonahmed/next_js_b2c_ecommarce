@@ -131,6 +131,19 @@ export default function AdminSidebar() {
           },
 
           {
+            label: "Inventory Management",
+            href: "#",
+            icon: "bi-box-seam-fill",
+            children: [
+              {
+                label: "My Inventory",
+                href: "/inventory",
+                icon: "bi-circle",
+              },
+            ],
+          },
+
+          {
             label: "Customer Management",
             href: "#",
             icon: "nav-icon bi bi-ui-checks",

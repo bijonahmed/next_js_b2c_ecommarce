@@ -353,7 +353,7 @@ export default function EditProductForm({ id }) {
                   </div>
 
                   <div className="mb-2">
-                    <label className="form-label">stock_qty</label>
+                    <label className="form-label">Stock Qty</label>
                     <input
                       type="text"
                       name="stock_qty"

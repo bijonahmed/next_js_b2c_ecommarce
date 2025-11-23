@@ -214,7 +214,7 @@ export default function EditProductForm({ id }) {
 
               <hr />
               <br />
-
+              {/* <pre>{JSON.stringify(orderHistory,null,2)}</pre> */}
               <table className="product-table">
                 <tbody>
                   <tr>
@@ -226,7 +226,16 @@ export default function EditProductForm({ id }) {
 
                   {orderHistory.map((order) => (
                     <tr key={order.id}>
-                      <td>{order.product_name || ""}</td>
+                      <td>{order.product_name || ""} &nbsp;
+                        
+                        {order.variation_value && (
+                        (<b>({order.variation_value})</b>)
+
+                        )}
+                        
+
+                        
+                        </td>
                       <td className="text-center">{order.qty || ""}</td>
                       <td className="text-center">Tk. {order.price || ""}</td>
                       <td className="text-center">

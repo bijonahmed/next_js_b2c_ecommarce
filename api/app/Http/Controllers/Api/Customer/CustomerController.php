@@ -25,28 +25,32 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $user           = Auth::user();
-        $chkCustomerId  = $user->id;
+        $user        = Auth::user();
+        $searchQuery = $request->searchQuery;
 
-        $orders = Orders::where('customer_id', $chkCustomerId)
-            ->orderBy('id', 'desc')
-            ->get();
+        // Build query
+        $query = User::where('role_type', 4);
 
-        // Prepare JSON array
+        // If search exists
+        if (!empty($searchQuery)) {
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('name', 'like', "%{$searchQuery}%")
+                    ->orWhere('email', 'like', "%{$searchQuery}%")
+                    ->orWhere('phone_number', 'like', "%{$searchQuery}%");
+            });
+        }
+
+        $custmerInfo = $query->orderBy('id', 'desc')->get();
+
+        // Prepare JSON response
         $orderJson = [];
-        foreach ($orders as $order) {
-            // Find matching status
-            $statusName = OrderStatus::where('status', 1)->first();
-             $totalbill = $order->grand_total;
-
+        foreach ($custmerInfo as $c) {
             $orderJson[] = [
-                'order_id'          => $order->id,
-                'orderId'           => $order->orderId,
-                'order_date'        => $order->order_date,
-                'shipping_phone'    => $order->shipping_phone,
-                'paymentMethod'     => $order->paymentMethod,
-                'subtotal'          => $totalbill,
-                'status_name'       => $statusName ? $statusName->name : "",
+                'id'           => $c->id,
+                'name'         => $c->name,
+                'email'        => $c->email,
+                'phone_number' => $c->phone_number,
+                'created_at'   => date("d-M-Y", strtotime($c->created_at)),
             ];
         }
 

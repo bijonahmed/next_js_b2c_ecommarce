@@ -70,7 +70,7 @@ export default function CustomerPage() {
     setLoading(true);
 
     try {
-      const url = `${process.env.NEXT_PUBLIC_API_BASE}/customer/index?page=${page}&pageSize=${pageSize}&searchQuery=${searchQuery}&selectedFilter=${selectedFilter}`;
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/customer/index?page=${page}&pageSize=${pageSize}&searchQuery=${search}&selectedFilter=${selectedFilter}`;
       const res = await fetch(url, {
         method: "GET",
         headers: {
@@ -112,23 +112,8 @@ export default function CustomerPage() {
     { name: "Name", selector: (row) => row.name, sortable: true },
     { name: "Email", selector: (row) => row.email, sortable: true },
     { name: "Phone", selector: (row) => row.phone_number, sortable: true },
-    { name: "Status", selector: (row) => row.status, sortable: true },
-    {
-      name: "Actions",
-      cell: (row) => (
-        <div className="d-flex gap-2">
-          {perms.includes("delete users") ? (
-            <button
-              className="btn btn-sm btn-danger"
-              onClick={() => handleDelete(row.id)}
-            >
-              <i className="bi bi-trash"></i> Delete
-            </button>
-          ) : null}
-        </div>
-      ),
-      ignoreRowClick: true,
-    },
+    { name: "Register Date", selector: (row) => row.created_at, sortable: true },
+    
   ];
 
   const conditionalRowStyles = [
@@ -190,7 +175,7 @@ export default function CustomerPage() {
                   <div className="col-12 col-md-6 col-lg-6">
                     <input
                       type="text"
-                      placeholder="Search users..."
+                      placeholder="Search Name/Email/Phone Number..."
                       className="form-control"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}

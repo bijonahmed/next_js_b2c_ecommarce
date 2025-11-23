@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Categories\CategoryController;
 use App\Http\Controllers\Api\ConfirmOrders\ConfirmOrdersController;
 use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
+use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\Orders\OrdersController;
 use App\Http\Controllers\Api\Post\PostCategoryController;
 use App\Http\Controllers\Api\Post\PostController;
@@ -122,6 +123,12 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/orderUpdate', [OrdersController::class, 'orderUpdate']);
     });
 
+
+    
+Route::prefix('inventory')->group(function () {
+        Route::get('/index', [InventoryController::class, 'index']);
+       
+    });
 
 
     Route::prefix('roles')->group(function () {
