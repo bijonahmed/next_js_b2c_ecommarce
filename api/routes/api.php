@@ -111,6 +111,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Route::post('/create', [PurchaseOrderController::class, 'store']);
         Route::DELETE('/delete/{id}', [ProductsController::class, 'destroy']);
         Route::get('/productrow/{id}', [ProductsController::class, 'productrow']);
+        Route::get('/search', [ProductsController::class, 'search']);
         Route::post('/update', [ProductsController::class, 'update']);
         Route::post('/gallery-delete', [ProductsController::class, 'deleteGalleryImage']);
     });
@@ -124,10 +125,11 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
 
-    
-Route::prefix('inventory')->group(function () {
+
+    Route::prefix('inventory')->group(function () {
         Route::get('/index', [InventoryController::class, 'index']);
-       
+        Route::get('/searchproductId', [InventoryController::class, 'searchproductId']);
+        Route::post('/add-stock', [InventoryController::class, 'addStock']);
     });
 
 

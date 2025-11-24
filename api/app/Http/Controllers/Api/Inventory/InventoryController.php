@@ -42,7 +42,7 @@ class InventoryController extends Controller
             ->where('orders.order_status', 5)
             ->groupBy('order_history.product_id')
             ->select('order_history.product_id', DB::raw('SUM(order_history.qty) as total_qty_out'))
-            ->pluck('total_qty_out', 'product_id'); 
+            ->pluck('total_qty_out', 'product_id');
 
 
 
@@ -60,7 +60,7 @@ class InventoryController extends Controller
         $finalData              = $inventories->map(function ($inv) use ($deliveredQtys) {
             $totalQtyOut        = $deliveredQtys[$inv->product_id] ?? 0;
             $currentBalance     = $inv->total_qty_in - $totalQtyOut;
-            
+
             return [
                 'product_id'        => $inv->product_id,
                 'product_name'      => $inv->product_name ?? 'Unknown',
@@ -70,10 +70,94 @@ class InventoryController extends Controller
             ];
         });
 
-
-        // Return the modified collection along with pagination metadata
         return response()->json([
             'data'           => $finalData,
         ], 200);
+    }
+
+
+    public function searchproductId(Request $request)
+    {
+        try {
+
+            $product_id = $request->get('query');
+
+            if (!$product_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product ID is required',
+                    'data' => []
+                ], 400);
+            }
+
+            $products = ProductInventory::where('product_id', $product_id)
+                ->leftJoin('users', 'users.id', '=', 'product_inventory.user_id')
+                ->select('product_inventory.*', \DB::raw('UPPER(users.name) as entry_by'))
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Data fetched successfully',
+                'data' => $products
+            ], 200);
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage(),
+                'data' => []
+            ], 500);
+        }
+    }
+
+    public function addStock(Request $request)
+    {
+
+        $user = Auth::user();
+        if (! $user->can('view order')) {
+            return response()->json([
+                'message' => 'Unauthorized: You do not have permission to view order',
+            ], 403);
+        }
+
+
+        try {
+            // 1. Validate input
+            $validated = $request->validate([
+                'product_id' => 'required', // product must exist
+                'quantity'   => 'required|integer|min:1',
+                'stock_date' => 'required|date',
+            ]);
+
+            // 2. Insert stock into inventory
+            $stock = new ProductInventory();
+            $stock->product_id = $validated['product_id'];
+            $stock->qty_in = $validated['quantity'];
+            $stock->stock_date = $validated['stock_date'];
+            $stock->user_id = $user->id; // assuming user is authenticated
+            $stock->save();
+
+            // 3. Return success response
+            return response()->json([
+                'success' => true,
+                'message' => 'Stock added successfully',
+                'data' => $stock
+            ], 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Validation errors
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            // General errors
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
