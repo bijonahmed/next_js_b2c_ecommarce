@@ -238,7 +238,7 @@ export default function ProductPage() {
               <div className="row">
                 {/* Left Column - Table */}
                 <div className="col-12 col-lg-12 mb-3">
-                  <div className="mb-3">
+                  <div className="mb-3 d-none">
                     <label className="form-label">Search Product Name</label>
                     <input
                       type="text"
@@ -285,68 +285,51 @@ export default function ProductPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {inventoryData
-                          .filter((item) =>
-                            item.product_name
-                              .toLowerCase()
-                              .includes((search || "").toLowerCase())
-                          )
-                          .map((item) => {
-                            let balanceColor =
-                              item.current_balance === 0
-                                ? "#ffcccc"
-                                : item.current_balance < 10
-                                ? "#fff3cd"
-                                : "#d4edda";
+                         {Array.isArray(inventoryData) &&
+  inventoryData.map((item) => {
+    const balance = item?.current_balance ?? 0; // fallback if undefined
+    let balanceColor =
+      balance === 0
+        ? "#ffcccc"
+        : balance < 10
+        ? "#fff3cd"
+        : "#d4edda";
 
-                            return (
-                              <tr
-                                key={item.product_id}
-                                style={{
-                                  transition: "all 0.3s ease",
-                                  backgroundColor: balanceColor,
-                                  cursor: "pointer",
-                                }}
-                                onMouseEnter={(e) =>
-                                  (e.currentTarget.style.backgroundColor =
-                                    "#cce5ff")
-                                }
-                                onMouseLeave={(e) =>
-                                  (e.currentTarget.style.backgroundColor =
-                                    balanceColor)
-                                }
-                              >
-                                <td>{item.product_id}</td>
-                                <td>{item.product_name}</td>
-                                <td className="text-end">
-                                  {item.total_qty_in}
-                                </td>
-                                <td className="text-end">
-                                  {item.total_qty_out}
-                                </td>
-                                <td className="text-end">
-                                  {item.current_balance}
-                                </td>
-                                <td className="text-center">
-                                  <button
-                                    className="btn btn-sm btn-primary"
-                                    style={{ transition: "transform 0.2s" }}
-                                    onClick={() => handleSelectHistory(item)}
-                                    onMouseEnter={(e) =>
-                                      (e.currentTarget.style.transform =
-                                        "scale(1.1)")
-                                    }
-                                    onMouseLeave={(e) =>
-                                      (e.currentTarget.style.transform =
-                                        "scale(1)")
-                                    }
-                                  >
-                                    View History
-                                  </button>
-                                </td>
-                              </tr>
-                            );
-                          })}
+    return (
+      <tr
+        key={item?.product_id || Math.random()}
+        style={{
+          transition: "all 0.3s ease",
+          backgroundColor: balanceColor,
+          cursor: "pointer",
+        }}
+        onMouseEnter={(e) =>
+          (e.currentTarget.style.backgroundColor = "#cce5ff")
+        }
+        onMouseLeave={(e) =>
+          (e.currentTarget.style.backgroundColor = balanceColor)
+        }
+      >
+        <td>{item?.product_id}</td>
+        <td>{item?.product_name}</td>
+        <td className="text-end">{item?.total_qty_in ?? 0}</td>
+        <td className="text-end">{item?.total_qty_out ?? 0}</td>
+        <td className="text-end">{balance}</td>
+        <td className="text-center">
+          <button
+            className="btn btn-sm btn-primary"
+            style={{ transition: "transform 0.2s" }}
+            onClick={() => handleSelectHistory(item)}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            View History
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+
                       </tbody>
                     </table>
                   </div>
