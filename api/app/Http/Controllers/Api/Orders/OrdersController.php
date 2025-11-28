@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Orders;
 use App\Http\Controllers\Controller;
 use App\Models\Orders;
 use App\Models\OrderStatus;
+use App\Models\PathaoToken;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductsAttribues;
@@ -22,6 +23,8 @@ use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Validator;
+use App\Services\PathaoService;
+use Illuminate\Support\Facades\Http;
 
 class OrdersController extends Controller
 {
@@ -42,8 +45,8 @@ class OrdersController extends Controller
             $pageSize = 10;
         }
         $query = Orders::leftJoin('users', 'users.id', '=', 'orders.customer_id')
-                ->select('orders.*', 'users.name as customerName')
-                ->orderBy('orders.id', 'desc');
+            ->select('orders.*', 'users.name as customerName')
+            ->orderBy('orders.id', 'desc');
 
 
         if (!empty($orderId)) {
@@ -85,8 +88,12 @@ class OrdersController extends Controller
     }
 
 
-    public function orderUpdate(Request $request)
+    public function orderUpdate(Request $request, PathaoService $pathao)
     {
+        //dd($pathao->getStores());
+
+        // return response()->json($pathao->getStores());
+        // api 
 
         // Validate request
         $validated = $request->validate([
@@ -100,6 +107,57 @@ class OrdersController extends Controller
             'orderUpdateDate'  => date("Y-m-d"),
             'orderUpdateby'    => $user->id,
         ];
+
+
+
+        $gettoken = PathaoToken::find(1);
+        $token = $gettoken->access_token;
+        //dd($token);
+
+        // $request->validate([
+        //     "recipient_name" => "required|min:3",
+        //     "recipient_phone" => "required|min:11|max:11",
+        //     "recipient_address" => "required|min:10",
+        //     "item_quantity" => "required|integer|min:1",
+        //     "item_weight" => "required|numeric|min:0.5",
+        //     "amount_to_collect" => "required|numeric|min:0",
+        // ]);
+
+        $payload = [
+            "store_id"            => 148941,
+            "merchant_order_id"   => "ORD-" . time(),
+            "recipient_name"      => "Gazi Giash Uddin",
+            "recipient_phone"     => "01988846927",
+            "recipient_address"   => "House 123, Mirpur-1, Dhaka", // 10+ characters
+            "delivery_type"       => 48,
+            "item_type"           => 2,
+            "item_quantity"       => 1,
+            "item_weight"         => "0.5",
+            "item_description"    => "Test cloth item",
+            "special_instruction" => "Test instruction",
+            "amount_to_collect"   => 900
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json'
+        ])->post(
+            //'https://courier-api-sandbox.pathao.com/aladdin/api/v1/orders',
+          'https://api-hermes.pathao.com/aladdin/api/v1/orders',
+            $payload
+        );
+
+        dd($response->json());
+
+        exit;
+
+
+
+
+
+
+
+
 
         // Update order
         $response = Orders::where('id', $validated['id'])->update($data);

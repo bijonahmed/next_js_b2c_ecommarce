@@ -285,51 +285,62 @@ export default function ProductPage() {
                         </tr>
                       </thead>
                       <tbody>
-                         {Array.isArray(inventoryData) &&
-  inventoryData.map((item) => {
-    const balance = item?.current_balance ?? 0; // fallback if undefined
-    let balanceColor =
-      balance === 0
-        ? "#ffcccc"
-        : balance < 10
-        ? "#fff3cd"
-        : "#d4edda";
+                        {Array.isArray(inventoryData) &&
+                          inventoryData.map((item) => {
+                            const balance = item?.current_balance ?? 0; // fallback if undefined
+                            let balanceColor =
+                              balance === 0
+                                ? "#ffcccc"
+                                : balance < 10
+                                ? "#fff3cd"
+                                : "#d4edda";
 
-    return (
-      <tr
-        key={item?.product_id || Math.random()}
-        style={{
-          transition: "all 0.3s ease",
-          backgroundColor: balanceColor,
-          cursor: "pointer",
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.backgroundColor = "#cce5ff")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.backgroundColor = balanceColor)
-        }
-      >
-        <td>{item?.product_id}</td>
-        <td>{item?.product_name}</td>
-        <td className="text-end">{item?.total_qty_in ?? 0}</td>
-        <td className="text-end">{item?.total_qty_out ?? 0}</td>
-        <td className="text-end">{balance}</td>
-        <td className="text-center">
-          <button
-            className="btn btn-sm btn-primary"
-            style={{ transition: "transform 0.2s" }}
-            onClick={() => handleSelectHistory(item)}
-            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            View History
-          </button>
-        </td>
-      </tr>
-    );
-  })}
-
+                            return (
+                              <tr
+                                key={item?.product_id || Math.random()}
+                                style={{
+                                  transition: "all 0.3s ease",
+                                  backgroundColor: balanceColor,
+                                  cursor: "pointer",
+                                }}
+                                onMouseEnter={(e) =>
+                                  (e.currentTarget.style.backgroundColor =
+                                    "#cce5ff")
+                                }
+                                onMouseLeave={(e) =>
+                                  (e.currentTarget.style.backgroundColor =
+                                    balanceColor)
+                                }
+                              >
+                                <td>{item?.product_id}</td>
+                                <td>{item?.product_name}</td>
+                                <td className="text-end">
+                                  {item?.total_qty_in ?? 0}
+                                </td>
+                                <td className="text-end">
+                                  {item?.total_qty_out ?? 0}
+                                </td>
+                                <td className="text-end">{balance}</td>
+                                <td className="text-center">
+                                  <button
+                                    className="btn btn-sm btn-primary"
+                                    style={{ transition: "transform 0.2s" }}
+                                    onClick={() => handleSelectHistory(item)}
+                                    onMouseEnter={(e) =>
+                                      (e.currentTarget.style.transform =
+                                        "scale(1.1)")
+                                    }
+                                    onMouseLeave={(e) =>
+                                      (e.currentTarget.style.transform =
+                                        "scale(1)")
+                                    }
+                                  >
+                                    View History
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
                       </tbody>
                     </table>
                   </div>
