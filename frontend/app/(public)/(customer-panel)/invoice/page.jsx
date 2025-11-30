@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../../context/AuthContext"; // Adjust the path as necessary
 import Sidebar from "../customer-dashboard/sidebar";
-import useOrderList from "../../../hooks/customerOrderList";
+import useOrderList from "../../../hooks/getOrderCustomer";
 
 import { useEffect, useState } from "react";
 
@@ -74,9 +74,9 @@ export default function InvoicePage() {
                         </thead>
                         <tbody>
                           {orderData.map((order) => (
-                            <tr key={order.order_id}>
+                            <tr key={order.id}>
                               <td>
-                                <Link href={`/invoice/${order.order_id}`}>
+                                <Link href={`/invoice/${order.id}`}>
                                   {order.orderId}
                                 </Link>
                               </td>
@@ -85,7 +85,7 @@ export default function InvoicePage() {
                                 {toUpperSafe(order?.paymentMethod)}
                               </td>
                               <td>
-                                <Link href={`/invoice/${order.order_id}`}>
+                                <Link href={`/invoice/${order.id}`}>
                                   {order.shipping_phone}
                                 </Link>
                               </td>
@@ -94,7 +94,7 @@ export default function InvoicePage() {
                               <td>{order.status_name}</td>
                               <td>
                                 <Link
-                                  href={`/invoice/${order.order_id}`}
+                                  href={`/invoice/${order.id}`}
                                   className="btn btn-warning btn-lg text-white fw-semibold"
                                 >
                                   View

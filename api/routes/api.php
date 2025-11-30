@@ -44,6 +44,7 @@ Route::prefix('public')->group(function () {
 
 Route::prefix('confirOrders')->group(function () {
     Route::post('/confirm-order', [ConfirmOrdersController::class, 'confirmOrder']);
+    Route::get('/getOrderCustomer', [ConfirmOrdersController::class, 'getOrderCustomer']);
 });
 
 Route::middleware(['auth:api'])->group(function () {
@@ -68,6 +69,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('customer')->group(function () {
         Route::get('/index', [CustomerController::class, 'index']);
         Route::get('/getOrderCustomer', [CustomerController::class, 'getOrderCustomer']);
+        Route::get('/getOnlyOrderData', [CustomerController::class, 'getOnlyOrderData']);
         Route::get('/getCustomerLists', [CustomerController::class, 'getCustomerLists']);
     });
 

@@ -109,15 +109,15 @@ class ConfirmOrdersController extends Controller
             $data['name']    = $checkUserData->name ?? '';
             $data['email']   = $checkUserData->email ?? '';
             $data['phone']   = $checkUserData->phone ?? '';
-           // $data['check'] = 'fetech from database';
+            // $data['check'] = 'fetech from database';
         } else {
             $data['name']    = $requestdata['name'];
             $data['email']   = $requestdata['email'] ?? '';
             $data['phone']   = $requestdata['phone'];
-           // $data['check'] = 'request data';
+            // $data['check'] = 'request data';
         }
 
-       // dd($data);
+        // dd($data);
 
         $data['address'] = $requestdata['address'];
         $data['shipping_phone'] = $requestdata['shipping_phone'];

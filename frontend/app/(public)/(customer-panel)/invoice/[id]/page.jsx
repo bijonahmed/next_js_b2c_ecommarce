@@ -92,6 +92,9 @@ export default function InvoiceDetailPage() {
                 {/* start */}
                 <div>
                   <h1>INVOICE</h1>
+
+                  
+
                   <table className="info-table">
                     <tbody>
                       <tr>

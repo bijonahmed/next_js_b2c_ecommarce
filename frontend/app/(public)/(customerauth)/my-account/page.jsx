@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter(); // ✅ Next.js Router
-  const [email, setemail] = useState("kazol@gmail.com");
-  const [password, setPassword] = useState("123456789");
+  const [email, setemail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");

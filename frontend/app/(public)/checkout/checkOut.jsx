@@ -207,7 +207,7 @@ export default function CheckoutPage() {
 
     const coupon = localStorage.getItem("apply_coupon") || null;
     const couponoffer = localStorage.getItem("coupon-offer") || null;
-    const finalEmail = token ? userdata?.email : email;
+    const finalEmail = token && userdata?.email ? userdata.email : email; //token ? userdata?.email : email;
     const data = {
       name,
       email: finalEmail,

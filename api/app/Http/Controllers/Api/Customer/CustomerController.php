@@ -87,6 +87,22 @@ class CustomerController extends Controller
     }
 
 
+    public function getOnlyOrderData(Request $request)
+    {
+
+
+        $user        = Auth::user();
+        $orderDetails   = Orders::join('order_status', 'order_status.id', '=', 'orders.order_status')->where('customer_id', $user->id)
+                        
+                        ->select('orders.*', 'order_status.name as status_name')->get();
+
+        return response()->json([
+            'orderHistory' => $orderDetails,
+        ], 200);
+    }
+
+
+
 
     public function getCustomerLists(Request $request)
     {

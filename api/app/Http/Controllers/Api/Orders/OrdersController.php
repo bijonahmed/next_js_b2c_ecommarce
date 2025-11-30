@@ -108,12 +108,11 @@ class OrdersController extends Controller
             'orderUpdateby'    => $user->id,
         ];
 
-
+        /*
 
         $gettoken = PathaoToken::find(1);
         $token = $gettoken->access_token;
         //dd($token);
-
         // $request->validate([
         //     "recipient_name" => "required|min:3",
         //     "recipient_phone" => "required|min:11|max:11",
@@ -143,20 +142,12 @@ class OrdersController extends Controller
             'Content-Type' => 'application/json'
         ])->post(
             //'https://courier-api-sandbox.pathao.com/aladdin/api/v1/orders',
-          'https://api-hermes.pathao.com/aladdin/api/v1/orders',
+            'https://api-hermes.pathao.com/aladdin/api/v1/orders',
             $payload
         );
 
         dd($response->json());
-
-        exit;
-
-
-
-
-
-
-
+     */
 
 
         // Update order
