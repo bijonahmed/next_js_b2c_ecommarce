@@ -258,7 +258,7 @@ class ProductsController extends Controller
                     foreach ($attributes as $attr) {
                         $pdata = [
                             'product_id'          => $productId,
-                            'attribute_variation' => $attr['attributeName'] ?? '',
+                            // 'attribute_variation' => $attr['attributeName'] ?? '',
                             'qty_in'              => $attr['quantity'] ?? 0,
                             'stock_date'          => date("Y-m-d"),
                             'user_id'             => $user->id
@@ -270,7 +270,7 @@ class ProductsController extends Controller
                 // If attributes empty, insert default
                 $pdata = [
                     'product_id'           => $productId,
-                    'attribute_variation'  => '',
+                   // 'attribute_variation'  => '',
                     'qty_in'               => $request->stock_qty ?? 0,
                     'stock_date'           => date("Y-m-d"),
                     'user_id'              => $user->id

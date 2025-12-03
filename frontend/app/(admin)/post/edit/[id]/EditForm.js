@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../../../../context/AuthContext"; // adjust path
-import { usePathname } from "next/navigation";
+import { useAuth } from "../../../../context/AuthContext";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import Image from "next/image";
 
 export default function EditUserForm({ id }) {
   const { token, permissions } = useAuth();
@@ -19,7 +19,7 @@ export default function EditUserForm({ id }) {
     meta_keyword: "",
     categoryId: "",
     description_full: "",
-    files: null, // single image
+    files: null,
     status: "",
   });
   const [loading, setLoading] = useState(true);
@@ -31,8 +31,9 @@ export default function EditUserForm({ id }) {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (files) {
-      setFormData({ ...formData, [name]: files[0] }); // store single file
+      setFormData({ ...formData, [name]: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -41,6 +42,7 @@ export default function EditUserForm({ id }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = new FormData();
+
     payload.append("id", formData.id);
     payload.append("name", formData.name);
     payload.append("meta_title", formData.meta_title);
@@ -55,19 +57,17 @@ export default function EditUserForm({ id }) {
     }
 
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/posts/update`,
-        {
-          method: "POST",
-          body: payload,
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/posts/update`, {
+        method: "POST",
+        body: payload,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       const data = await res.json();
+
       if (res.ok) {
-        // setUser(data);
         toast.success("Post update successfully ✅");
         router.push("/post");
       } else if (data.errors) {
@@ -97,10 +97,9 @@ export default function EditUserForm({ id }) {
             },
           }
         );
+
         const data = await res.json();
         const datarow = data?.data || {};
-        const chkImg = data.images || "";
-        console.log("chkImg", chkImg);
 
         setFormData({
           id: datarow.id ?? "",
@@ -111,18 +110,20 @@ export default function EditUserForm({ id }) {
           categoryId: datarow.categoryId ?? "",
           description_full: datarow.description_full ?? "",
           status: datarow.status ?? "",
-          files: chkImg ?? "",
+          files: data?.images ?? "",
         });
+        
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    fetchPost();
-  }, []);
 
-  // Fetch post categories
+    fetchPost();
+  }, [id, token]);
+
+  // Fetch categories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -135,29 +136,28 @@ export default function EditUserForm({ id }) {
             },
           }
         );
+
         const data = await res.json();
         if (res.ok) setPostCategorys(data);
       } catch (err) {
         console.error(err);
       }
     };
-    fetchCategories();
-  }, []);
 
-  useEffect(() => {
-    if (title) document.title = title;
-  }, [title]);
+    fetchCategories();
+  }, [id, token]);
 
   if (loading) return <p>Loading...</p>;
 
   if (!permissions.includes("edit posts")) {
     router.replace("/dashboard");
-    return false;
+    return null;
   }
 
   return (
     <main className="app-main" id="main" tabIndex={-1}>
       <Toaster position="top-right" />
+
       <div className="app-content-header">
         <div className="container-fluid">
           <div className="row">
@@ -169,14 +169,13 @@ export default function EditUserForm({ id }) {
                 <li className="breadcrumb-item">
                   <Link href="/dashboard">Home</Link>
                 </li>
-                <li className="breadcrumb-item active" aria-current="page">
+                <li className="breadcrumb-item active">
                   <a
                     href="#"
                     onClick={(e) => {
                       e.preventDefault();
                       router.back();
                     }}
-                    className="text-blue-600 hover:underline"
                   >
                     ← Back
                   </a>
@@ -194,6 +193,7 @@ export default function EditUserForm({ id }) {
               <div className="card card-primary card-outline mb-4">
                 <form onSubmit={handleSubmit}>
                   <div className="card-body">
+                    {/* NAME */}
                     <div className="mb-3">
                       <label className="form-label">Name</label>
                       <input
@@ -210,6 +210,7 @@ export default function EditUserForm({ id }) {
                       )}
                     </div>
 
+                    {/* META FIELDS */}
                     <div className="mb-3">
                       <label className="form-label">Meta Title</label>
                       <input
@@ -243,6 +244,7 @@ export default function EditUserForm({ id }) {
                       />
                     </div>
 
+                    {/* CATEGORY */}
                     <div className="mb-3">
                       <label className="form-label">Post Category</label>
                       <select
@@ -262,11 +264,12 @@ export default function EditUserForm({ id }) {
                       </select>
                     </div>
 
+                    {/* DESCRIPTION */}
                     <div className="mb-3">
                       <label className="form-label">Full Description</label>
                       <CKEditor
                         editor={ClassicEditor}
-                        key={formData.id} // important: force rerender when id changes
+                        key={formData.id}
                         data={formData.description_full}
                         onChange={(event, editor) => {
                           const data = editor.getData();
@@ -278,6 +281,7 @@ export default function EditUserForm({ id }) {
                       />
                     </div>
 
+                    {/* UPLOAD */}
                     <div className="mb-3">
                       <label className="form-label">Upload Image</label>
                       <input
@@ -289,18 +293,20 @@ export default function EditUserForm({ id }) {
                       />
                     </div>
 
-                    {/* ✅ Show Preview if Image is Selected */}
+                    {/* PREVIEW IMAGE – now using NEXT/IMAGE */}
                     {formData.files && (
                       <div className="mb-3">
-                        <img
+                        <Image
                           src={
                             typeof formData.files === "string"
-                              ? formData.files // API URL
-                              : URL.createObjectURL(formData.files) // new File object
+                              ? formData.files
+                              : URL.createObjectURL(formData.files)
                           }
-                          alt="Preview"
+                          alt="Preview Image"
+                          width={150}
+                          height={150}
                           className="img-thumbnail"
-                          style={{ maxHeight: "150px" }}
+                          unoptimized
                         />
                       </div>
                     )}

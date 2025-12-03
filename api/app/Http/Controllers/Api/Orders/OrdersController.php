@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Validator;
 use App\Services\PathaoService;
 use Illuminate\Support\Facades\Http;
+use Codeboxr\PathaoCourier\Facade\PathaoCourier;
 
 class OrdersController extends Controller
 {
@@ -90,9 +91,54 @@ class OrdersController extends Controller
 
     public function orderUpdate(Request $request, PathaoService $pathao)
     {
-        //dd($pathao->getStores());
+        // return PathaoCourier::store()->list();
+        //return PathaoCourier::area()->city();
+        //$cityId = '52';
+        // return PathaoCourier::area()->zone($cityId);
+        //$zoneId = '156';
+        // return PathaoCourier::area()->area($zoneId);
 
-        // return response()->json($pathao->getStores());
+        $pathaoOrder =  PathaoCourier::order()
+            ->create([
+                "store_id"            => 349959, // Find in store list,
+                "merchant_order_id"   => "ORD-" . time(), // Unique order id
+                "recipient_name"      => "Gazi Giash Uddin", // Customer name
+                "recipient_phone"     => "01988846927", // Customer phone
+                "recipient_address"   => "House 123, Mirpur-1, Dhaka", // Customer address
+                "recipient_city"      => 52, // Find in city method
+                "recipient_zone"      => "156", // Find in zone method
+                "recipient_area"      => "13193", // Find in Area method
+                "delivery_type"       => "48", // 48 for normal delivery or 12 for on demand delivery
+                "item_type"           => 2, // 1 for document,
+                "special_instruction" => "",
+                "item_quantity"       => "1", // item quantity
+                "item_weight"         => "1", // parcel weight
+                "amount_to_collect"   => "60", // amount to collect
+                "item_description"    => "No details" // product details
+            ]);
+
+
+
+        dd($pathaoOrder);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //    dd($pathao->getStores());
+
+        return response()->json($pathao->getStores());
         // api 
 
         // Validate request

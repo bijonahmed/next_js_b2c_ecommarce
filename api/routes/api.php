@@ -38,6 +38,7 @@ Route::prefix('public')->group(function () {
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
     Route::get('/getsPost', [PublicController::class, 'getsPost']);
     Route::get('/getSetting', [PublicController::class, 'getSetting']);
+    Route::get('/callback-hook', [PublicController::class, 'testApiCallbackHook']);
 });
 
 

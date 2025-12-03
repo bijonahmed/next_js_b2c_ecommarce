@@ -14,19 +14,37 @@ export default function EditProductForm({ id }) {
   const { categoryData } = useCategories();
   const router = useRouter();
   const pathname = usePathname();
-
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [subcategoryList, setSubCategories] = useState([]);
-  const [productdata, setProductData] = useState({});
+  const [productdata, setProductData] = useState("");
   const [attributes, setAttributes] = useState([
     { attributeName: "", quantity: "", sellingPrice: "" },
   ]);
+  const handleAttrChange = (index, field, value) => {
+    const newAttributes = [...attributes];
+    newAttributes[index][field] = value;
+    setAttributes(newAttributes);
+  };
 
+  const addRow = () => {
+    setAttributes([
+      ...attributes,
+      { attributeName: "", quantity: "", sellingPrice: "" },
+    ]);
+  };
+
+ 
+
+  const removeRow = (index) => {
+    const newAttributes = attributes.filter((_, i) => i !== index);
+    setAttributes(newAttributes);
+  };
+  // Set into state user?.email || ""
   const [formData, setFormData] = useState({
     id: id,
-    name: "",
-    meta_title: "",
+    name:  "",
+    meta_title:  "",
     meta_description: "",
     meta_keyword: "",
     categoryId: "",
@@ -35,10 +53,10 @@ export default function EditProductForm({ id }) {
     discount_price: "",
     stock_qty: "",
     supplier_name: "",
-    status: 1,
+    status: 1, // 1=Active, 0=Inactive
     description_full: "",
-    files: null,
-    gallery: [],
+    files: null, // main image
+    gallery: [], // multiple images
   });
 
   // Fetch product data
@@ -52,34 +70,32 @@ export default function EditProductForm({ id }) {
         );
         const data = await res.json();
         const productData = data?.data || {};
+        console.log("==product==" + productData.name);
         const galleryData = data?.galleryData || [];
         const subCategory = data?.subCategory || [];
         const chkAttrbute = data?.chkAttrbute || [];
-
         setSubCategories(subCategory);
         setAttributes(chkAttrbute);
         setProductData(productData);
-
         setFormData({
-          id: productData?.id ?? "",
-          name: productData?.name ?? "",
-          meta_title: productData?.meta_title ?? productData?.name ?? "",
-          meta_description: productData?.meta_description ?? "",
-          meta_keyword: productData?.meta_keyword ?? "",
-          categoryId: productData?.categoryId ?? "",
-          subcategoryId: productData?.subcategoryId ?? "",
-          price: productData?.price ?? "",
-          discount_price: productData?.discount_price ?? "",
-          stock_qty: productData?.stock_qty ?? "",
-          status: productData?.status ?? 1,
-          supplier_name: productData?.supplier_name ?? "",
-          description_full: productData?.description_full ?? "",
-          files: productData?.convert_thumbnail_url ?? null,
-          gallery: galleryData ?? [],
+          id: productData.id ?? "",
+          name: productData.name ?? "",
+          meta_title: productData.meta_title ?? productData.name ?? "",
+          meta_description: productData.meta_description ?? "",
+          meta_keyword: productData.meta_keyword ?? "",
+          categoryId: productData.categoryId ?? "",
+          subcategoryId: productData.subcategoryId ?? "",
+          price: productData.price ?? "",
+          discount_price: productData.discount_price ?? "",
+          stock_qty: productData.stock_qty ?? "",
+          status: productData.status ?? 1,
+          supplier_name: productData.supplier_name ?? "",
+          description_full: productData.description_full ?? "",
+          files: productData.convert_thumbnail_url ?? null,
+          gallery: galleryData,
         });
       } catch (err) {
         console.error(err);
-        toast.error("Failed to fetch product data.");
       } finally {
         setLoading(false);
       }
@@ -88,16 +104,15 @@ export default function EditProductForm({ id }) {
     fetchProduct();
   }, [id, token]);
 
-  // Update document title
+  const title = `Product [${id}]`;
   useEffect(() => {
-    document.title = `Product [${id}]`;
-  }, [id]);
+    document.title = title;
+  }, [title]);
 
-  // Handle main category change
+  // Handle main category change & fetch subcategories
   const handleMainCategoryChange = async (e) => {
     const selectedId = e.target.value;
     setFormData({ ...formData, categoryId: selectedId, subcategoryId: "" });
-
     if (!selectedId) return;
 
     try {
@@ -113,65 +128,63 @@ export default function EditProductForm({ id }) {
         }
       );
       const data = await res.json();
-      if (data) setSubCategories(data.data || []);
+      if (data) setSubCategories(data.data);
     } catch (err) {
       console.error("Fetch subcategories error:", err);
     }
   };
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (files) {
       if (name === "files") {
+        // Main thumbnail (you can keep 300x300 validation here if needed)
         const file = files[0];
         const img = new Image();
         img.src = URL.createObjectURL(file);
+
         img.onload = () => {
           if (img.width !== 300 || img.height !== 300) {
             alert("Thumbnail image must be exactly 300px by 300px!");
-            e.target.value = "";
+            e.target.value = ""; // reset input
             return;
           }
-          setFormData((prev) => ({ ...prev, files: file }));
+          setFormData({ ...formData, files: file });
         };
       } else if (name === "gallery") {
+        // Multiple gallery images
         const validFiles = [];
         let allValid = true;
+
         Array.from(files).forEach((file) => {
           const img = new Image();
           img.src = URL.createObjectURL(file);
+
           img.onload = () => {
             if (img.width !== 600 || img.height !== 600) {
               allValid = false;
-              alert(`Gallery image "${file.name}" must be 600x600px`);
+              alert(
+                `Gallery image "${file.name}" must be exactly 600px by 600px!`
+              );
             } else {
               validFiles.push(file);
             }
+
+            // After all images are processed, update state
             if (validFiles.length === files.length && allValid) {
-              setFormData((prev) => ({
-                ...prev,
-                gallery: [...prev.gallery, ...validFiles],
-              }));
+              setFormData({ ...formData, gallery: validFiles });
             }
           };
         });
       }
     } else {
+    //  setFormData({ ...formData, [name]: value });
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  // Allow only numbers
-  const allowOnlyNumbers = (e) => {
-    const val = e.target.value;
-    if (!/^\d*$/.test(val)) {
-      e.target.value = val.replace(/\D/g, "");
-    }
-  };
-
-  // Handle form submit
+  // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = new FormData();
@@ -182,15 +195,19 @@ export default function EditProductForm({ id }) {
         payload.append(key, value);
       }
     });
+
     payload.append("id", id);
     payload.append("attributes", JSON.stringify(attributes));
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/product/update`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: payload,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/product/update`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: payload,
+        }
+      );
       const data = await res.json();
       if (res.ok) {
         toast.success("Product updated successfully ✅");
@@ -214,14 +231,22 @@ export default function EditProductForm({ id }) {
     return null;
   }
 
+  const allowOnlyNumbers = (e) => {
+    const val = e.target.value;
+    if (!/^\d*$/.test(val)) {
+      e.target.value = val.replace(/\D/g, ""); // remove all non-digit characters
+    }
+  };
+
   return (
     <main className="app-main" id="main" tabIndex={-1}>
       <Toaster position="top-right" />
       <div className="container-fluid">
         <div className="row mt-3">
+          ==={productdata.name}===
           <div className="col-sm-8">
             <h3 className="mb-0">
-              Product [{id}] &nbsp;
+              {title}&nbsp;
               <span className="text-success">[{formData.supplier_name}]</span>
             </h3>
           </div>
@@ -230,7 +255,7 @@ export default function EditProductForm({ id }) {
               <li className="breadcrumb-item">
                 <Link href="/dashboard">Home</Link>
               </li>
-              <li className="breadcrumb-item active">
+              <li className="breadcrumb-item active" aria-current="page">
                 <a
                   href="#"
                   onClick={(e) => {
@@ -245,9 +270,8 @@ export default function EditProductForm({ id }) {
             </ol>
           </div>
         </div>
-
         <div className="card card-primary card-outline mb-4">
-          {loading && (
+          {loading ? (
             <div
               className="d-flex justify-content-center align-items-center"
               style={{ height: "200px" }}
@@ -256,145 +280,154 @@ export default function EditProductForm({ id }) {
                 <span className="visually-hidden">Loading...</span>
               </div>
             </div>
-          )}
+          ) : null}
 
-          {!loading && (
-            <form onSubmit={handleSubmit}>
-              <div className="card-body">
-                <div className="row g-3">
-                  {/* Left column */}
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <label className="form-label">Name</label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name || ""}
-                        onChange={handleChange}
-                        className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                      />
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="form-label">Meta Title</label>
-                      <input
-                        type="text"
-                        name="meta_title"
-                        value={formData.meta_title || ""}
-                        onChange={handleChange}
-                        className="form-control"
-                      />
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="form-label">Meta Keyword</label>
-                      <input
-                        type="text"
-                        name="meta_keyword"
-                        value={formData.meta_keyword || ""}
-                        onChange={handleChange}
-                        className="form-control"
-                      />
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="form-label">Meta Description</label>
-                      <textarea
-                        name="meta_description"
-                        rows={3}
-                        value={formData.meta_description || ""}
-                        onChange={handleChange}
-                        className="form-control"
-                      />
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="form-label">Regular Price</label>
-                      <input
-                        type="text"
-                        name="price"
-                        value={formData.price || ""}
-                        onChange={handleChange}
-                        onInput={allowOnlyNumbers}
-                        className="form-control"
-                      />
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="form-label">Discount Price</label>
-                      <input
-                        type="text"
-                        name="discount_price"
-                        value={formData.discount_price || ""}
-                        onChange={handleChange}
-                        onInput={allowOnlyNumbers}
-                        className="form-control"
-                      />
-                    </div>
-
-                    <div className="mb-2">
-                      <label className="form-label">Stock Qty</label>
-                      <input
-                        type="text"
-                        name="stock_qty"
-                        value={formData.stock_qty || ""}
-                        onChange={handleChange}
-                        onInput={allowOnlyNumbers}
-                        className="form-control"
-                      />
-                    </div>
+          <form onSubmit={handleSubmit}>
+            <div className="card-body">
+              <div className="row g-3">
+                {/* Column 1 */}
+                <div className="col-md-6">
+                  <div className="mb-2">
+                    <label className="form-label">Name</label>
+                    <input
+                      type="text"
+                      key={formData.id}
+                      data={formData.name}
+                      name="name"
+                      className={`form-control ${
+                        errors.name ? "is-invalid" : ""
+                      }`}
+                      value={formData.name}
+                      onChange={handleChange}
+                    />
                   </div>
 
-                  {/* Right column */}
-                  <div className="col-md-6">
-                    <div className="mb-2">
-                      <label className="form-label">Category</label>
-                      <select
-                        className="form-select"
-                        value={formData.categoryId || ""}
-                        onChange={handleMainCategoryChange}
-                      >
-                        <option value="">-- Select Category --</option>
-                        {categoryData.map((cat) => (
-                          <option key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="mb-2">
+                    <label className="form-label">Meta Title</label>
+                    <input
+                      type="text"
+                      key={formData.id}
+                      name="meta_title"
+                      className="form-control"
+                      value={formData.meta_title}
+                      onChange={handleChange}
+                    />
+                  </div>
 
-                    <div className="mb-2">
-                      <label className="form-label">Subcategory</label>
-                      <select
-                        className="form-select"
-                        value={formData.subcategoryId || ""}
-                        onChange={(e) =>
-                          setFormData({ ...formData, subcategoryId: e.target.value })
-                        }
-                      >
-                        <option value="">-- Select Subcategory --</option>
-                        {subcategoryList.map((sub) => (
-                          <option key={sub.id} value={sub.id}>
-                            {sub.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="mb-2">
+                    <label className="form-label">Meta Keyword</label>
+                    <input
+                      type="text"
+                      key={formData.id}
+                      name="meta_keyword"
+                      className="form-control"
+                      value={formData.meta_keyword}
+                      onChange={handleChange}
+                    />
+                  </div>
 
-                    <div className="mb-2">
-                      <label className="form-label">Status</label>
-                      <select
-                        name="status"
-                        className="form-select"
-                        value={formData.status ?? 1}
-                        onChange={handleChange}
-                      >
-                        <option value={1}>Active</option>
-                        <option value={0}>Inactive</option>
-                      </select>
-                    </div>
+                  <div className="mb-2">
+                    <label className="form-label">Meta Description</label>
+                    <textarea
+                      key={formData.id}
+                      name="meta_description"
+                      className="form-control"
+                      rows={3}
+                      value={formData.meta_description}
+                      onChange={handleChange}
+                    />
+                  </div>
 
-                    <div className="mb-2 mt-2">
+                  <div className="mb-2">
+                    <label className="form-label">Regular Price</label>
+                    <input
+                      type="text"
+                      name="price"
+                      className="form-control"
+                      value={formData.price}
+                      onChange={handleChange}
+                      onInput={allowOnlyNumbers}
+                    />
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="form-label">Discount Price</label>
+                    <input
+                      type="text"
+                      name="discount_price"
+                      className="form-control"
+                      value={formData.discount_price}
+                      onChange={handleChange}
+                      onInput={allowOnlyNumbers}
+                    />
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="form-label">Stock Qty</label>
+                    <input
+                      type="text"
+                      name="stock_qty"
+                      className="form-control"
+                      value={formData.stock_qty}
+                      onChange={handleChange}
+                      onInput={allowOnlyNumbers}
+                    />
+                  </div>
+                </div>
+
+                {/* Column 2 */}
+                <div className="col-md-6">
+                  <div className="mb-2">
+                    <label className="form-label">Category</label>
+                    <select
+                      className="form-select"
+                      value={formData.categoryId ?? ""}
+                      onChange={handleMainCategoryChange}
+                    >
+                      <option value="">-- Select Category --</option>
+                      {categoryData.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="form-label">Subcategory</label>
+                    <select
+                      className="form-select"
+                      value={formData.subcategoryId ?? ""}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          subcategoryId: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">-- Select Subcategory --</option>
+                      {subcategoryList.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="form-label">Status</label>
+                    <select
+                      name="status"
+                      className="form-select"
+                      value={formData.status}
+                      onChange={handleChange}
+                    >
+                      <option value={1}>Active</option>
+                      <option value={0}>Inactive</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-2 mt-2">
                     <label className="form-label">
                       Thumbnail Image <span className="text-danger">*</span>{" "}
                       (300px x 300px)
@@ -552,29 +585,117 @@ export default function EditProductForm({ id }) {
                       ))}
                     </div>
                   </div>
-
-                    {/* Thumbnail & Gallery */}
-                    {/* ... Same logic as your previous code */}
-                  </div>
-
-                  {/* CKEditor for description */}
-                  <div className="mb-2">
-                    <label className="form-label">Full Description</label>
-                    <CKEditor
-                      editor={ClassicEditor}
-                      data={formData.description_full || ""}
-                      onChange={(event, editor) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          description_full: editor.getData(),
-                        }))
-                      }
-                    />
-                  </div>
-
-                  {/* Product attributes */}
-                  {/* ... Same as your previous code */}
                 </div>
+
+                <div className="mb-2">
+                  <label className="form-label">Full Description</label>
+                  <CKEditor
+                    editor={ClassicEditor}
+                    key={formData.id}
+                    data={formData.description_full}
+                    onChange={(event, editor) =>
+                      setFormData({
+                        ...formData,
+                        description_full: editor.getData(),
+                      })
+                    }
+                  />
+                </div>
+
+                {/* Add Attribue */}
+
+                <div className="container mt-4">
+                  <div className="mt-4">
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <h6 className="mb-0">Product Attributes</h6>
+                      <button
+                        type="button"
+                        className="btn btn-success btn-sm"
+                        onClick={addRow}
+                      >
+                        <i className="bi bi-plus-lg"></i> Add Row
+                      </button>
+                    </div>
+
+                    <table className="table table-bordered table-striped align-middle">
+                      <thead className="table-dark">
+                        <tr>
+                          <th scope="col">Attribute Name</th>
+                          <th scope="col">Quantity</th>
+                          <th scope="col">Selling Price</th>
+                          <th scope="col" className="text-center">
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {attributes.map((attr, index) => (
+                          <tr key={index}>
+                            <td>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={attr.attributeName}
+                                onChange={(e) =>
+                                  handleAttrChange(
+                                    index,
+                                    "attributeName",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Attribute Name"
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="form-control"
+                                onInput={allowOnlyNumbers}
+                                value={attr.quantity}
+                                onChange={(e) =>
+                                  handleAttrChange(
+                                    index,
+                                    "quantity",
+                                    e.target.value
+                                  )
+                                }
+                                placeholder="Quantity"
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                className="form-control"
+                                value={attr.sellingPrice}
+                                onChange={(e) =>
+                                  handleAttrChange(
+                                    index,
+                                    "sellingPrice",
+                                    e.target.value
+                                  )
+                                }
+                                onInput={allowOnlyNumbers}
+                                placeholder="Selling Price"
+                              />
+                            </td>
+                            <td className="text-center">
+                              <button
+                                type="button"
+                                className="btn btn-danger btn-sm"
+                                onClick={() => removeRow(index)}
+                                disabled={attributes.length === 1} // prevent removing last row
+                                title="Remove Attribute"
+                              >
+                                <i className="bi bi-x-lg"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                {/* End */}
 
                 <div className="mb-2 mt-4">
                   <button type="submit" className="btn btn-primary w-100">
@@ -582,8 +703,8 @@ export default function EditProductForm({ id }) {
                   </button>
                 </div>
               </div>
-            </form>
-          )}
+            </div>
+          </form>
         </div>
       </div>
     </main>

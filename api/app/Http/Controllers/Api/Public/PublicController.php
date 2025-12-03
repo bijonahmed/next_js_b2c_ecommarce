@@ -18,6 +18,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Attribute;
 use DB;
 use File;
@@ -460,6 +461,12 @@ class PublicController extends Controller
         ], 200);
     }
 
+    public function testApiCallbackHook(Request $request)
+    {
+        Log::info('Test API Request:', $request->all());
 
-    
+        return response()->json([
+            'message' => 'Test API working'
+        ]);
+    }
 }

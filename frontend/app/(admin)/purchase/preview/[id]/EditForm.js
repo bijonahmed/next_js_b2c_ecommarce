@@ -1,8 +1,7 @@
-// EditUserForm.jsx
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useAuth } from "../../../../context/AuthContext"; // adjust path
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useAuth } from "../../../../context/AuthContext";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
@@ -11,6 +10,7 @@ import { useRouter } from "next/navigation";
 export default function EditUserForm({ id }) {
   const { token, permissions } = useAuth();
   const router = useRouter();
+
   const [loading, setLoading] = useState(true);
   const [purchaseData, setPurchaseData] = useState([]);
   const [selectedSupplier, setSelectedSupplier] = useState("");
@@ -24,16 +24,18 @@ export default function EditUserForm({ id }) {
 
   const printRef = useRef();
 
-  // 💰 Calculate line total
+  // Calculate line total
   const getLineTotal = (item) => (item.qty * item.price).toFixed(2);
 
-  // 💵 Calculate grand total
+  // Grand total
   const grandTotal = items
     .reduce((sum, item) => sum + item.qty * item.price, 0)
     .toFixed(2);
 
-  // Fetch suppliers
-  const fetchSupplierData = async () => {
+  // ---------------------------------------------------------
+  // ✅ FIXED: useCallback to stabilize fetchSupplierData
+  // ---------------------------------------------------------
+  const fetchSupplierData = useCallback(async () => {
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE}/supplier/index`,
@@ -45,19 +47,25 @@ export default function EditUserForm({ id }) {
           },
         }
       );
+
       const result = await res.json();
       setPurchaseData(result.data || []);
     } catch (err) {
       console.error(err);
       toast.error("Failed to fetch suppliers.");
     }
-  };
+  }, [token]);
 
+  // ---------------------------------------------------------
+  // ⭐ CORRECT useEffect: Only depends on fetchSupplierData
+  // ---------------------------------------------------------
   useEffect(() => {
     fetchSupplierData();
-  }, []);
+  }, [fetchSupplierData]);
 
+  // ---------------------------------------------------------
   // Fetch purchase order data
+  // ---------------------------------------------------------
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -71,7 +79,10 @@ export default function EditUserForm({ id }) {
             },
           }
         );
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        if (!response.ok)
+          throw new Error(`HTTP error! status: ${response.status}`);
+
         const data = await response.json();
         const particular = data?.particularData || {};
         const history = data?.historyData || [];
@@ -94,9 +105,11 @@ export default function EditUserForm({ id }) {
     fetchData();
   }, [id, token]);
 
+  // Print function
   const handlePrint = () => {
     const printContent = printRef.current;
     const printWindow = window.open("", "", "width=900,height=700");
+
     printWindow.document.write(`
       <html>
         <head>
@@ -120,6 +133,7 @@ export default function EditUserForm({ id }) {
         </body>
       </html>
     `);
+
     printWindow.document.close();
   };
 
@@ -130,6 +144,7 @@ export default function EditUserForm({ id }) {
     if (title) document.title = title;
   }, [title]);
 
+  // Permission check
   if (!permissions.includes("edit posts category")) {
     router.replace("/dashboard");
     return null;
@@ -172,6 +187,7 @@ export default function EditUserForm({ id }) {
             <div className="col-md-12">
               <div className="card card-primary card-outline mb-4">
                 <Toaster position="top-right" />
+
                 <div className="px-4 px-md-5 my-4">
                   <div className="card shadow-sm">
                     <div className="card-body">
@@ -210,7 +226,7 @@ export default function EditUserForm({ id }) {
                                 Supplier:
                               </label>
                               <div className="form-control-plaintext">
-                               {supplier_name || "-"}
+                                {supplier_name || "-"}
                               </div>
                             </div>
 
@@ -255,35 +271,39 @@ export default function EditUserForm({ id }) {
                             </div>
                           ) : (
                             <div className="table-responsive">
-                              <table
-                                className="table table-bordered align-middle"
-                                id="itemTable"
-                              >
+                              <table className="table table-bordered align-middle">
                                 <thead className="table-light">
                                   <tr>
                                     <th>Description</th>
                                     <th className="text-center">SKU</th>
-                                    <th className="text-center d-none">Attribute</th>
                                     <th className="text-end">Qty</th>
                                     <th className="text-end">Unit Price</th>
                                     <th className="text-end">Line Total</th>
                                   </tr>
                                 </thead>
-                                <tbody id="itemBody">
+
+                                <tbody>
                                   {items.length > 0 ? (
                                     items.map((item, index) => (
                                       <tr key={index}>
                                         <td>{item.description || "-"}</td>
-                                        <td className="text-center">{item.sku || "-"}</td>
-                                        <td className="text-center d-none">{item.attribute || "-"}</td>
-                                        <td className="text-end">{item.qty || 0}</td>
-                                        <td className="text-end">{item.price || 0}</td>
-                                        <td className="text-end">{getLineTotal(item)}</td>
+                                        <td className="text-center">
+                                          {item.sku || "-"}
+                                        </td>
+                                        <td className="text-end">
+                                          {item.qty || 0}
+                                        </td>
+                                        <td className="text-end">
+                                          {item.price || 0}
+                                        </td>
+                                        <td className="text-end">
+                                          {getLineTotal(item)}
+                                        </td>
                                       </tr>
                                     ))
                                   ) : (
                                     <tr>
-                                      <td colSpan="6" className="text-center text-muted">
+                                      <td colSpan="5" className="text-center">
                                         No items available
                                       </td>
                                     </tr>
@@ -305,12 +325,12 @@ export default function EditUserForm({ id }) {
                               <div className="card p-3">
                                 <div className="d-flex justify-content-between">
                                   <div>Subtotal</div>
-                                  <div id="subtotal">{grandTotal}</div>
+                                  <div>{grandTotal}</div>
                                 </div>
                                 <hr />
                                 <div className="d-flex justify-content-between">
                                   <strong>Grand Total</strong>
-                                  <strong id="grandTotal">{grandTotal}</strong>
+                                  <strong>{grandTotal}</strong>
                                 </div>
                               </div>
                             </div>
