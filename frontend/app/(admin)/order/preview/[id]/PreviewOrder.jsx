@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../../../../context/AuthContext";
 import { usePathname, useRouter } from "next/navigation";
@@ -11,7 +10,6 @@ import useCategories from "../../../../hooks/useCategories";
 import "../../../../components/styles/invoice.css";
 import "../../../../components/styles/orderStatus.css";
 import getOrderStatusList from "../../../../hooks/orderStatusList";
-
 export default function EditProductForm({ id }) {
   const { token, permissions } = useAuth();
   const { categoryData } = useCategories();
@@ -21,20 +19,29 @@ export default function EditProductForm({ id }) {
   const [errors, setErrors] = useState({});
   const [invoice, setInvoice] = useState("");
   const [orderHistory, setOrderHistory] = useState([]);
+  const [storeList, setStoreList] = useState([]);
+  const [cityList, setCityList] = useState([]);
+  const [areaList, setZoneList] = useState([]);
   const [updateStatus, setUpdateStatus] = useState("");
   const [updateBy, setUpdateBy] = useState("");
   const { ordersStsData } = getOrderStatusList();
-
+  const [showModal, setShowModal] = useState(false);
+  const [citySearch, setCitySearch] = useState("");
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
+  const [selectedAreaId, setSelectedAreaId] = useState(null);
+  const [areaSearch, setAreaSearch] = useState("");
+  const filteredCityList = cityList.filter((city) =>
+    city.city_name.toLowerCase().includes(citySearch.toLowerCase())
+  );
   const handlePrint = () => {
     const printContents = document.getElementById("printArea").innerHTML;
     const originalContents = document.body.innerHTML;
-
     document.body.innerHTML = printContents;
     window.print();
     document.body.innerHTML = originalContents;
     window.location.reload();
   };
-
   const fetchInvoice = async () => {
     try {
       setLoading(true);
@@ -51,7 +58,6 @@ export default function EditProductForm({ id }) {
       const data = await res.json();
       if (res.ok) {
         //console.log("Invoice updateBy:", data.data.updateBy);
-
         setInvoice(data.data.orderRow);
         setUpdateStatus(data.data.orderRow.order_status);
         setUpdateBy(data.data.updateBy);
@@ -66,24 +72,20 @@ export default function EditProductForm({ id }) {
     }
   };
   // Set into state
-
   const title = `Order ID: [${id}]`;
   useEffect(() => {
     document.title = title;
   }, [title]);
-
   useEffect(() => {
     fetchInvoice();
   }, [id]);
   // Submit handler
   const handleStatusUpdate = async (e) => {
     e.preventDefault();
-
     if (!updateStatus) {
       toast.error("Please select a status!");
       return;
     }
-
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE}/orders/orderUpdate`,
@@ -99,9 +101,7 @@ export default function EditProductForm({ id }) {
           }),
         }
       );
-
       const data = await res.json();
-
       if (data.success) {
         toast.success(
           `Status updated successfully!\nOrder ID: ${invoice.orderId}`
@@ -114,17 +114,127 @@ export default function EditProductForm({ id }) {
       toast.error("Something went wrong!");
     }
   };
+  const checkFirstStore = async () => {
+    try {
+      setLoading(true); // start loading
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/deliveryAssign/checkInitialized`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify([]),
+        }
+      );
+      const data = await res.json();
+      setShowModal(true);
+      setStoreList(data.responseData.store.data || []);
+      setCityList(data.responseData.city.data || []);
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false); // stop loading in both success/error
+    }
+  };
+  const handleCityClick = async (cityId) => {
+    setSelectedCity(cityId); // set selected city
+    setLoading(true); // optional: show loading spinner
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/deliveryAssign/checkZone`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ zone_id: cityId }), // send selected city_id
+        }
+      );
+      const data = await res.json();
+      if (data.success) {
+        setZoneList(data.responseData.zone.data || []);
+      } else {
+        toast.error("Failed to fetch zone data");
+      }
+    } catch (error) {
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false); // stop loading
+    }
+  };
 
-  if (!permissions.includes("edit order")) {
+  const sendToPathaoMerchant = async () => {
+    if (!selectedStoreId || !selectedCity || !selectedAreaId) {
+      toast.error("Please select Store, City, and Area before sending.");
+      return;
+    }
+
+    try {
+      // Optional: show loading state
+      setLoading(true);
+
+      // Construct payload
+      const payload = {
+        store_id: selectedStoreId,
+        city_id: selectedCity,
+        area_id: selectedAreaId,
+      };
+
+      // Send request
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/pathao/sendMerchant`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        toast.success("Successfully sent to Pathao Merchant!");
+        // Optional: close modal
+        setShowModal(false);
+        // Optional: reset selection
+        setSelectedStoreId(null);
+        setSelectedCity(null);
+        setSelectedAreaId(null);
+      } else {
+        toast.error(data.message || "Failed to send data.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong while sending to Pathao.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendtoDelivery = async (e) => {
+    e.preventDefault();
+    if (!updateStatus) {
+      toast.error("Please select a status!");
+      return;
+    }
+    checkFirstStore();
+    return false;
+  };
+
+  if (!permissions.includes("view order")) {
     router.replace("/dashboard");
     return null;
   }
-
   const toUpperSafe = (text) => (text ? text.toUpperCase() : "");
   const totalAmount = orderHistory.reduce((sum, order) => {
     return sum + order.qty * order.price;
   }, 0);
-
   return (
     <main className="app-main" id="main" tabIndex={-1}>
       <Toaster position="top-right" />
@@ -164,158 +274,429 @@ export default function EditProductForm({ id }) {
               </div>
             </div>
           ) : null}
-          <div className="invoice-container mt-5" id="printArea">
-            {/* start */}
-            <div>
-              <h1>INVOICE</h1>
-              <table className="info-table">
-                <tbody>
-                  <tr>
-                    <td>
-                      <strong>Order ID:</strong> {invoice.orderId}
-                    </td>
-                    <td>
-                      <strong>Date:&nbsp;</strong>
-                      {invoice.order_date}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td>
-                      <strong>Shipping Phone:</strong> {invoice.shipping_phone}
-                    </td>
-                    <td>
-                      <strong>Status:</strong> {invoice.status_name}
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td colSpan="2">
-                      <strong>Payment Method:</strong>&nbsp;
-                      {toUpperSafe(invoice?.paymentMethod)}
-                      {/* If Bkash then show details */}
-                    </td>
-                  </tr>
-
-                  {/* SHOW ONLY IF PAYMENT METHOD = BKASH */}
-                  {invoice.paymentMethod === "bkash" && (
-                    <tr>
-                      <td>
-                        <strong>Bkash Number:</strong> {invoice.bkash_number}
-                      </td>
-                      <td>
-                        <strong>Transaction ID:</strong>{" "}
-                        {invoice?.transaction_id ?? ""}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-
-              <hr />
-              <br />
-              {/* <pre>{JSON.stringify(orderHistory,null,2)}</pre> */}
-              <table className="product-table">
-                <tbody>
-                  <tr>
-                    <th>Product Name</th>
-                    <th className="text-center">Qty</th>
-                    <th className="text-center">Unit Price</th>
-                    <th className="text-center">Total</th>
-                  </tr>
-
-                  {orderHistory.map((order) => (
-                    <tr key={order.id}>
-                      <td>{order.product_name || ""} &nbsp;
-                        
-                        {order.variation_value && (
-                        (<b>({order.variation_value})</b>)
-
-                        )}
-                        
-
-                        
+          <div className="mt-5 p-4" id="printArea">
+            <div className="row">
+              <div className="col-8">
+                {/* start */}
+                <div>
+                  <h1>INVOICE</h1>
+                  <table className="info-table">
+                    <tbody>
+                      <tr>
+                        <td>
+                          <strong>Order ID:</strong> {invoice.orderId}
                         </td>
-                      <td className="text-center">{order.qty || ""}</td>
-                      <td className="text-center">Tk. {order.price || ""}</td>
-                      <td className="text-center">
-                        Tk. {order.qty * order.price}{" "}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <div className="total-section">
-                <p>
-                  <strong>Subtotal:</strong> Tk. {totalAmount}
-                </p>
-                <p>
-                  <strong>Shipping:</strong> Tk. {invoice.devliery_charge}
-                </p>
-                <p>
-                  <strong>Grand Total:</strong>{" "}
-                  <strong>
-                    Tk.{" "}
-                    {(
-                      parseFloat(totalAmount || 0) +
-                      parseFloat(invoice.devliery_charge || 0)
-                    ).toFixed(2)}
-                  </strong>
-                </p>
+                        <td>
+                          <strong>Date:&nbsp;</strong>
+                          {invoice.order_date}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <strong>Shipping Phone:</strong>{" "}
+                          {invoice.shipping_phone}
+                        </td>
+                        <td>
+                          <strong>Status:</strong> {invoice.status_name}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colSpan="2">
+                          <strong>Payment Method:</strong>&nbsp;
+                          {toUpperSafe(invoice?.paymentMethod)}
+                          {/* If Bkash then show details */}
+                        </td>
+                      </tr>
+                      {/* SHOW ONLY IF PAYMENT METHOD = BKASH */}
+                      {invoice.paymentMethod === "bkash" && (
+                        <tr>
+                          <td>
+                            <strong>Bkash Number:</strong>{" "}
+                            {invoice.bkash_number}
+                          </td>
+                          <td>
+                            <strong>Transaction ID:</strong>{" "}
+                            {invoice?.transaction_id ?? ""}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                  <hr />
+                  <br />
+                  {/* <pre>{JSON.stringify(orderHistory,null,2)}</pre> */}
+                  <table className="product-table">
+                    <tbody>
+                      <tr>
+                        <th>Product Name</th>
+                        <th className="text-center">Qty</th>
+                        <th className="text-center">Unit Price</th>
+                        <th className="text-center">Total</th>
+                      </tr>
+                      {orderHistory.map((order) => (
+                        <tr key={order.id}>
+                          <td>
+                            {order.product_name || ""} &nbsp;
+                            {order.variation_value && (
+                              <b>({order.variation_value})</b>
+                            )}
+                          </td>
+                          <td className="text-center">{order.qty || ""}</td>
+                          <td className="text-center">
+                            Tk. {order.price || ""}
+                          </td>
+                          <td className="text-center">
+                            Tk. {order.qty * order.price}{" "}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="total-section">
+                    <p>
+                      <strong>Subtotal:</strong> Tk. {totalAmount}
+                    </p>
+                    <p>
+                      <strong>Shipping:</strong> Tk. {invoice.devliery_charge}
+                    </p>
+                    <p>
+                      <strong>Grand Total:</strong>{" "}
+                      <strong>
+                        Tk.{" "}
+                        {(
+                          parseFloat(totalAmount || 0) +
+                          parseFloat(invoice.devliery_charge || 0)
+                        ).toFixed(2)}
+                      </strong>
+                    </p>
+                  </div>
+                  <div className="d-flex justify-content-end">
+                    <button className="print-btn" onClick={handlePrint}>
+                      Print Invoice
+                    </button>
+                  </div>
+                </div>
+                {/* END */}
               </div>
-
-              <div className="d-flex justify-content-end">
-                <button className="print-btn" onClick={handlePrint}>
-                  Print Invoice
-                </button>
+              <div className="col-4">
+                {/* Transfer Card */}
+                <div className="card shadow-sm border-0 rounded-4">
+                  <div className="card-body text-center p-4">
+                    <h5 className="mb-3 fw-bold">Delivery Action</h5>
+                    <form onSubmit={handleSendtoDelivery}>
+                      <button
+                        className="btn btn-primary w-100 py-3 rounded-4 fw-semibold d-flex justify-content-center align-items-center gap-2"
+                        type="submit"
+                      >
+                        <i className="bi bi-truck"></i>
+                        Transfer to Pathao
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                {/* Status Card */}
+                <div className="card shadow-sm border-0 rounded-4 mt-4">
+                  <div className="card-body text-center p-4">
+                    <h5 className="mb-4 fw-bold">Update Status</h5>
+                    <form
+                      onSubmit={handleStatusUpdate}
+                      className="d-flex justify-content-center gap-3 flex-wrap"
+                    >
+                      <select
+                        className="form-select form-select-lg rounded-pill status-select px-4 py-2 shadow-sm"
+                        value={updateStatus}
+                        onChange={(e) => setUpdateStatus(e.target.value)}
+                        style={{ maxWidth: "200px" }}
+                      >
+                        <option value="">Select Status</option>
+                        {ordersStsData.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="submit"
+                        className="btn btn-warning btn-lg rounded-pill px-4 fw-semibold shadow-sm"
+                      >
+                        Update
+                      </button>
+                    </form>
+                  </div>
+                </div>
               </div>
             </div>
-
-            {/* END */}
           </div>
-
-          <div className="d-flex justify-content-center mt-5 mb-4">
-            <div className="card row col-6 status-card">
-              <div className="card-body text-center">
-                <h5 className="mb-3 fw-bold text-primary">
-                  Update Order Status
-                </h5>
-                <form
-                  onSubmit={handleStatusUpdate}
-                  className="d-inline-flex gap-3"
-                >
-                  <select
-                    className="form-select form-select-lg rounded-pill status-select"
-                    value={updateStatus}
-                    onChange={(e) => setUpdateStatus(e.target.value)}
-                  >
-                    <option value="">Select Status</option>
-                    {ordersStsData.map((r) => (
-                      <option key={r.id} value={r.id}>
-                        {r.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button
-                    type="submit"
-                    className="btn btn-warning btn-lg rounded-pill status-btn"
-                  >
-                    Update
-                  </button>
-                </form>
-                <hr />
-                {invoice.orderUpdateDate && (
-                  <p className="bg-warning bg-opacity-25 p-2 rounded">
-                    Last Update Date: {invoice.orderUpdateDate}, Last Update
-                    By:&nbsp;{updateBy}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
+          {invoice.orderUpdateDate && (
+            <p className="bg-warning bg-opacity-25 p-2 rounded">
+              Last Update Date: {invoice.orderUpdateDate}, Last Update By:&nbsp;
+              {updateBy}
+            </p>
+          )}
         </div>
+        {showModal && (
+          <div
+            className="modal fade show d-block"
+            tabIndex="-1"
+            style={{ background: "rgba(0,0,0,0.5)" }}
+          >
+            <div
+              className="modal-dialog modal-xl modal-fullscreen-lg-down"
+              style={{ maxWidth: "95%" }}
+            >
+              {" "}
+              {/* extra large */}
+              <div className="modal-content rounded-4 border-0 shadow">
+                <div className="modal-header">
+                  <h5 className="modal-title">API Response Data</h5>
+                  <button
+                    className="btn-close"
+                    onClick={() => setShowModal(false)}
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  {/* Summary */}
+                  <div className="mb-4">
+                    <strong>Reciept Address:</strong> Dhaka, Bangladesh ,
+                    <strong>Selected Store:</strong> {selectedStoreId},
+                    <strong>Selected City:</strong> {selectedCity} ,
+                    <strong>Selected Area:</strong> {selectedAreaId}
+                  </div>
+                  <div className="d-flex gap-3 flex-wrap">
+                    {/* Store List */}
+                    <div className="card shadow-sm mb-3 flex-fill">
+                      <div className="card-body">
+                        <h5 className="fw-bold mb-3">Store List</h5>
+                        <div
+                          className="table-responsive"
+                          style={{ maxHeight: "300px", overflowY: "auto" }}
+                        >
+                          <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
+                            <thead className="table-primary">
+                              <tr>
+                                <th>#</th>
+                                <th>Store Name</th>
+                                <th>Address</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {storeList.length > 0 ? (
+                                storeList.map((item, index) => (
+                                  <tr
+                                    key={item.store_id || index}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                      setSelectedStoreId(item.store_id)
+                                    }
+                                    className={
+                                      selectedStoreId === item.store_id
+                                        ? "table-primary"
+                                        : ""
+                                    }
+                                  >
+                                    <td>{index + 1}</td>
+                                    <td className="text-start">
+                                      {item.store_name}
+                                    </td>
+                                    <td className="text-start">
+                                      {item.store_address}
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan="3" className="text-center">
+                                    No Data Found
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                    {/* City List */}
+                    <div className="card shadow-sm mb-3 flex-fill">
+                      <div className="card-body">
+                        <h5 className="fw-bold mb-3">City List</h5>
+                        {/* Search Input */}
+                        <div className="mb-3 d-flex justify-content-end">
+                          <input
+                            type="text"
+                            className="form-control w-auto"
+                            placeholder="Search City..."
+                            value={citySearch}
+                            onChange={(e) => setCitySearch(e.target.value)}
+                          />
+                        </div>
+                        <div
+                          className="table-responsive"
+                          style={{ maxHeight: "300px", overflowY: "auto" }}
+                        >
+                          <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
+                            <thead className="table-info">
+                              <tr>
+                                <th>#</th>
+                                <th>City ID</th>
+                                <th>City Name</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {filteredCityList.length > 0 ? (
+                                filteredCityList.map((city, index) => (
+                                  <tr
+                                    key={city.city_id}
+                                    style={{ cursor: "pointer" }}
+                                    onClick={() =>
+                                      handleCityClick(city.city_id)
+                                    }
+                                    className={
+                                      selectedCity === city.city_id
+                                        ? "table-primary"
+                                        : ""
+                                    }
+                                  >
+                                    <td>{index + 1}</td>
+                                    <td>{city.city_id}</td>
+                                    <td className="text-start">
+                                      {city.city_name}
+                                    </td>
+                                  </tr>
+                                ))
+                              ) : (
+                                <tr>
+                                  <td colSpan="3" className="text-center">
+                                    No cities found
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Area List */}
+                  <div className="card shadow-sm mb-3">
+                    <div className="card-body">
+                      <h5 className="fw-bold mb-3">Area List</h5>
+                      {/* Search Input */}
+                      <div className="row">
+                        <div className="col-12">
+                          <div className="mb-3 d-flex justify-content-end">
+                            <input
+                              type="text"
+                              className="form-control w-auto"
+                              placeholder="Search Area..."
+                              value={areaSearch}
+                              onChange={(e) => setAreaSearch(e.target.value)}
+                            />
+                          </div>
+                          {/* Table */}
+                          <div
+                            className="table-responsive"
+                            style={{ maxHeight: "250px", overflowY: "auto" }}
+                          >
+                            <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
+                              <thead className="table-primary">
+                                <tr>
+                                  <th>#</th>
+                                  <th>Area ID</th>
+                                  <th>Area Name</th>
+                                  <th>Home Delivery</th>
+                                  <th>Pickup Available</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {areaList.filter((area) =>
+                                  area.area_name
+                                    .toLowerCase()
+                                    .includes(areaSearch.toLowerCase())
+                                ).length > 0 ? (
+                                  areaList
+                                    .filter((area) =>
+                                      area.area_name
+                                        .toLowerCase()
+                                        .includes(areaSearch.toLowerCase())
+                                    )
+                                    .map((area, index) => (
+                                      <tr
+                                        key={area.area_id}
+                                        onClick={() =>
+                                          setSelectedAreaId(area.area_id)
+                                        }
+                                        style={{ cursor: "pointer" }}
+                                        className={
+                                          selectedAreaId === area.area_id
+                                            ? "table-primary"
+                                            : ""
+                                        }
+                                      >
+                                        <td>{index + 1}</td>
+                                        <td>{area.area_id}</td>
+                                        <td className="text-start">
+                                          {area.area_name}
+                                        </td>
+                                        <td>
+                                          {area.home_delivery_available ? (
+                                            <span className="badge bg-success">
+                                              Yes
+                                            </span>
+                                          ) : (
+                                            <span className="badge bg-danger">
+                                              No
+                                            </span>
+                                          )}
+                                        </td>
+                                        <td>
+                                          {area.pickup_available ? (
+                                            <span className="badge bg-success">
+                                              Yes
+                                            </span>
+                                          ) : (
+                                            <span className="badge bg-danger">
+                                              No
+                                            </span>
+                                          )}
+                                        </td>
+                                      </tr>
+                                    ))
+                                ) : (
+                                  <tr>
+                                    <td colSpan="5" className="text-center">
+                                      No areas found
+                                    </td>
+                                  </tr>
+                                )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    className="btn btn-secondary btn-lg"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Close
+                  </button>
+                  <button
+                    className="btn btn-success btn-lg"
+                    onClick={sendToPathaoMerchant} // your handler function
+                    disabled={
+                      !selectedStoreId || !selectedCity || !selectedAreaId
+                    } // disable if selection incomplete
+                  >
+                    Send to Pathao Merchant
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

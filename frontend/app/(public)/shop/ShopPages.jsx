@@ -12,6 +12,7 @@ import useCategories from "../../hooks/useProductsCategoriesAllData";
 import { useCart } from "../../context/CartContext";
 import Swal from "sweetalert2";
 const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
 export const metadata = {
   title: "shop - Bir E-Commerce",
   description: "Securely complete your order and payment on Bir E-Commerce.",

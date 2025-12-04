@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import ProductSlider from "./ProductSlider";
 import RelatedProducts from "./RelatedProducts";
+import { useRouter } from "next/navigation";
 import styles from "./ProductDetail.module.css";
 import "../../../components/styles/darknessLoader.css";
 import { useCart } from "../../../context/CartContext";
@@ -62,6 +63,51 @@ export default function ProductDetailsClient({ slug }) {
       showConfirmButton: false,
       timer: 1500,
     });
+  };
+
+  const router = useRouter();
+
+  const handleAddToCartBuyNow = () => {
+    const product = {
+      id: productRow.id,
+      slug: productRow.slug,
+      name: productRow.name,
+      price: price,
+      qty: qty,
+      thumnail_img: productRow.thumnail_img,
+      selectedAttr: selectedAttr?.id ?? null,
+      selectedAttrName: selectedAttr?.name ?? null,
+    };
+
+    const isDuplicate = cart.some(
+      (item) =>
+        item.id === product.id && item.selectedAttr === product.selectedAttr
+    );
+
+    if (isDuplicate) {
+      Swal.fire({
+        icon: "warning",
+        title: "<span style='font-size:18px;'>Already in Cart</span>",
+        html: "<span style='font-size:16px;'>This product is already in your cart.</span>",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      // 🔥 Already in cart → directly redirect to checkout
+      setTimeout(() => {
+        router.push("/checkout");
+      }, 1600);
+
+      return;
+    }
+
+    // Add to cart
+    addToCart(product);
+    setTimeout(() => {
+      router.push("/checkout");
+    }, 1600);
+
+    return;
   };
 
   const handleChange = (e) => {
@@ -235,7 +281,11 @@ export default function ProductDetailsClient({ slug }) {
                     >
                       Add to cart
                     </a>
-                    <Link className="ps-btn" href="/shop">
+                    <Link
+                      className="ps-btn"
+                      href="#"
+                      onClick={handleAddToCartBuyNow}
+                    >
                       Buy Now
                     </Link>
                   </div>

@@ -43,6 +43,9 @@ class SettingsController extends Controller
                 'name'        => 'required',
                 'email'       => 'required',
 
+                'devliery_charge_inside_dhk'  => 'required',
+                'devliery_charge_outside_dhk' => 'required',
+
             ]);
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
@@ -58,6 +61,9 @@ class SettingsController extends Controller
                 'fblink'            => !empty($request->fblink) ? $request->fblink : "",
                 'website'           => !empty($request->website) ? $request->website : "",
                 'telegram'          => !empty($request->telegram) ? $request->telegram : "",
+
+                'devliery_charge_inside_dhk' => !empty($request->devliery_charge_inside_dhk) ? $request->devliery_charge_inside_dhk : "",
+                'devliery_charge_outside_dhk'=> !empty($request->devliery_charge_outside_dhk) ? $request->devliery_charge_outside_dhk : "",
             );
 
             //dd($data);

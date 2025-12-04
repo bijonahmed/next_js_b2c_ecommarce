@@ -35,6 +35,9 @@ export default function SettingPage() {
     website: user?.website || "",
     telegram: user?.telegram || "",
     copyright: user?.copyright || "",
+    //setting
+    devliery_charge_inside_dhk: user?.devliery_charge_inside_dhk || "",
+    devliery_charge_outside_dhk: user?.devliery_charge_outside_dhk || "",
   });
 
   const handleChange = (e) => {
@@ -50,16 +53,16 @@ export default function SettingPage() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // ✅ pass token
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ ...formData, email: user?.email }),
+          body: JSON.stringify({ ...formData }),
         }
       );
 
       const data = await res.json();
       if (res.ok) {
         setUser(data);
-        toast.success("User updated successfully ✅"); // ✅ success toast
+        toast.success("User updated successfully");
       } else if (data.errors) {
         toast.error(Object.values(data.errors).flat().join(" "));
         setErrors(data.errors);
@@ -89,6 +92,7 @@ export default function SettingPage() {
 
       if (res.ok) {
         setUser(data.data); // not the whole data wrapper
+
         setFormData({
           name: data?.data?.name || "",
           email: data?.data?.email || "",
@@ -99,6 +103,10 @@ export default function SettingPage() {
           website: data?.data?.website || "",
           telegram: data?.data?.telegram || "",
           copyright: data?.data?.copyright || "",
+          devliery_charge_inside_dhk:
+            data?.data?.devliery_charge_inside_dhk || "",
+          devliery_charge_outside_dhk:
+            data?.data?.devliery_charge_outside_dhk || "",
         });
       } else {
         console.error("Auth error:", data.message);
@@ -184,7 +192,6 @@ export default function SettingPage() {
                         <div className="invalid-feedback">{errors.name[0]}</div>
                       )}
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">Email address</label>
                       <input
@@ -195,7 +202,6 @@ export default function SettingPage() {
                         onChange={handleChange}
                       />
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">Address</label>
                       <input
@@ -206,7 +212,6 @@ export default function SettingPage() {
                         onChange={handleChange}
                       />
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">Business Description</label>
                       <textarea
@@ -217,7 +222,6 @@ export default function SettingPage() {
                         onChange={handleChange}
                       />
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">WhatsApp</label>
                       <input
@@ -228,7 +232,6 @@ export default function SettingPage() {
                         onChange={handleChange}
                       />
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">Facebook Page Link</label>
                       <input
@@ -239,7 +242,6 @@ export default function SettingPage() {
                         onChange={handleChange}
                       />
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">Website</label>
                       <input
@@ -250,7 +252,6 @@ export default function SettingPage() {
                         onChange={handleChange}
                       />
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">Telegram</label>
                       <input
@@ -261,7 +262,6 @@ export default function SettingPage() {
                         onChange={handleChange}
                       />
                     </div>
-
                     <div className="mb-3">
                       <label className="form-label">Copyright</label>
                       <input
@@ -269,6 +269,26 @@ export default function SettingPage() {
                         className="form-control"
                         name="copyright"
                         value={formData.copyright}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Inside Dhaka </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="devliery_charge_inside_dhk"
+                        value={formData.devliery_charge_inside_dhk}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Outside Dhaka</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        name="devliery_charge_outside_dhk"
+                        value={formData.devliery_charge_outside_dhk}
                         onChange={handleChange}
                       />
                     </div>

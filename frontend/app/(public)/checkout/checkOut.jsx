@@ -256,6 +256,11 @@ export default function CheckoutPage() {
   function showValidationError(title, message) {
     toast.error(`${title}: ${message}`);
   }
+  useEffect(() => {
+    if (settingData?.devliery_charge_inside_dhk) {
+      setSelectedDeliveryCharge(Number(settingData.devliery_charge_inside_dhk));
+    }
+  }, [settingData]);
 
   if (!mounted) return null; // Prevent SSR mismatch
 
@@ -441,50 +446,66 @@ export default function CheckoutPage() {
                       </tbody>
                     </table>
 
-                    <div className="checkout__total--items d-flex justify-content-between align-items-start mb-3">
-                      <span className="checkout__total--title fw-bold">
-                        Shipping
-                      </span>
-
-                      <div className="checkout__total--amount text-end">
-                        <label style={{ display: "block", cursor: "pointer" }}>
-                          <input
-                            type="radio"
-                            name="shippingOption"
-                            value={settingData.devliery_charge_inside_dhk}
-                            checked={
-                              selectedDeliveryCharge ===
+                    <div className="checkout__total--amount d-flex gap-2">
+                      {/* Inside Dhaka */}
+                      <label
+                        className={`delivery-option inline-option ${
+                          selectedDeliveryCharge ===
+                          Number(settingData.devliery_charge_inside_dhk)
+                            ? "active"
+                            : ""
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="shippingOption"
+                          value={settingData.devliery_charge_inside_dhk}
+                          checked={
+                            selectedDeliveryCharge ===
+                            Number(settingData.devliery_charge_inside_dhk)
+                          }
+                          onChange={() =>
+                            setSelectedDeliveryCharge(
                               Number(settingData.devliery_charge_inside_dhk)
-                            }
-                            onChange={() =>
-                              setSelectedDeliveryCharge(
-                                Number(settingData.devliery_charge_inside_dhk)
-                              )
-                            }
-                          />{" "}
+                            )
+                          }
+                        />
+
+                        <div className="label-content">
                           Inside Dhaka ({settingData.currency}
                           {settingData.devliery_charge_inside_dhk})
-                        </label>
+                        </div>
+                      </label>
 
-                        <label style={{ display: "block", cursor: "pointer" }}>
-                          <input
-                            type="radio"
-                            name="shippingOption"
-                            value={settingData.devliery_charge_outside_dhk}
-                            checked={
-                              selectedDeliveryCharge ===
+                      {/* Outside Dhaka */}
+                      <label
+                        className={`delivery-option inline-option ${
+                          selectedDeliveryCharge ===
+                          Number(settingData.devliery_charge_outside_dhk)
+                            ? "active"
+                            : ""
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="shippingOption"
+                          value={settingData.devliery_charge_outside_dhk}
+                          checked={
+                            selectedDeliveryCharge ===
+                            Number(settingData.devliery_charge_outside_dhk)
+                          }
+                          onChange={() =>
+                            setSelectedDeliveryCharge(
                               Number(settingData.devliery_charge_outside_dhk)
-                            }
-                            onChange={() =>
-                              setSelectedDeliveryCharge(
-                                Number(settingData.devliery_charge_outside_dhk)
-                              )
-                            }
-                          />{" "}
+                            )
+                          }
+                        />
+
+                        <div className="label-content">
                           Outside Dhaka ({settingData.currency}
                           {settingData.devliery_charge_outside_dhk})
-                        </label>
-                      </div>
+                        </div>
+                      </label>
                     </div>
 
                     <div className="order-totals">

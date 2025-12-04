@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
 use App\Http\Controllers\Api\Inventory\InventoryController;
 use App\Http\Controllers\Api\Orders\OrdersController;
+use App\Http\Controllers\Api\Patho\GatewayController;
 use App\Http\Controllers\Api\Post\PostCategoryController;
 use App\Http\Controllers\Api\Post\PostController;
 use App\Http\Controllers\Api\User\UserController;
@@ -127,6 +128,11 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/orderUpdate', [OrdersController::class, 'orderUpdate']);
     });
 
+    Route::prefix('deliveryAssign')->group(function () {
+        Route::post('/checkInitialized', [GatewayController::class, 'checkInitialized']);
+        Route::post('/checkZone', [GatewayController::class, 'checkZone']);
+        Route::post('/orderSendToGateway', [GatewayController::class, 'orderSendToGateway']);
+    });
 
 
     Route::prefix('inventory')->group(function () {

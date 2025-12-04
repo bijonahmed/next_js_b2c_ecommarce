@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Orders;
+namespace App\Http\Controllers\Api\Patho;
 
 use App\Http\Controllers\Controller;
 use App\Models\Orders;
@@ -27,71 +27,42 @@ use App\Services\PathaoService;
 use Illuminate\Support\Facades\Http;
 use Codeboxr\PathaoCourier\Facade\PathaoCourier;
 
-class OrdersController extends Controller
+class GatewayController extends Controller
 {
-    public function index(Request $request)
+
+
+    public function checkInitialized(PathaoService $pathao)
     {
-        $user = Auth::user();
-        if (! $user->can('view order')) {
-            return response()->json([
-                'message' => 'Unauthorized: You do not have permission to view order',
-            ], 403);
-        }
-        $page             = (int) $request->input('page', 1);
-        $pageSize         = (int) $request->input('pageSize', 10);
-        $orderId          = $request->input('searchQuery');
-        $customerId       = (int) $request->input('customerId');
-        $status           = (int) $request->input('status');
-        if ($pageSize <= 0) {
-            $pageSize = 10;
-        }
-        $query = Orders::leftJoin('users', 'users.id', '=', 'orders.customer_id')
-            ->select('orders.*', 'users.name as customerName')
-            ->orderBy('orders.id', 'desc');
+        $data['store'] = PathaoCourier::store()->list();
+        $data['city'] = PathaoCourier::area()->city();
 
-
-        if (!empty($orderId)) {
-            $query->where('orders.orderId', 'like', '%' . $orderId . '%');
-        }
-        if (!empty($customerId)) {
-            $query->where('orders.customer_id', $customerId);
-        }
-        if (!empty($status)) {
-            $query->where('orders.order_status', $status);
-        }
-        $paginator = $query->paginate($pageSize, ['*'], 'page', $page);
-        $modifiedCollection = $paginator->getCollection()->map(function ($item) {
-
-            $statusName = OrderStatus::where('id', $item->order_status)->first();
-            $updateBy   = User::find($item->orderUpdateby)->name ?? "-";
-
-            $totalBill = $item->grand_total;
-
-            return [
-                'id'                => $item->id,
-                'orderId'           => $item->orderId,
-                'customerName'      => $item->customerName,
-                'order_date'        => $item->order_date,
-                'updateBy'          => strtoupper($updateBy),
-                'grand_total'       => "Tk." . number_format($totalBill, 2),
-                'paymentMethod'     => strtoupper($item->paymentMethod) ?? "N/A",
-                'status'            => $statusName->name ?? "",
-                'order_status'      => $item->order_status ?? "",
-            ];
-        });
-        // Return the modified collection along with pagination metadata
         return response()->json([
-            'data'           => $modifiedCollection,
-            'current_page'   => $paginator->currentPage(),
-            'total_pages'    => $paginator->lastPage(),
-            'total_records'  => $paginator->total(),
+            'success'      => true,
+            'responseData' => $data,
         ], 200);
     }
 
 
-    public function orderUpdate(Request $request, PathaoService $pathao)
+
+    public function checkZone(Request $request, PathaoService $pathao)
     {
-        // return PathaoCourier::store()->list();
+
+        $zoneId = $request->zone_id ?? "";
+
+        $response = PathaoCourier::area()->area($zoneId);
+
+        // Make sure you use the correct property from the response
+        $data['zone'] = $response->response ?? $response; // fallback if response missing
+
+        return response()->json([
+            'success'      => true,
+            'responseData' => $data,
+        ], 200);
+    }
+
+    public function orderSendToGateway(Request $request, PathaoService $pathao)
+    {
+        return PathaoCourier::store()->list();
         //return PathaoCourier::area()->city();
         //$cityId = '52';
         // return PathaoCourier::area()->zone($cityId);
@@ -171,14 +142,7 @@ class OrdersController extends Controller
             "amount_to_collect"   => 900
         ];
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Content-Type' => 'application/json'
-        ])->post(
-            //'https://courier-api-sandbox.pathao.com/aladdin/api/v1/orders',
-            'https://api-hermes.pathao.com/aladdin/api/v1/orders',
-            $payload
-        );
+      
 
         dd($response->json());
      */
@@ -192,15 +156,5 @@ class OrdersController extends Controller
             'message' => 'Order status updated successfully',
             'updated' => $response,
         ], 200);
-    }
-
-
-    public function getOrderStatusList()
-    {
-        $oderStatus = OrderStatus::where('status', 1)->get();
-        return response()->json([
-            'status'        => true,
-            'data'          => $oderStatus,
-        ], 200); // 200 OK for data fetch
     }
 }

@@ -17,6 +17,8 @@ class Setting extends Authenticatable
     protected $fillable = [
       'id',
       'name',
+      'devliery_charge_inside_dhk',
+      'devliery_charge_outside_dhk'
     ];
 
     public static function filterEmpList($data = array())
