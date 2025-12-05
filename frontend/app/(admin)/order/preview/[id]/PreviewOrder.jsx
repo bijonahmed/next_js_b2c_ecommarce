@@ -497,35 +497,34 @@ export default function EditProductForm({ id }) {
                       </button>
                     </form>
                     {orderResponseData && (
-                        <div className="card mt-3">
-                          <div className="card-body">
-                            <h5 className="fw-bold mb-3">
-                              Pathao Order Response
-                            </h5>
-                            <table className="table table-bordered table-sm">
-                              <tbody>
-                                <tr>
-                                  <th>Consignment ID</th>
-                                  <td>{orderResponseData.consignment_id}</td>
-                                </tr>
-                                <tr>
-                                  <th>Merchant Order ID</th>
-                                  <td>{orderResponseData.merchant_order_id}</td>
-                                </tr>
-                                <tr>
-                                  <th>Order Status</th>
-                                  <td>{orderResponseData.order_status}</td>
-                                </tr>
-                                <tr>
-                                  <th>Delivery Fee</th>
-                                  <td>{orderResponseData.delivery_fee}</td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
+                      <div className="card mt-3">
+                        <div className="card-body">
+                          <h5 className="fw-bold mb-3">
+                            Pathao Order Response
+                          </h5>
+                          <table className="table table-bordered table-sm">
+                            <tbody>
+                              <tr>
+                                <th>Consignment ID</th>
+                                <td>{orderResponseData.consignment_id}</td>
+                              </tr>
+                              <tr>
+                                <th>Merchant Order ID</th>
+                                <td>{orderResponseData.merchant_order_id}</td>
+                              </tr>
+                              <tr>
+                                <th>Order Status</th>
+                                <td>{orderResponseData.order_status}</td>
+                              </tr>
+                              <tr>
+                                <th>Delivery Fee</th>
+                                <td>{orderResponseData.delivery_fee}</td>
+                              </tr>
+                            </tbody>
+                          </table>
                         </div>
+                      </div>
                     )}
-                    
                   </div>
                 </div>
               </div>
@@ -561,10 +560,10 @@ export default function EditProductForm({ id }) {
                 <div className="modal-body">
                   {/* Summary */}
                   <div className="mb-4">
-                    <strong>Reciept Address:</strong> Dhaka, Bangladesh ,
+                    <strong>Reciept Address:</strong> {invoice.address}
                     <strong>Selected Store:</strong> {selectedStoreId},
                     <strong>Selected City:</strong> {selectedCity} ,
-                    <strong>Selected Zone:</strong> {selectedAreaId},
+                    <strong>Selected Zone:</strong> {selectedZoneId},
                     <strong>Selected Area:</strong> {selectedAreaId}
                   </div>
                   <div className="d-flex gap-3 flex-wrap">
@@ -623,22 +622,42 @@ export default function EditProductForm({ id }) {
                     {/* City List */}
                     <div className="card shadow-sm mb-3 flex-fill">
                       <div className="card-body">
-                        <h5 className="fw-bold mb-3">City List</h5>
-                        {/* Search Input */}
-                        <div className="mb-3 d-flex justify-content-end">
-                          <input
-                            type="text"
-                            className="form-control w-auto"
-                            placeholder="Search City..."
-                            value={citySearch}
-                            onChange={(e) => setCitySearch(e.target.value)}
-                          />
+                        <div className="mb-3">
+                          <label
+                            htmlFor="citySelect"
+                            className="form-label fw-bold"
+                          >
+                            Select City
+                          </label>
+                          <select
+                            id="citySelect"
+                            className="form-select"
+                            value={selectedCity || ""}
+                            onChange={(e) => handleCityClick(e.target.value)}
+                          >
+                            <option value="" disabled>
+                              -- Select a city --
+                            </option>
+
+                            {filteredCityList.length > 0 ? (
+                              filteredCityList.map((city) => (
+                                <option key={city.city_id} value={city.city_id}>
+                                  {city.city_name} (ID: {city.city_id})
+                                </option>
+                              ))
+                            ) : (
+                              <option value="" disabled>
+                                No cities found
+                              </option>
+                            )}
+                          </select>
                         </div>
+
                         <div
                           className="table-responsive"
                           style={{ maxHeight: "300px", overflowY: "auto" }}
                         >
-                          <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
+                          {/* <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
                             <thead className="table-info">
                               <tr>
                                 <th>#</th>
@@ -676,7 +695,7 @@ export default function EditProductForm({ id }) {
                                 </tr>
                               )}
                             </tbody>
-                          </table>
+                          </table> */}
                         </div>
                       </div>
                     </div>
@@ -688,78 +707,38 @@ export default function EditProductForm({ id }) {
                         <div className="col-6">
                           <h5 className="fw-bold mb-3">Zone List</h5>
                           {/* Search Input */}
-                          <div className="row">
-                            <div className="col-12">
-                              <div className="mb-3 d-flex justify-content-end">
-                                <input
-                                  type="text"
-                                  className="form-control w-auto"
-                                  placeholder="Search Area..."
-                                  value={areaSearch}
-                                  onChange={(e) =>
-                                    setAreaSearch(e.target.value)
-                                  }
-                                />
-                              </div>
-                              {/* Table */}
-                              <div
-                                className="table-responsive"
-                                style={{
-                                  maxHeight: "250px",
-                                  overflowY: "auto",
-                                }}
-                              >
-                                <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
-                                  <thead className="table-primary">
-                                    <tr>
-                                      <th>#</th>
-                                      <th>Zone ID</th>
-                                      <th>Zone Name</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {zoneList.filter((zone) =>
-                                      zone.zone_name
-                                        .toLowerCase()
-                                        .includes(areaSearch.toLowerCase())
-                                    ).length > 0 ? (
-                                      zoneList
-                                        .filter((zone) =>
-                                          zone.zone_name
-                                            .toLowerCase()
-                                            .includes(areaSearch.toLowerCase())
-                                        )
-                                        .map((zone, index) => (
-                                          <tr
-                                            key={zone.zone_id}
-                                            onClick={() =>
-                                              handleZoneClick(zone.zone_id)
-                                            }
-                                            style={{ cursor: "pointer" }}
-                                            className={
-                                              selectedAreaId === zone.zone_id
-                                                ? "table-primary"
-                                                : ""
-                                            }
-                                          >
-                                            <td>{index + 1}</td>
-                                            <td>{zone.zone_id}</td>
-                                            <td className="text-start">
-                                              {zone.zone_name}
-                                            </td>
-                                          </tr>
-                                        ))
-                                    ) : (
-                                      <tr>
-                                        <td colSpan="5" className="text-center">
-                                          No areas found
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </tbody>
-                                </table>
-                              </div>
-                            </div>
+                          <div className="mb-3">
+                            <label
+                              htmlFor="zoneSelect"
+                              className="form-label fw-bold"
+                            >
+                              Select Zone
+                            </label>
+                            <select
+                              id="zoneSelect"
+                              className="form-select"
+                              value={selectedZoneId || ""}
+                              onChange={(e) => handleZoneClick(e.target.value)}
+                            >
+                              <option value="" disabled>
+                                -- Select a zone --
+                              </option>
+
+                              {zoneList.length > 0 ? (
+                                zoneList.map((zone) => (
+                                  <option
+                                    key={zone.zone_id}
+                                    value={zone.zone_id}
+                                  >
+                                    {zone.zone_name} (ID: {zone.zone_id})
+                                  </option>
+                                ))
+                              ) : (
+                                <option value="" disabled>
+                                  No zones available
+                                </option>
+                              )}
+                            </select>
                           </div>
                         </div>
                         <div className="col-6">
@@ -770,7 +749,8 @@ export default function EditProductForm({ id }) {
                               {/* Search Input */}
                               <div className="row">
                                 <div className="col-12">
-                                  <div className="mb-3 d-flex justify-content-end">
+                                  {/* Optional: Search Input */}
+                                  <div className="mb-3">
                                     <input
                                       type="text"
                                       className="form-control w-auto"
@@ -781,96 +761,52 @@ export default function EditProductForm({ id }) {
                                       }
                                     />
                                   </div>
-                                  {/* Table */}
-                                  <div
-                                    className="table-responsive"
-                                    style={{
-                                      maxHeight: "250px",
-                                      overflowY: "auto",
-                                    }}
+
+                                  {/* Dropdown */}
+                                  <select
+                                    className="form-select"
+                                    value={selectedAreaId || ""}
+                                    onChange={(e) =>
+                                      setSelectedAreaId(e.target.value)
+                                    }
                                   >
-                                    <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
-                                      <thead className="table-primary">
-                                        <tr>
-                                          <th>#</th>
-                                          <th>Area ID</th>
-                                          <th>Area Name</th>
-                                          <th>Home Delivery</th>
-                                          <th>Pickup Available</th>
-                                        </tr>
-                                      </thead>
-                                      <tbody>
-                                        {areaList.filter((area) =>
+                                    <option value="" disabled>
+                                      -- Select Area --
+                                    </option>
+
+                                    {areaList.filter((area) =>
+                                      area.area_name
+                                        .toLowerCase()
+                                        .includes(areaSearch.toLowerCase())
+                                    ).length > 0 ? (
+                                      areaList
+                                        .filter((area) =>
                                           area.area_name
                                             .toLowerCase()
                                             .includes(areaSearch.toLowerCase())
-                                        ).length > 0 ? (
-                                          areaList
-                                            .filter((area) =>
-                                              area.area_name
-                                                .toLowerCase()
-                                                .includes(
-                                                  areaSearch.toLowerCase()
-                                                )
-                                            )
-                                            .map((area, index) => (
-                                              <tr
-                                                key={area.area_id}
-                                                onClick={() =>
-                                                  setSelectedAreaId(
-                                                    area.area_id
-                                                  )
-                                                }
-                                                style={{ cursor: "pointer" }}
-                                                className={
-                                                  selectedAreaId ===
-                                                  area.area_id
-                                                    ? "table-primary"
-                                                    : ""
-                                                }
-                                              >
-                                                <td>{index + 1}</td>
-                                                <td>{area.area_id}</td>
-                                                <td className="text-start">
-                                                  {area.area_name}
-                                                </td>
-                                                <td>
-                                                  {area.home_delivery_available ? (
-                                                    <span className="badge bg-success">
-                                                      Yes
-                                                    </span>
-                                                  ) : (
-                                                    <span className="badge bg-danger">
-                                                      No
-                                                    </span>
-                                                  )}
-                                                </td>
-                                                <td>
-                                                  {area.pickup_available ? (
-                                                    <span className="badge bg-success">
-                                                      Yes
-                                                    </span>
-                                                  ) : (
-                                                    <span className="badge bg-danger">
-                                                      No
-                                                    </span>
-                                                  )}
-                                                </td>
-                                              </tr>
-                                            ))
-                                        ) : (
-                                          <tr>
-                                            <td
-                                              colSpan="5"
-                                              className="text-center"
-                                            >
-                                              No areas found
-                                            </td>
-                                          </tr>
-                                        )}
-                                      </tbody>
-                                    </table>
-                                  </div>
+                                        )
+                                        .map((area) => (
+                                          <option
+                                            key={area.area_id}
+                                            value={area.area_id}
+                                          >
+                                            {area.area_name} (ID: {area.area_id}
+                                            ) | Home Delivery:{" "}
+                                            {area.home_delivery_available
+                                              ? "Yes"
+                                              : "No"}{" "}
+                                            | Pickup:{" "}
+                                            {area.pickup_available
+                                              ? "Yes"
+                                              : "No"}
+                                          </option>
+                                        ))
+                                    ) : (
+                                      <option value="" disabled>
+                                        No areas found
+                                      </option>
+                                    )}
+                                  </select>
                                 </div>
                               </div>
                             </div>

@@ -84,8 +84,8 @@ class GatewayController extends Controller
         $orderId         = $request->id ?? "";
         $chkOrder        = Orders::find($orderId);
         $consignmentId = $chkOrder && !empty($chkOrder->pathao_consignment_id)
-    ? $chkOrder->pathao_consignment_id
-    : 0;
+            ? $chkOrder->pathao_consignment_id
+            : 0;
         //$consignmentId   = $chkOrder ? $chkOrder->pathao_consignment_id : "";
 
         $orderResonse    = PathaoCourier::order()->orderDetails($consignmentId);
