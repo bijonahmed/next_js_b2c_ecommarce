@@ -34,6 +34,10 @@ class Orders extends Model
         'shipping_phone',
         'address',
         'coupons',
+        'pathao_consignment_id',
+        'pathao_merchant_order_id',
+        'pathao_order_status',
+        'pathao_delivery_fee',
         'orderUpdateby'
     ];
 }

@@ -31,6 +31,9 @@ class GatewayController extends Controller
 {
 
 
+
+
+
     public function checkInitialized(PathaoService $pathao)
     {
         $data['store'] = PathaoCourier::store()->list();
@@ -47,12 +50,26 @@ class GatewayController extends Controller
     public function checkZone(Request $request, PathaoService $pathao)
     {
 
-        $zoneId = $request->zone_id ?? "";
+        $cityId = $request->cityId ?? "";
 
-        $response = PathaoCourier::area()->area($zoneId);
+        $response = PathaoCourier::area()->zone($cityId);
 
         // Make sure you use the correct property from the response
         $data['zone'] = $response->response ?? $response; // fallback if response missing
+        return response()->json([
+            'success'      => true,
+            'responseData' => $data,
+        ], 200);
+    }
+
+
+    public function checkZoneWiseArea(Request $request, PathaoService $pathao)
+    {
+
+        $zone_id = $request->zone_id ?? "";
+        $response = PathaoCourier::area()->area($zone_id);
+        // Make sure you use the correct property from the response
+        $data['area'] = $response->response ?? $response; // fallback if response missing
 
         return response()->json([
             'success'      => true,
@@ -60,25 +77,106 @@ class GatewayController extends Controller
         ], 200);
     }
 
-    public function orderSendToGateway(Request $request, PathaoService $pathao)
+    public function checkPathaoResponseOrder(Request $request, PathaoService $pathao)
     {
-        return PathaoCourier::store()->list();
-        //return PathaoCourier::area()->city();
-        //$cityId = '52';
-        // return PathaoCourier::area()->zone($cityId);
-        //$zoneId = '156';
-        // return PathaoCourier::area()->area($zoneId);
+
+        //dd($request->all());
+        $orderId         = $request->id ?? "";
+        $chkOrder        = Orders::find($orderId);
+        $consignmentId = $chkOrder && !empty($chkOrder->pathao_consignment_id)
+    ? $chkOrder->pathao_consignment_id
+    : 0;
+        //$consignmentId   = $chkOrder ? $chkOrder->pathao_consignment_id : "";
+
+        $orderResonse    = PathaoCourier::order()->orderDetails($consignmentId);
+
+        $pathao_order_status    = $orderResonse->order_status ?? "";
+
+        Orders::where('id', $request->id)->update([
+            'pathao_order_status'      => $pathao_order_status ?? "",
+        ]);
+
+
+        $pathaoData = [
+            'consignment_id'    => $chkOrder->pathao_consignment_id,
+            'merchant_order_id' => $chkOrder->pathao_merchant_order_id,
+            'order_status'      => $chkOrder->pathao_order_status,
+            'delivery_fee'      => $chkOrder->pathao_delivery_fee,
+        ];
+
+
+
+
+        return response()->json([
+            'success'      => true,
+            'orderResonse' => $pathaoData,
+        ], 200);
+    }
+
+
+
+    public function sendMerchant(Request $request, PathaoService $pathao)
+    {
+
+        $validated = $request->validate([
+            'id'       => 'required|integer',
+            'status'   => 'required|integer',
+            'store_id' => 'required|integer',
+            'city_id'  => 'required|integer',
+            'zone_id'  => 'required|integer',
+            'area_id'  => 'required|integer',
+        ], [
+            'id.required'       => 'Order ID is required.',
+            'id.integer'        => 'Order ID must be an integer.',
+
+            'status.required'   => 'Status is required.',
+            'status.integer'    => 'Status must be an integer.',
+
+            'store_id.required' => 'Store is required.',
+            'store_id.integer'  => 'Store must be an integer.',
+
+            'city_id.required'  => 'City is required.',
+            'city_id.integer'   => 'City must be an integer.',
+
+            'zone_id.required'  => 'Zone is required.',
+            'zone_id.integer'   => 'Zone must be an integer.',
+
+            'area_id.required'  => 'Area is required.',
+            'area_id.integer'   => 'Area must be an integer.',
+        ]);
+
+        $checkOrder           =  Orders::find($request->id);
+        $orderId              = $checkOrder ? $checkOrder->orderId : "";
+        $recipient_address    = $checkOrder ? $checkOrder->address : "";
+        $shipping_phone       = $checkOrder ? $checkOrder->shipping_phone : "";
+
+        //Customer 
+
+        $chkCustomer          = User::find($checkOrder->customer_id);
+        $customerName         = $chkCustomer ? $chkCustomer->name : "";
+
+        //dd("Order ID: $orderId-- Reciept Name: $customerName--Phone: $shipping_phone--Address: $recipient_address");
+
+        $user = Auth::user();
+        // Prepare update data
+        $data = [
+            'order_status'     => 10, //$validated['status'],
+            'orderUpdateDate'  => date("Y-m-d"),
+            'orderUpdateby'    => $user->id,
+        ];
+
+        Orders::where('id', $request->id)->update($data);
 
         $pathaoOrder =  PathaoCourier::order()
             ->create([
-                "store_id"            => 349959, // Find in store list,
-                "merchant_order_id"   => "ORD-" . time(), // Unique order id
-                "recipient_name"      => "Gazi Giash Uddin", // Customer name
-                "recipient_phone"     => "01988846927", // Customer phone
-                "recipient_address"   => "House 123, Mirpur-1, Dhaka", // Customer address
-                "recipient_city"      => 52, // Find in city method
-                "recipient_zone"      => "156", // Find in zone method
-                "recipient_area"      => "13193", // Find in Area method
+                "store_id"            => $request->store_id, //349959, // Find in store list,
+                "merchant_order_id"   => $orderId, //"ORD-" . time(), // Unique order id
+                "recipient_name"      => $customerName, //"Gazi Giash Uddin", // Customer name
+                "recipient_phone"     => $shipping_phone, //"01988846927", // Customer phone
+                "recipient_address"   => $recipient_address, //"House 123, Mirpur-1, Dhaka", // Customer address
+                "recipient_city"      => $request->city_id, //52, // Find in city method
+                "recipient_zone"      => $request->zone_id, //"156", // Find in zone method
+                "recipient_area"      => $request->area_id, //"13193", // Find in Area method
                 "delivery_type"       => "48", // 48 for normal delivery or 12 for on demand delivery
                 "item_type"           => 2, // 1 for document,
                 "special_instruction" => "",
@@ -88,73 +186,20 @@ class GatewayController extends Controller
                 "item_description"    => "No details" // product details
             ]);
 
-
-
-        dd($pathaoOrder);
-
-
-
-
-        //    dd($pathao->getStores());
-
-        return response()->json($pathao->getStores());
-        // api 
-
-        // Validate request
-        $validated = $request->validate([
-            'id'     => 'required|integer|exists:orders,id',
-            'status' => 'required|integer',
+        // 3. Extract Pathao data and update your order
+        Orders::where('id', $request->id)->update([
+            'pathao_consignment_id'      => $pathaoOrder->consignment_id ?? null,
+            'pathao_merchant_order_id'   => $pathaoOrder->merchant_order_id ?? null,
+            'pathao_order_status'        => $pathaoOrder->order_status ?? null,
+            'pathao_delivery_fee'        => $pathaoOrder->delivery_fee ?? null,
         ]);
-        $user = Auth::user();
-        // Prepare update data
-        $data = [
-            'order_status'     => $validated['status'],
-            'orderUpdateDate'  => date("Y-m-d"),
-            'orderUpdateby'    => $user->id,
-        ];
-
-        /*
-
-        $gettoken = PathaoToken::find(1);
-        $token = $gettoken->access_token;
-        //dd($token);
-        // $request->validate([
-        //     "recipient_name" => "required|min:3",
-        //     "recipient_phone" => "required|min:11|max:11",
-        //     "recipient_address" => "required|min:10",
-        //     "item_quantity" => "required|integer|min:1",
-        //     "item_weight" => "required|numeric|min:0.5",
-        //     "amount_to_collect" => "required|numeric|min:0",
-        // ]);
-
-        $payload = [
-            "store_id"            => 148941,
-            "merchant_order_id"   => "ORD-" . time(),
-            "recipient_name"      => "Gazi Giash Uddin",
-            "recipient_phone"     => "01988846927",
-            "recipient_address"   => "House 123, Mirpur-1, Dhaka", // 10+ characters
-            "delivery_type"       => 48,
-            "item_type"           => 2,
-            "item_quantity"       => 1,
-            "item_weight"         => "0.5",
-            "item_description"    => "Test cloth item",
-            "special_instruction" => "Test instruction",
-            "amount_to_collect"   => 900
-        ];
-
-      
-
-        dd($response->json());
-     */
 
 
-        // Update order
-        $response = Orders::where('id', $validated['id'])->update($data);
 
         return response()->json([
             'success' => true,
             'message' => 'Order status updated successfully',
-            'updated' => $response,
+            'orderResonse' => $pathaoOrder,
         ], 200);
     }
 }

@@ -21,7 +21,8 @@ export default function EditProductForm({ id }) {
   const [orderHistory, setOrderHistory] = useState([]);
   const [storeList, setStoreList] = useState([]);
   const [cityList, setCityList] = useState([]);
-  const [areaList, setZoneList] = useState([]);
+  const [zoneList, setZoneList] = useState([]);
+  const [areaList, setAreaList] = useState([]);
   const [updateStatus, setUpdateStatus] = useState("");
   const [updateBy, setUpdateBy] = useState("");
   const { ordersStsData } = getOrderStatusList();
@@ -29,8 +30,11 @@ export default function EditProductForm({ id }) {
   const [citySearch, setCitySearch] = useState("");
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedStoreId, setSelectedStoreId] = useState(null);
+  const [selectedZoneId, setSelectedZoneId] = useState(null);
   const [selectedAreaId, setSelectedAreaId] = useState(null);
+  const [pathaoOrderStatus, setPathaoOrderStatus] = useState(null);
   const [areaSearch, setAreaSearch] = useState("");
+  const [orderResponseData, setOrderResponseData] = useState(null);
   const filteredCityList = cityList.filter((city) =>
     city.city_name.toLowerCase().includes(citySearch.toLowerCase())
   );
@@ -42,6 +46,37 @@ export default function EditProductForm({ id }) {
     document.body.innerHTML = originalContents;
     window.location.reload();
   };
+
+  const fetchPathoResponse = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/deliveryAssign/checkPathaoResponseOrder?id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setOrderResponseData(data.orderResonse);
+        setPathaoOrderStatus(data.orderResonse.order_status);
+        console.log(
+          "Patho Respose Order status:" + data.orderResonse.order_status
+        );
+      } else {
+        console.error("Auth error:", data.message);
+      }
+    } catch (err) {
+      console.error("API error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchInvoice = async () => {
     try {
       setLoading(true);
@@ -71,6 +106,7 @@ export default function EditProductForm({ id }) {
       setLoading(false);
     }
   };
+
   // Set into state
   const title = `Order ID: [${id}]`;
   useEffect(() => {
@@ -78,6 +114,7 @@ export default function EditProductForm({ id }) {
   }, [title]);
   useEffect(() => {
     fetchInvoice();
+    fetchPathoResponse();
   }, [id]);
   // Submit handler
   const handleStatusUpdate = async (e) => {
@@ -140,7 +177,6 @@ export default function EditProductForm({ id }) {
   };
   const handleCityClick = async (cityId) => {
     setSelectedCity(cityId); // set selected city
-    setLoading(true); // optional: show loading spinner
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE}/deliveryAssign/checkZone`,
@@ -150,7 +186,7 @@ export default function EditProductForm({ id }) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ zone_id: cityId }), // send selected city_id
+          body: JSON.stringify({ cityId: cityId }), // send selected city_id
         }
       );
       const data = await res.json();
@@ -161,31 +197,55 @@ export default function EditProductForm({ id }) {
       }
     } catch (error) {
       toast.error("Something went wrong!");
-    } finally {
-      setLoading(false); // stop loading
     }
   };
-
+  const handleZoneClick = async (zone_id) => {
+    setSelectedZoneId(zone_id); // set selected city
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/deliveryAssign/checkZoneWiseArea`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ zone_id: zone_id }), // send selected city_id
+        }
+      );
+      const data = await res.json();
+      if (data.success) {
+        setAreaList(data.responseData.area.data || []);
+      } else {
+        toast.error("Failed to fetch zone data");
+      }
+    } catch (error) {
+      toast.error("Something went wrong!");
+    }
+  };
   const sendToPathaoMerchant = async () => {
-    if (!selectedStoreId || !selectedCity || !selectedAreaId) {
+    if (
+      !selectedStoreId ||
+      !selectedCity ||
+      !selectedStoreId ||
+      !selectedAreaId
+    ) {
       toast.error("Please select Store, City, and Area before sending.");
       return;
     }
-
     try {
-      // Optional: show loading state
       setLoading(true);
-
-      // Construct payload
       const payload = {
+        id: invoice.id,
+        status: updateStatus,
         store_id: selectedStoreId,
         city_id: selectedCity,
+        zone_id: selectedZoneId,
         area_id: selectedAreaId,
       };
-
       // Send request
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/pathao/sendMerchant`,
+        `${process.env.NEXT_PUBLIC_API_BASE}/deliveryAssign/sendMerchant`,
         {
           method: "POST",
           headers: {
@@ -195,14 +255,14 @@ export default function EditProductForm({ id }) {
           body: JSON.stringify(payload),
         }
       );
-
       const data = await res.json();
-
       if (res.ok && data.success) {
         toast.success("Successfully sent to Pathao Merchant!");
-        // Optional: close modal
+        setCityList([]);
+        setZoneList([]);
+        setAreaList([]);
+        setOrderResponseData(data.orderResonse);
         setShowModal(false);
-        // Optional: reset selection
         setSelectedStoreId(null);
         setSelectedCity(null);
         setSelectedAreaId(null);
@@ -216,7 +276,6 @@ export default function EditProductForm({ id }) {
       setLoading(false);
     }
   };
-
   const handleSendtoDelivery = async (e) => {
     e.preventDefault();
     if (!updateStatus) {
@@ -226,7 +285,6 @@ export default function EditProductForm({ id }) {
     checkFirstStore();
     return false;
   };
-
   if (!permissions.includes("view order")) {
     router.replace("/dashboard");
     return null;
@@ -293,15 +351,20 @@ export default function EditProductForm({ id }) {
                       </tr>
                       <tr>
                         <td>
+                          <strong>Shipping Address:</strong> {invoice.address}
+                        </td>
+                        <td>
                           <strong>Shipping Phone:</strong>{" "}
                           {invoice.shipping_phone}
                         </td>
+                      </tr>
+                      <tr>
                         <td>
                           <strong>Status:</strong> {invoice.status_name}
                         </td>
                       </tr>
                       <tr>
-                        <td colSpan="2">
+                        <td colSpan="3">
                           <strong>Payment Method:</strong>&nbsp;
                           {toUpperSafe(invoice?.paymentMethod)}
                           {/* If Bkash then show details */}
@@ -383,15 +446,27 @@ export default function EditProductForm({ id }) {
                 <div className="card shadow-sm border-0 rounded-4">
                   <div className="card-body text-center p-4">
                     <h5 className="mb-3 fw-bold">Delivery Action</h5>
-                    <form onSubmit={handleSendtoDelivery}>
-                      <button
-                        className="btn btn-primary w-100 py-3 rounded-4 fw-semibold d-flex justify-content-center align-items-center gap-2"
-                        type="submit"
-                      >
-                        <i className="bi bi-truck"></i>
-                        Transfer to Pathao
-                      </button>
-                    </form>
+
+                    {pathaoOrderStatus ? (
+                      <>
+                        <button className="btn btn-danger w-100 py-3 rounded-4 fw-semibold d-flex justify-content-center align-items-center gap-2">
+                          <i className="bi bi-truck"></i>
+                          Already Sent to Pathao
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <form onSubmit={handleSendtoDelivery}>
+                          <button
+                            className="btn btn-primary w-100 py-3 rounded-4 fw-semibold d-flex justify-content-center align-items-center gap-2"
+                            type="submit"
+                          >
+                            <i className="bi bi-truck"></i>
+                            Transfer to Pathao
+                          </button>
+                        </form>
+                      </>
+                    )}
                   </div>
                 </div>
                 {/* Status Card */}
@@ -400,13 +475,12 @@ export default function EditProductForm({ id }) {
                     <h5 className="mb-4 fw-bold">Update Status</h5>
                     <form
                       onSubmit={handleStatusUpdate}
-                      className="d-flex justify-content-center gap-3 flex-wrap"
+                      className="d-flex justify-content-center"
                     >
                       <select
                         className="form-select form-select-lg rounded-pill status-select px-4 py-2 shadow-sm"
                         value={updateStatus}
                         onChange={(e) => setUpdateStatus(e.target.value)}
-                        style={{ maxWidth: "200px" }}
                       >
                         <option value="">Select Status</option>
                         {ordersStsData.map((r) => (
@@ -422,6 +496,36 @@ export default function EditProductForm({ id }) {
                         Update
                       </button>
                     </form>
+                    {orderResponseData && (
+                        <div className="card mt-3">
+                          <div className="card-body">
+                            <h5 className="fw-bold mb-3">
+                              Pathao Order Response
+                            </h5>
+                            <table className="table table-bordered table-sm">
+                              <tbody>
+                                <tr>
+                                  <th>Consignment ID</th>
+                                  <td>{orderResponseData.consignment_id}</td>
+                                </tr>
+                                <tr>
+                                  <th>Merchant Order ID</th>
+                                  <td>{orderResponseData.merchant_order_id}</td>
+                                </tr>
+                                <tr>
+                                  <th>Order Status</th>
+                                  <td>{orderResponseData.order_status}</td>
+                                </tr>
+                                <tr>
+                                  <th>Delivery Fee</th>
+                                  <td>{orderResponseData.delivery_fee}</td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                    )}
+                    
                   </div>
                 </div>
               </div>
@@ -460,6 +564,7 @@ export default function EditProductForm({ id }) {
                     <strong>Reciept Address:</strong> Dhaka, Bangladesh ,
                     <strong>Selected Store:</strong> {selectedStoreId},
                     <strong>Selected City:</strong> {selectedCity} ,
+                    <strong>Selected Zone:</strong> {selectedAreaId},
                     <strong>Selected Area:</strong> {selectedAreaId}
                   </div>
                   <div className="d-flex gap-3 flex-wrap">
@@ -579,97 +684,196 @@ export default function EditProductForm({ id }) {
                   {/* Area List */}
                   <div className="card shadow-sm mb-3">
                     <div className="card-body">
-                      <h5 className="fw-bold mb-3">Area List</h5>
-                      {/* Search Input */}
                       <div className="row">
-                        <div className="col-12">
-                          <div className="mb-3 d-flex justify-content-end">
-                            <input
-                              type="text"
-                              className="form-control w-auto"
-                              placeholder="Search Area..."
-                              value={areaSearch}
-                              onChange={(e) => setAreaSearch(e.target.value)}
-                            />
-                          </div>
-                          {/* Table */}
-                          <div
-                            className="table-responsive"
-                            style={{ maxHeight: "250px", overflowY: "auto" }}
-                          >
-                            <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
-                              <thead className="table-primary">
-                                <tr>
-                                  <th>#</th>
-                                  <th>Area ID</th>
-                                  <th>Area Name</th>
-                                  <th>Home Delivery</th>
-                                  <th>Pickup Available</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {areaList.filter((area) =>
-                                  area.area_name
-                                    .toLowerCase()
-                                    .includes(areaSearch.toLowerCase())
-                                ).length > 0 ? (
-                                  areaList
-                                    .filter((area) =>
-                                      area.area_name
+                        <div className="col-6">
+                          <h5 className="fw-bold mb-3">Zone List</h5>
+                          {/* Search Input */}
+                          <div className="row">
+                            <div className="col-12">
+                              <div className="mb-3 d-flex justify-content-end">
+                                <input
+                                  type="text"
+                                  className="form-control w-auto"
+                                  placeholder="Search Area..."
+                                  value={areaSearch}
+                                  onChange={(e) =>
+                                    setAreaSearch(e.target.value)
+                                  }
+                                />
+                              </div>
+                              {/* Table */}
+                              <div
+                                className="table-responsive"
+                                style={{
+                                  maxHeight: "250px",
+                                  overflowY: "auto",
+                                }}
+                              >
+                                <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
+                                  <thead className="table-primary">
+                                    <tr>
+                                      <th>#</th>
+                                      <th>Zone ID</th>
+                                      <th>Zone Name</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {zoneList.filter((zone) =>
+                                      zone.zone_name
                                         .toLowerCase()
                                         .includes(areaSearch.toLowerCase())
-                                    )
-                                    .map((area, index) => (
-                                      <tr
-                                        key={area.area_id}
-                                        onClick={() =>
-                                          setSelectedAreaId(area.area_id)
-                                        }
-                                        style={{ cursor: "pointer" }}
-                                        className={
-                                          selectedAreaId === area.area_id
-                                            ? "table-primary"
-                                            : ""
-                                        }
-                                      >
-                                        <td>{index + 1}</td>
-                                        <td>{area.area_id}</td>
-                                        <td className="text-start">
-                                          {area.area_name}
-                                        </td>
-                                        <td>
-                                          {area.home_delivery_available ? (
-                                            <span className="badge bg-success">
-                                              Yes
-                                            </span>
-                                          ) : (
-                                            <span className="badge bg-danger">
-                                              No
-                                            </span>
-                                          )}
-                                        </td>
-                                        <td>
-                                          {area.pickup_available ? (
-                                            <span className="badge bg-success">
-                                              Yes
-                                            </span>
-                                          ) : (
-                                            <span className="badge bg-danger">
-                                              No
-                                            </span>
-                                          )}
+                                    ).length > 0 ? (
+                                      zoneList
+                                        .filter((zone) =>
+                                          zone.zone_name
+                                            .toLowerCase()
+                                            .includes(areaSearch.toLowerCase())
+                                        )
+                                        .map((zone, index) => (
+                                          <tr
+                                            key={zone.zone_id}
+                                            onClick={() =>
+                                              handleZoneClick(zone.zone_id)
+                                            }
+                                            style={{ cursor: "pointer" }}
+                                            className={
+                                              selectedAreaId === zone.zone_id
+                                                ? "table-primary"
+                                                : ""
+                                            }
+                                          >
+                                            <td>{index + 1}</td>
+                                            <td>{zone.zone_id}</td>
+                                            <td className="text-start">
+                                              {zone.zone_name}
+                                            </td>
+                                          </tr>
+                                        ))
+                                    ) : (
+                                      <tr>
+                                        <td colSpan="5" className="text-center">
+                                          No areas found
                                         </td>
                                       </tr>
-                                    ))
-                                ) : (
-                                  <tr>
-                                    <td colSpan="5" className="text-center">
-                                      No areas found
-                                    </td>
-                                  </tr>
-                                )}
-                              </tbody>
-                            </table>
+                                    )}
+                                  </tbody>
+                                </table>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-6">
+                          {/* Area List */}
+                          <div className="card shadow-sm mb-3">
+                            <div className="card-body">
+                              <h5 className="fw-bold mb-3">Area List</h5>
+                              {/* Search Input */}
+                              <div className="row">
+                                <div className="col-12">
+                                  <div className="mb-3 d-flex justify-content-end">
+                                    <input
+                                      type="text"
+                                      className="form-control w-auto"
+                                      placeholder="Search Area..."
+                                      value={areaSearch}
+                                      onChange={(e) =>
+                                        setAreaSearch(e.target.value)
+                                      }
+                                    />
+                                  </div>
+                                  {/* Table */}
+                                  <div
+                                    className="table-responsive"
+                                    style={{
+                                      maxHeight: "250px",
+                                      overflowY: "auto",
+                                    }}
+                                  >
+                                    <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
+                                      <thead className="table-primary">
+                                        <tr>
+                                          <th>#</th>
+                                          <th>Area ID</th>
+                                          <th>Area Name</th>
+                                          <th>Home Delivery</th>
+                                          <th>Pickup Available</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {areaList.filter((area) =>
+                                          area.area_name
+                                            .toLowerCase()
+                                            .includes(areaSearch.toLowerCase())
+                                        ).length > 0 ? (
+                                          areaList
+                                            .filter((area) =>
+                                              area.area_name
+                                                .toLowerCase()
+                                                .includes(
+                                                  areaSearch.toLowerCase()
+                                                )
+                                            )
+                                            .map((area, index) => (
+                                              <tr
+                                                key={area.area_id}
+                                                onClick={() =>
+                                                  setSelectedAreaId(
+                                                    area.area_id
+                                                  )
+                                                }
+                                                style={{ cursor: "pointer" }}
+                                                className={
+                                                  selectedAreaId ===
+                                                  area.area_id
+                                                    ? "table-primary"
+                                                    : ""
+                                                }
+                                              >
+                                                <td>{index + 1}</td>
+                                                <td>{area.area_id}</td>
+                                                <td className="text-start">
+                                                  {area.area_name}
+                                                </td>
+                                                <td>
+                                                  {area.home_delivery_available ? (
+                                                    <span className="badge bg-success">
+                                                      Yes
+                                                    </span>
+                                                  ) : (
+                                                    <span className="badge bg-danger">
+                                                      No
+                                                    </span>
+                                                  )}
+                                                </td>
+                                                <td>
+                                                  {area.pickup_available ? (
+                                                    <span className="badge bg-success">
+                                                      Yes
+                                                    </span>
+                                                  ) : (
+                                                    <span className="badge bg-danger">
+                                                      No
+                                                    </span>
+                                                  )}
+                                                </td>
+                                              </tr>
+                                            ))
+                                        ) : (
+                                          <tr>
+                                            <td
+                                              colSpan="5"
+                                              className="text-center"
+                                            >
+                                              No areas found
+                                            </td>
+                                          </tr>
+                                        )}
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

@@ -131,7 +131,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('deliveryAssign')->group(function () {
         Route::post('/checkInitialized', [GatewayController::class, 'checkInitialized']);
         Route::post('/checkZone', [GatewayController::class, 'checkZone']);
-        Route::post('/orderSendToGateway', [GatewayController::class, 'orderSendToGateway']);
+        Route::post('/checkZoneWiseArea', [GatewayController::class, 'checkZoneWiseArea']);
+        Route::post('/sendMerchant', [GatewayController::class, 'sendMerchant']);
+        Route::get('/checkPathaoResponseOrder', [GatewayController::class, 'checkPathaoResponseOrder']);
     });
 
 
