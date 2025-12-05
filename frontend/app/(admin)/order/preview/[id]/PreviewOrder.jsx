@@ -46,6 +46,9 @@ export default function EditProductForm({ id }) {
     document.body.innerHTML = originalContents;
     window.location.reload();
   };
+  const [invoiceData, setInvoiceData] = useState({
+    delivery_charge: "",
+  });
 
   const fetchPathoResponse = async () => {
     try {
@@ -242,6 +245,7 @@ export default function EditProductForm({ id }) {
         city_id: selectedCity,
         zone_id: selectedZoneId,
         area_id: selectedAreaId,
+        delivery_charge: Number(invoiceData.delivery_charge),
       };
       // Send request
       const res = await fetch(
@@ -266,6 +270,8 @@ export default function EditProductForm({ id }) {
         setSelectedStoreId(null);
         setSelectedCity(null);
         setSelectedAreaId(null);
+        router.replace("/order");
+       // window.location.reload();
       } else {
         toast.error(data.message || "Failed to send data.");
       }
@@ -293,6 +299,13 @@ export default function EditProductForm({ id }) {
   const totalAmount = orderHistory.reduce((sum, order) => {
     return sum + order.qty * order.price;
   }, 0);
+
+  useEffect(() => {
+    setInvoiceData({
+      delivery_charge: invoice.devliery_charge || "",
+    });
+  }, [invoice]);
+
   return (
     <main className="app-main" id="main" tabIndex={-1}>
       <Toaster position="top-right" />
@@ -652,51 +665,6 @@ export default function EditProductForm({ id }) {
                             )}
                           </select>
                         </div>
-
-                        <div
-                          className="table-responsive"
-                          style={{ maxHeight: "300px", overflowY: "auto" }}
-                        >
-                          {/* <table className="table table-hover table-striped align-middle text-center mb-0 text-nowrap">
-                            <thead className="table-info">
-                              <tr>
-                                <th>#</th>
-                                <th>City ID</th>
-                                <th>City Name</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {filteredCityList.length > 0 ? (
-                                filteredCityList.map((city, index) => (
-                                  <tr
-                                    key={city.city_id}
-                                    style={{ cursor: "pointer" }}
-                                    onClick={() =>
-                                      handleCityClick(city.city_id)
-                                    }
-                                    className={
-                                      selectedCity === city.city_id
-                                        ? "table-primary"
-                                        : ""
-                                    }
-                                  >
-                                    <td>{index + 1}</td>
-                                    <td>{city.city_id}</td>
-                                    <td className="text-start">
-                                      {city.city_name}
-                                    </td>
-                                  </tr>
-                                ))
-                              ) : (
-                                <tr>
-                                  <td colSpan="3" className="text-center">
-                                    No cities found
-                                  </td>
-                                </tr>
-                              )}
-                            </tbody>
-                          </table> */}
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -808,6 +776,24 @@ export default function EditProductForm({ id }) {
                                     )}
                                   </select>
                                 </div>
+                              </div>
+
+                              <div className="mb-3">
+                                <label className="form-label">
+                                  Delivery Charge{" "}
+                                </label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  name="delivery_charge"
+                                  defaultValue={invoice.devliery_charge} // FIX
+                                  onBlur={(e) =>
+                                    setInvoiceData((prev) => ({
+                                      ...prev,
+                                      delivery_charge: e.target.value,
+                                    }))
+                                  }
+                                />
                               </div>
                             </div>
                           </div>

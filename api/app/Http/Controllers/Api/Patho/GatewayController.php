@@ -118,13 +118,16 @@ class GatewayController extends Controller
     public function sendMerchant(Request $request, PathaoService $pathao)
     {
 
-        $validated = $request->validate([
+       // dd($request->all());
+
+        $request->validate([
             'id'       => 'required|integer',
             'status'   => 'required|integer',
             'store_id' => 'required|integer',
             'city_id'  => 'required|integer',
             'zone_id'  => 'required|integer',
             'area_id'  => 'required|integer',
+            'delivery_charge'  => 'required|integer',
         ], [
             'id.required'       => 'Order ID is required.',
             'id.integer'        => 'Order ID must be an integer.',
@@ -143,6 +146,8 @@ class GatewayController extends Controller
 
             'area_id.required'  => 'Area is required.',
             'area_id.integer'   => 'Area must be an integer.',
+            'delivery_charge.integer'   => 'Delivery charge must be an integer.',
+
         ]);
 
         $checkOrder           =  Orders::find($request->id);
@@ -182,7 +187,7 @@ class GatewayController extends Controller
                 "special_instruction" => "",
                 "item_quantity"       => "1", // item quantity
                 "item_weight"         => "1", // parcel weight
-                "amount_to_collect"   => "60", // amount to collect
+                "amount_to_collect"   => $request->delivery_charge,//"60", // amount to collect
                 "item_description"    => "No details" // product details
             ]);
 
