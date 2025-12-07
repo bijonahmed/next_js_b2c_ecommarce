@@ -128,8 +128,9 @@ export default function ProductsSliders() {
                       alt={product.name}
                       className="img-fluid"
                       style={{
-                        height: "250px",
+                        height: "100%",
                         objectFit: "cover",
+                        padding: '5px',
                         width: "100%",
                       }}
                     />

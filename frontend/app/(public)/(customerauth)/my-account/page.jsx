@@ -60,7 +60,7 @@ export default function LoginPage() {
         <div className="container">
           <ul className="breadcrumb">
             <li>
-              <a href="index.html">Home</a>
+              <Link href="/">Home</Link>
             </li>
             <li>My account</li>
           </ul>
