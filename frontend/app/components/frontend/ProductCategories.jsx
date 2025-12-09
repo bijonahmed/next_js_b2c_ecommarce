@@ -23,21 +23,24 @@ export default function ProductCategories() {
                   : parent.children.slice(0, 10)
                 ).map((child) => (
                   <li key={child.id}>
-                    <a href={`/shop/${child.slug}`}>{child.name}</a>
+                    <a href={`/shop-categories/${child.slug}`}>{child.name}</a>
                   </li>
                 ))
               ) : (
                 <li className="text-gray-400">No subcategories</li>
               )}
             </ul>
-            <Link className="ps-block__more-link" href={`/product-categories/${parent.slug}`}>
+            <Link
+              className="ps-block__more-link"
+              href={`/product-categories/${parent.slug}`}
+            >
               View All
             </Link>
           </div>
 
           {/* Middle image */}
           <div className="ps-block__slider">
-            <a href={`/shop/${parent.slug}`}>
+            <a href={`/product-categories/${parent.slug}`}>
               <img
                 loading="lazy"
                 src={

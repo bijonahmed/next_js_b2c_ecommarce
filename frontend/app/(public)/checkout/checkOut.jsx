@@ -21,7 +21,7 @@ export default function CheckoutPage() {
   const [userdata, setUserdata] = useState(null);
   const [address, setAddress] = useState("");
   const [shippingPhone, setShippingPhone] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cash");
   const [your_bkash_number, setYourBkashNumber] = useState("");
   const [bkash_transaction_id, setBkashTransactionId] = useState("");
   const [couponCode, setCouponCode] = useState("");
@@ -351,6 +351,31 @@ export default function CheckoutPage() {
               </div>
 
               <h4>Payment method</h4>
+
+              <div className="payment-buttons d-flex gap-3 mb-3">
+
+  {/* Cash Button */}
+  <div
+    className={`payment-option-inline ${paymentMethod === "cash" ? "active" : ""}`}
+    onClick={() => setPaymentMethod("cash")}
+  >
+    <img src="/cash-on-delivery.png" alt="Cash" className="payment-icon" />
+    <span>Cash on Delivery</span>
+  </div>
+
+  {/* Bkash Button */}
+  <div
+    className={`payment-option-inline ${paymentMethod === "bkash" ? "active" : ""}`}
+    onClick={() => setPaymentMethod("bkash")}
+  >
+    <img src="/bkashlogo.svg" alt="Bkash" className="payment-icon" />
+    <span>Bkash</span>
+  </div>
+
+</div>
+
+
+              {/* <h4>Payment method</h4>
               <div className="form-group">
                 <select
                   className="form-control"
@@ -361,7 +386,7 @@ export default function CheckoutPage() {
                   <option value="cash">Cash on Delivery</option>
                   <option value="bkash">Bkash</option>
                 </select>
-              </div>
+              </div> */}
 
               {paymentMethod === "bkash" && mounted && (
                 <div>
