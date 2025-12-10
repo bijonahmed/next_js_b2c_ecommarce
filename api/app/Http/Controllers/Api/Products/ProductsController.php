@@ -121,13 +121,7 @@ class ProductsController extends Controller
     public function deleteGalleryImage(Request $request)
     {
         $user = Auth::user();
-        // Check permission
-        if (! $user->can('delete product')) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Unauthorized: You do not have permission to delete',
-            ], 403);
-        }
+        
         $productId = $request->product_id;
         $imageId   = $request->image_id;
         // Find the gallery image
