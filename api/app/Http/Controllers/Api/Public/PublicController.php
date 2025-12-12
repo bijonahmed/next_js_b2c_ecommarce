@@ -32,6 +32,7 @@ class PublicController extends Controller
     {
         try {
             $categories = ProductCategory::where('status', 1)->get();
+
             $grouped    = $categories->groupBy('parent_id');
             $buildTree  = function ($parentId) use (&$buildTree, $grouped) {
                 return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
@@ -221,6 +222,13 @@ class PublicController extends Controller
             'data' => $mappedCategories,
         ], 200);
     }
+
+     
+
+
+
+
+ 
     public function productsCategory(Request $request)
     {
         try {
@@ -275,6 +283,7 @@ class PublicController extends Controller
             ], 500);
         }
     }
+  
     public function productsCategoryAllData(Request $request)
     {
         try {

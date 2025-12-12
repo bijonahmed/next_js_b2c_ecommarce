@@ -9,54 +9,60 @@ import "../styles/beforeLoading.css";
 export default function ProductCategories() {
   const [loaded, setLoaded] = useState(false);
   const { categoryData, loading } = useCategories();
+
+  if (loading) return <p>Loading...</p>;
+
   return (
     <>
-      {categoryData.map((parent) => (
-        <div key={parent.id} className="ps-block--products-of-category mb-10">
-          {/* Category block container */}
-          <div className="ps-block__categories">
-            <h3>{parent.name}</h3>
-            <ul>
-              {parent.children && parent.children.length > 0 ? (
-                (parent.id === 1
-                  ? parent.children.slice(0, 20)
-                  : parent.children.slice(0, 10)
-                ).map((child) => (
-                  <li key={child.id}>
-                    <a href={`/shop-categories/${child.slug}`}>{child.name}</a>
-                  </li>
-                ))
-              ) : (
-                <li className="text-gray-400">No subcategories</li>
-              )}
-            </ul>
-            <Link
-              className="ps-block__more-link"
-              href={`/product-categories/${parent.slug}`}
-            >
-              View All
-            </Link>
-          </div>
+      {categoryData
+        .filter((parent) => parent.products && parent.products.length > 0) // ✅ Only show categories with products
+        .map((parent) => (
+          <div key={parent.id} className="ps-block--products-of-category mb-10">
+            {/* Category block container */}
+            <div className="ps-block__categories">
+              <h3>{parent.name}</h3>
+              <ul>
+                {parent.children && parent.children.length > 0 ? (
+                  (parent.id === 1
+                    ? parent.children.slice(0, 20)
+                    : parent.children.slice(0, 10)
+                  ).map((child) => (
+                    <li key={child.id}>
+                      <Link href={`/shop-categories/${child.slug}`}>
+                        {child.name}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <li className="text-gray-400">No subcategories</li>
+                )}
+              </ul>
+              <Link
+                className="ps-block__more-link"
+                href={`/product-categories/${parent.slug}`}
+              >
+                View All
+              </Link>
+            </div>
 
-          {/* Middle image */}
-          <div className="ps-block__slider">
-            <a href={`/product-categories/${parent.slug}`}>
-              <img
-                loading="lazy"
-                src={
-                  parent.banner_image
-                    ? parent.banner_image
-                    : "/frontend_theme/img/slider/home-3/blank_category.png"
-                }
-                alt={parent.name}
-              />
-            </a>
-          </div>
+            {/* Middle image */}
+            <div className="ps-block__slider">
+              <Link href={`/product-categories/${parent.slug}`}>
+                <img
+                  loading="lazy"
+                  src={
+                    parent.banner_image
+                      ? parent.banner_image
+                      : "/frontend_theme/img/slider/home-3/blank_category.png"
+                  }
+                  alt={parent.name}
+                />
+              </Link>
+            </div>
 
-          {/* ✅ Product loop section */}
-          <div className="ps-block__product-box">
-            {parent.products && parent.products.length > 0 ? (
-              parent.products.map((product) => (
+            {/* Product loop section */}
+            <div className="ps-block__product-box">
+              {parent.products.map((product) => (
                 <div key={product.id} className="ps-product ps-product--simple">
                   <div
                     className={`image-wrapper ps-product__thumbnail ${
@@ -71,7 +77,7 @@ export default function ProductCategories() {
                             ? product.thumbnail
                             : "/frontend_theme/img/products/clothing/1.jpg"
                         }
-                        onLoad={() => setLoaded(true)} // detect when image fully loaded
+                        onLoad={() => setLoaded(true)}
                         alt={product.name}
                       />
                     </Link>
@@ -86,18 +92,15 @@ export default function ProductCategories() {
                       </Link>
                       <p className="ps-product__price sale">
                         Tk.{product.discount_price ?? "0"}{" "}
-                        <del>Tk.{product.price ?? "0"} </del>
+                        <del>Tk.{product.price ?? "0"}</del>
                       </p>
                     </div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="text-muted ps-3">No products found</p>
-            )}
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
     </>
   );
 }

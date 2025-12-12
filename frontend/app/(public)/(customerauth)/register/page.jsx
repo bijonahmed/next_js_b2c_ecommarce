@@ -78,7 +78,7 @@ export default function RegisterPage() {
           phone_number: "",
           confirmPassword: "",
         });
-         router.replace("/login");
+         router.replace("/my-account");
 
         return;
       }

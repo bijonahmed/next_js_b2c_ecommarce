@@ -22,7 +22,8 @@ export default function ClientNavbar() {
   const { topBannerData } = useCategories();
   const { query, setQuery, products, loading, clearSearch } =
     useProductSearch();
-  //const { user } = useAuth?.() || {}; // optional chaining if AuthContext is optional
+  const { roles, permissions } = useAuth();
+  //const { roles,user } = useAuth?.() || {}; // optional chaining if AuthContext is optional
   const [isFocused, setIsFocused] = useState(false);
   const [token, setToken] = useState(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -299,10 +300,23 @@ export default function ClientNavbar() {
                       <div className="ps-block__right">
                         {token ? (
                           <>
-                            <Link href="/customer-dashboard">My Dashboard</Link>
-                            <Link href="#" onClick={handleLogout}>
-                              Logout
-                            </Link>
+                            {roles == "admin" ? (
+                              <>
+                                <Link href="/dashboard/">Dashboard</Link>
+                                <Link href="#" onClick={handleLogout}>
+                                  Logout
+                                </Link>
+                              </>
+                            ) : (
+                              <>
+                                <Link href="/customer-dashboard">
+                                 My Dashboard
+                                </Link>
+                                <Link href="#" onClick={handleLogout}>
+                                  Logout
+                                </Link>
+                              </>
+                            )}
                           </>
                         ) : (
                           <>
@@ -381,18 +395,31 @@ export default function ClientNavbar() {
                 </div>
                 <div className="ps-block__right">
                   {token ? (
-                    <>
-                      <Link href="/customer-dashboard">My Dashboard</Link>
-                      <Link href="#" onClick={handleLogout}>
-                        Logout
-                      </Link>
-                    </>
-                  ) : (
-                    <>
-                      <Link href="/my-account">Login</Link>
-                      <Link href="/register">Register</Link>
-                    </>
-                  )}
+                          <>
+                            {roles == "admin" ? (
+                              <>
+                                <Link href="/dashboard/">Dashboard</Link>
+                                <Link href="#" onClick={handleLogout}>
+                                  Logout
+                                </Link>
+                              </>
+                            ) : (
+                              <>
+                                <Link href="/customer-dashboard">
+                                 My Dashboard
+                                </Link>
+                                <Link href="#" onClick={handleLogout}>
+                                  Logout
+                                </Link>
+                              </>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <Link href="/my-account">Login</Link>
+                            <Link href="/register">Register</Link>
+                          </>
+                        )}
                 </div>
               </div>
             </div>

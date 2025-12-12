@@ -8409,8 +8409,9 @@ html:not([dir="rtl"]) .noUi-horizontal .noUi-handle {
 }
 
 .ps-product:hover .ps-product__content {
-  visibility: hidden;
+  /*visibility: hidden;
   opacity: 0;
+  */
   height: 0;
 }
 
