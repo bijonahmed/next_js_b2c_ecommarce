@@ -129,11 +129,11 @@ export default function EditProductForm({ id }) {
         const img = new Image();
         img.src = URL.createObjectURL(file);
         img.onload = () => {
-          if (img.width !== 300 || img.height !== 300) {
-            alert("Thumbnail image must be exactly 300px by 300px!");
-            e.target.value = "";
-            return;
-          }
+          // if (img.width !== 300 || img.height !== 300) {
+          //   alert("Thumbnail image must be exactly 300px by 300px!");
+          //   e.target.value = "";
+          //   return;
+          // }
           setFormData((prev) => ({ ...prev, files: file }));
         };
       } else if (name === "gallery") {
@@ -144,8 +144,8 @@ export default function EditProductForm({ id }) {
           img.src = URL.createObjectURL(file);
           img.onload = () => {
             if (img.width !== 600 || img.height !== 600) {
-              allValid = false;
-              alert(`Gallery image "${file.name}" must be 600x600px`);
+              // allValid = false;
+              // alert(`Gallery image "${file.name}" must be 600x600px`);
             } else {
               validFiles.push(file);
             }
@@ -186,11 +186,14 @@ export default function EditProductForm({ id }) {
     payload.append("attributes", JSON.stringify(attributes));
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/product/update`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: payload,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/product/update`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          body: payload,
+        }
+      );
       const data = await res.json();
       if (res.ok) {
         toast.success("Product updated successfully ✅");
@@ -271,7 +274,9 @@ export default function EditProductForm({ id }) {
                         name="name"
                         value={formData.name || ""}
                         onChange={handleChange}
-                        className={`form-control ${errors.name ? "is-invalid" : ""}`}
+                        className={`form-control ${
+                          errors.name ? "is-invalid" : ""
+                        }`}
                       />
                     </div>
 
@@ -369,7 +374,10 @@ export default function EditProductForm({ id }) {
                         className="form-select"
                         value={formData.subcategoryId || ""}
                         onChange={(e) =>
-                          setFormData({ ...formData, subcategoryId: e.target.value })
+                          setFormData({
+                            ...formData,
+                            subcategoryId: e.target.value,
+                          })
                         }
                       >
                         <option value="">-- Select Subcategory --</option>
@@ -395,163 +403,165 @@ export default function EditProductForm({ id }) {
                     </div>
 
                     <div className="mb-2 mt-2">
-                    <label className="form-label">
-                      Thumbnail Image <span className="text-danger">*</span>{" "}
-                      (300px x 300px)
-                    </label>
-                    <input
-                      type="file"
-                      name="files"
-                      accept="image/*"
-                      onChange={handleChange}
-                      className="form-control"
-                    />
-                    {formData.files &&
-                      (typeof formData.files === "string" ||
-                      formData.files instanceof File ? (
-                        <img
-                          src={
-                            typeof formData.files === "string"
-                              ? formData.files
-                              : URL.createObjectURL(formData.files)
-                          }
-                          alt="Preview"
-                          className="img-thumbnail mt-2"
-                          style={{ maxHeight: "150px" }}
-                        />
-                      ) : null)}
-                  </div>
-
-                  <div className="mb-3 mt-4">
-                    Gallery Images <span className="text-danger">*</span> (600px
-                    x 600px)
-                    <input
-                      type="file"
-                      name="gallery"
-                      multiple
-                      accept="image/*"
-                      onChange={(e) => {
-                        const filesArray = Array.from(e.target.files);
-                        const validFiles = [];
-                        let allValid = true;
-
-                        filesArray.forEach((file, idx) => {
-                          const img = new Image();
-                          img.src = URL.createObjectURL(file);
-                          img.onload = () => {
-                            if (img.width !== 600 || img.height !== 600) {
-                              alert(
-                                `"${file.name}" must be exactly 600px x 600px!`
-                              );
-                              allValid = false;
-                            } else {
-                              validFiles.push(file);
-                            }
-
-                            if (idx === filesArray.length - 1) {
-                              if (allValid) {
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  gallery: [...prev.gallery, ...validFiles],
-                                }));
-                              } else {
-                                e.target.value = "";
-                              }
-                            }
-                          };
-                        });
-                      }}
-                      className="form-control"
-                    />
-                    <div className="d-flex flex-wrap gap-2 mt-2">
-                      {formData.gallery.map((file, index) => (
-                        <div
-                          key={index}
-                          className="position-relative me-2 mb-2"
-                        >
+                      <label className="form-label">
+                        Thumbnail Image <span className="text-danger">*</span>{" "}
+                        (300px x 300px)
+                      </label>
+                      <input
+                        type="file"
+                        name="files"
+                        accept="image/*"
+                        onChange={handleChange}
+                        className="form-control"
+                      />
+                      {formData.files &&
+                        (typeof formData.files === "string" ||
+                        formData.files instanceof File ? (
                           <img
                             src={
-                              file.gallery_image_url // existing DB image
-                                ? file.gallery_image_url
-                                : URL.createObjectURL(file) // newly uploaded file
+                              typeof formData.files === "string"
+                                ? formData.files
+                                : URL.createObjectURL(formData.files)
                             }
-                            alt={`preview-${index}`}
-                            style={{
-                              width: "100px",
-                              height: "100px",
-                              objectFit: "cover",
-                            }}
-                            className="border rounded"
+                            alt="Preview"
+                            className="img-thumbnail mt-2"
+                            style={{ maxHeight: "150px" }}
                           />
-
-                          {/* Remove Button */}
-                          <button
-                            type="button"
-                            className="btn btn-danger btn-sm position-absolute"
-                            style={{
-                              top: "-5px",
-                              right: "-5px",
-                              borderRadius: "50%",
-                              padding: "0 6px",
-                              lineHeight: "1",
-                            }}
-                            onClick={async () => {
-                              const isFromDatabase = file.id !== undefined;
-
-                              if (isFromDatabase) {
-                                if (
-                                  confirm(
-                                    "Are you sure you want to delete this image from server?"
-                                  )
-                                ) {
-                                  try {
-                                    const response = await fetch(
-                                      `${process.env.NEXT_PUBLIC_API_BASE}/product/gallery-delete`,
-                                      {
-                                        method: "POST",
-                                        headers: {
-                                          "Content-Type": "application/json",
-                                          Authorization: `Bearer ${token}`,
-                                        },
-                                        body: JSON.stringify({
-                                          image_id: file.id, // send ID to delete
-                                          product_id: file.product_id,
-                                        }),
-                                      }
-                                    );
-                                    const resData = await response.json();
-                                    if (resData.status) {
-                                      alert("Image deleted successfully!");
-                                      setFormData((prev) => ({
-                                        ...prev,
-                                        gallery: prev.gallery.filter(
-                                          (_, i) => i !== index
-                                        ),
-                                      }));
-                                    } else {
-                                      alert("Failed to delete image!");
-                                    }
-                                  } catch (err) {
-                                    console.error("Delete failed:", err);
-                                  }
-                                }
-                              } else {
-                                // Remove locally for newly uploaded files
-                                setFormData((prev) => ({
-                                  ...prev,
-                                  gallery: prev.gallery.filter(
-                                    (_, i) => i !== index
-                                  ),
-                                }));
-                              }
-                            }}
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
+                        ) : null)}
                     </div>
-                  </div>
+
+                    <div className="mb-3 mt-4">
+                      Gallery Images <span className="text-danger">*</span>{" "}
+                      (600px x 600px)
+                      <input
+                        type="file"
+                        name="gallery"
+                        multiple
+                        accept="image/*"
+                        onChange={(e) => {
+                          const filesArray = Array.from(e.target.files);
+                          const validFiles = [];
+                          let allValid = true;
+
+                          filesArray.forEach((file, idx) => {
+                            const img = new Image();
+                            img.src = URL.createObjectURL(file);
+                            img.onload = () => {
+                               validFiles.push(file);
+                               /*
+                              if (img.width !== 600 || img.height !== 600) {
+                               alert(
+                                 `"${file.name}" must be exactly 600px x 600px!`
+                                );
+                                allValid = false;
+                              } else {
+                                validFiles.push(file);
+                              }
+*/
+                              if (idx === filesArray.length - 1) {
+                                if (allValid) {
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    gallery: [...prev.gallery, ...validFiles],
+                                  }));
+                                } else {
+                                  e.target.value = "";
+                                }
+                              }
+                            };
+                          });
+                        }}
+                        className="form-control"
+                      />
+                      <div className="d-flex flex-wrap gap-2 mt-2">
+                        {formData.gallery.map((file, index) => (
+                          <div
+                            key={index}
+                            className="position-relative me-2 mb-2"
+                          >
+                            <img
+                              src={
+                                file.gallery_image_url // existing DB image
+                                  ? file.gallery_image_url
+                                  : URL.createObjectURL(file) // newly uploaded file
+                              }
+                              alt={`preview-${index}`}
+                              style={{
+                                width: "100px",
+                                height: "100px",
+                                objectFit: "cover",
+                              }}
+                              className="border rounded"
+                            />
+
+                            {/* Remove Button */}
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm position-absolute"
+                              style={{
+                                top: "-5px",
+                                right: "-5px",
+                                borderRadius: "50%",
+                                padding: "0 6px",
+                                lineHeight: "1",
+                              }}
+                              onClick={async () => {
+                                const isFromDatabase = file.id !== undefined;
+
+                                if (isFromDatabase) {
+                                  if (
+                                    confirm(
+                                      "Are you sure you want to delete this image from server?"
+                                    )
+                                  ) {
+                                    try {
+                                      const response = await fetch(
+                                        `${process.env.NEXT_PUBLIC_API_BASE}/product/gallery-delete`,
+                                        {
+                                          method: "POST",
+                                          headers: {
+                                            "Content-Type": "application/json",
+                                            Authorization: `Bearer ${token}`,
+                                          },
+                                          body: JSON.stringify({
+                                            image_id: file.id, // send ID to delete
+                                            product_id: file.product_id,
+                                          }),
+                                        }
+                                      );
+                                      const resData = await response.json();
+                                      if (resData.status) {
+                                        alert("Image deleted successfully!");
+                                        setFormData((prev) => ({
+                                          ...prev,
+                                          gallery: prev.gallery.filter(
+                                            (_, i) => i !== index
+                                          ),
+                                        }));
+                                      } else {
+                                        alert("Failed to delete image!");
+                                      }
+                                    } catch (err) {
+                                      console.error("Delete failed:", err);
+                                    }
+                                  }
+                                } else {
+                                  // Remove locally for newly uploaded files
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    gallery: prev.gallery.filter(
+                                      (_, i) => i !== index
+                                    ),
+                                  }));
+                                }
+                              }}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
 
                     {/* Thumbnail & Gallery */}
                     {/* ... Same logic as your previous code */}
