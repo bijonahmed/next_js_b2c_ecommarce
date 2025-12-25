@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Validator;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 
 class ConfirmOrdersController extends Controller
 {
@@ -280,20 +283,20 @@ class ConfirmOrdersController extends Controller
             ];
             */
         } else {
-            /*
-            $msg = "Thanks for your order! ID: $longOrderId. We'll contact you soon.";
-            $smsApiUrl = 'http://139.99.39.237/api/smsapi';
-            $params = [
-                'api_key' => '0YvO1UoW99Z4TprlGUr4',
-                'type' => 'text',
-                'number' => $customerPhone . ',01915728982',
-                'senderid' => '8809604902507',
-                'message' => $msg,
-            ];
-            */
+            $this->sms_send($longOrderId, $customerPhone);
+
+            // $msg = "Thanks for your order! ID: $longOrderId. We'll contact you soon.";
+            // $smsApiUrl = 'http://139.99.39.237/api/smsapi';
+            // $params = [
+            //     'api_key' => '0YvO1UoW99Z4TprlGUr4',
+            //     'type' => 'text',
+            //     'number' => $customerPhone . ',01915728982',
+            //     'senderid' => '8809604902507',
+            //     'message' => $msg,
+            // ];
         }
 
-        //  Http::get($smsApiUrl, $params);
+        //Http::get($smsApiUrl, $params);
 
         return response()->json([
 
@@ -310,30 +313,28 @@ class ConfirmOrdersController extends Controller
     }
 
 
-    public function sms_send()
+    public function sms_send($longOrderId, $customerPhone)
     {
-        $url = 'http://139.99.39.237/api/smsapi';
-        $api_key = '0YvO1UoW99Z4TprlGUr4';
-        $senderid = '8809604902507';
-        $number = '8801753828855';
-        $message = 'test sms check';
 
-        $data = [
-            'api_key' => $api_key,
-            'senderid' => $senderid,
-            'number' => $number,
-            'message' => $message,
-        ];
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        $response = curl_exec($ch);
-        curl_close($ch);
+        $message = "Thanks for your order! ID: {$longOrderId}. We'll contact you soon.";
 
-        return $response;
+        try {
+            $response = Http::asForm()->post('http://bulksmsbd.net/api/smsapi', [
+                'api_key'  => env('BULKSMS_API_KEY'),
+                'senderid' => env('BULKSMS_SENDER_ID'),
+                'number'   => preg_replace('/\D/', '', "88$customerPhone"),
+                'message'  => $message, // ✅ REQUIRED
+            ]);
+            Log::info('SMS send response', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+            return $response->body();
+        } catch (\Exception $e) {
+            Log::error('SMS Error', ['error' => $e->getMessage()]);
+            return false;
+        }
+
     }
 
     public function generateUniqueRandomNumber()

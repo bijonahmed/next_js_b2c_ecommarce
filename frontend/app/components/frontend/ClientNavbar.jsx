@@ -373,6 +373,7 @@ export default function ClientNavbar() {
                 loading="lazy"
                 src="/frontend_theme/img/logo.png"
                 alt="Logo"
+                style={{ height: "40px", width: "auto" }}
               />
             </Link>
           </div>
