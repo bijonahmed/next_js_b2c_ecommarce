@@ -61,7 +61,7 @@ export default function ProductPage() {
 
   const fetchProducts = async (
     page = 1,
-    perPageSize = 10,
+    perPageSize = 100,
     searchQuery = ""
   ) => {
     try {
@@ -229,10 +229,7 @@ export default function ProductPage() {
         <div className="container-fluid">
           <div className="row">
             <div className="col-sm-6">
-              <h3 className="mb-0">
-                {title}&nbsp;
-                <span className="badge bg-primary">{total_records}</span>
-              </h3>
+              <h3 className="mb-0">{title}&nbsp;</h3>
             </div>
             <div className="col-sm-6">
               <ol className="breadcrumb float-sm-end">
@@ -338,7 +335,7 @@ export default function ProductPage() {
                 </div>
               </div>
             </div>
-            <div className="card-body p-0">
+            <div className="card-body p-0 mt-2">
               <CustomDataTable
                 columns={columns}
                 fetchFunction={fetchProducts}

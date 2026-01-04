@@ -223,12 +223,12 @@ class PublicController extends Controller
         ], 200);
     }
 
-     
 
 
 
 
- 
+
+
     public function productsCategory(Request $request)
     {
         try {
@@ -283,7 +283,7 @@ class PublicController extends Controller
             ], 500);
         }
     }
-  
+
     public function productsCategoryAllData(Request $request)
     {
         try {
@@ -294,6 +294,7 @@ class PublicController extends Controller
                 return $grouped->get($parentId, collect())->map(function ($category) use ($buildTree) {
                     // Get up to 6 products for this category
                     $filterProducts = Product::where('categoryId', $category->id)
+                        ->where('status', 1)
                         ->get()
                         ->map(function ($product) {
                             return [
@@ -425,7 +426,8 @@ class PublicController extends Controller
 
     public function checkProductDetails($slug)
     {
-        $product = Product::where('slug', $slug)->first();
+        $product = Product::where('slug', $slug)->where('status', 1)->first();
+        //   dd($product);
         if ($product) {
             $product->thumnail_img = $product->thumnail_img ? url($product->thumnail_img) : null;
         }
@@ -449,6 +451,8 @@ class PublicController extends Controller
                 'vendor'          => 'BIR GROUP',
             ];
         });
+        // dd($product->id);
+
         // Fetch related data
         $attributes = ProductsAttribues::where('product_id', $product->id)->get();
         $galleries  = ProductsGallery::where('product_id', $product->id)->get();

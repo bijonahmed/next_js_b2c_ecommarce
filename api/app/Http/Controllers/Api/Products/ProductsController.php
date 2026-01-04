@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers\Api\Products;
+
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
@@ -18,6 +20,7 @@ use PhpParser\Node\Stmt\TryCatch;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Validator;
+
 class ProductsController extends Controller
 {
     public function index(Request $request)
@@ -29,14 +32,16 @@ class ProductsController extends Controller
             ], 403);
         }
         $page             = (int) $request->input('page', 1);
-        $pageSize         = (int) $request->input('pageSize', 10);
+        $pageSize         = (int) $request->input('pageSize', 50);
         $searchQuery      = $request->input('searchQuery');
         $supplierId       = (int) $request->input('supplierId');
         $categoryId       = (int) $request->input('categoryId');
         $subcategoryId    = (int) $request->input('subcategoryId');
         $status           = (int) $request->input('status');
+
+
         if ($pageSize <= 0) {
-            $pageSize = 10;
+            $pageSize = 50;
         }
         $query = Product::leftJoin('supplier', 'supplier.id', '=', 'product.supplier_id')
             ->select('product.*', 'supplier.name as supplierName')
@@ -53,9 +58,12 @@ class ProductsController extends Controller
         if (!empty($subcategoryId)) {
             $query->where('product.subcategoryId', $subcategoryId);
         }
-        if (!empty($status)) {
-            $query->where('product.status', $status);
+        if ($status !== null) {
+            $query->where('product.status', (int) $status);
         }
+
+
+
         $paginator = $query->paginate($pageSize, ['*'], 'page', $page);
         $modifiedCollection = $paginator->getCollection()->map(function ($item) {
             $chkCat = ProductCategory::where('id', $item->categoryId)->select('name')->first();
@@ -81,7 +89,7 @@ class ProductsController extends Controller
     public function search(Request $request)
     {
         $query = $request->get('query');
-        $products = Product::where('status',1)->where('name', 'like', "%{$query}%")
+        $products = Product::where('status', 1)->where('name', 'like', "%{$query}%")
             ->limit(10)
             ->get(['id', 'name']);
         return response()->json($products);
@@ -121,7 +129,7 @@ class ProductsController extends Controller
     public function deleteGalleryImage(Request $request)
     {
         $user = Auth::user();
-        
+
         $productId = $request->product_id;
         $imageId   = $request->image_id;
         // Find the gallery image
@@ -243,7 +251,7 @@ class ProductsController extends Controller
             // Check if product_id already exists
             $checked = ProductInventory::where('product_id', $productId)->first();
             if (empty($checked)) {
-               
+
                 $attributes = $request->input('attributes');
                 if (is_string($attributes)) {
                     $attributes = json_decode($attributes, true);
@@ -264,7 +272,7 @@ class ProductsController extends Controller
                 // If attributes empty, insert default
                 $pdata = [
                     'product_id'           => $productId,
-                   // 'attribute_variation'  => '',
+                    // 'attribute_variation'  => '',
                     'qty_in'               => $request->stock_qty ?? 0,
                     'stock_date'           => date("Y-m-d"),
                     'user_id'              => $user->id

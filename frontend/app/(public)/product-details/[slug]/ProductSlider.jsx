@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -8,6 +8,19 @@ import "slick-carousel/slick/slick-theme.css";
 export default function ProductSlider({ images }) {
   const [mainSlider, setMainSlider] = useState(null);
   const [thumbSlider, setThumbSlider] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [zoomStyle, setZoomStyle] = useState({
+    transform: "scale(1)",
+    transformOrigin: "center center",
+  });
+
+  /* Detect desktop */
+  useEffect(() => {
+    const checkScreen = () => setIsDesktop(window.innerWidth > 768);
+    checkScreen();
+    window.addEventListener("resize", checkScreen);
+    return () => window.removeEventListener("resize", checkScreen);
+  }, []);
 
   const mainSettings = {
     asNavFor: thumbSlider,
@@ -32,7 +45,27 @@ export default function ProductSlider({ images }) {
     focusOnSelect: true,
     arrows: false,
     infinite: true,
-    centerMode: false,
+  };
+
+  /* Zoom handlers */
+  const handleMove = (e) => {
+    if (!isDesktop) return;
+
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    setZoomStyle({
+      transform: "scale(1.7)",
+      transformOrigin: `${x}% ${y}%`,
+    });
+  };
+
+  const handleLeave = () => {
+    setZoomStyle({
+      transform: "scale(1)",
+      transformOrigin: "center center",
+    });
   };
 
   return (
@@ -42,6 +75,7 @@ export default function ProductSlider({ images }) {
         display: "flex",
         gap: "10px",
         alignItems: "flex-start",
+        width: "100%",
       }}
     >
       {/* Left Thumbnail Slider */}
@@ -50,7 +84,7 @@ export default function ProductSlider({ images }) {
         style={{
           width: "60px",
           flexShrink: 0,
-          overflow: "hidden", // hide unwanted scrollbars on desktop
+          overflow: "hidden",
         }}
       >
         <Slider {...thumbSettings}>
@@ -78,22 +112,37 @@ export default function ProductSlider({ images }) {
         style={{
           width: "500px",
           maxWidth: "100%",
-          height: "500px",
-          flexShrink: 0,
+          aspectRatio: "1 / 1",
         }}
       >
         <Slider {...mainSettings}>
           {images.map((img, index) => (
             <div key={index}>
-              <img
-                src={img}
-                alt={`Product ${index + 1}`}
+              <div
+                onMouseMove={handleMove}
+                onMouseLeave={handleLeave}
                 style={{
                   width: "100%",
                   height: "100%",
-                  objectFit: "cover",
+                  overflow: "hidden",
+                  border: "1px solid #ddd",      // ✅ BORDER
+                  borderRadius: "4px",
+                  cursor: isDesktop ? "zoom-in" : "default",
                 }}
-              />
+              >
+                <img
+                  src={img}
+                  alt={`Product ${index + 1}`}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transition: "transform 0.3s ease",
+                    cursor: isDesktop ? "zoom-out" : "default",
+                    ...zoomStyle,
+                  }}
+                />
+              </div>
             </div>
           ))}
         </Slider>
@@ -105,11 +154,10 @@ export default function ProductSlider({ images }) {
           overflow: hidden !important;
         }
 
-        /* Mobile: hide left vertical thumbnail slider */
+        /* Mobile: keep design clean */
         @media (max-width: 480px) {
           .product-slider-wrapper {
             flex-direction: column;
-           
           }
 
           .thumb-slider {
@@ -118,9 +166,7 @@ export default function ProductSlider({ images }) {
 
           .main-slider {
             width: 100% !important;
-            height: auto;
           }
-
         }
       `}</style>
     </div>

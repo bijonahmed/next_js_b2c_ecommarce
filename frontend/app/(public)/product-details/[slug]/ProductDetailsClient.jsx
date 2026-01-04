@@ -185,7 +185,7 @@ export default function ProductDetailsClient({ slug }) {
                 <div className="ps-product__thumbnail">
                   <ProductSlider images={images} />
                 </div>
-                <div className="ps-product__info">
+                <div className="ps-product__info ms-2">
                   <h1>{productRow.name}</h1>
                   <div className="ps-product__meta">
                     <p>
