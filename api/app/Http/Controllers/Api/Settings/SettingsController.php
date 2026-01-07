@@ -44,35 +44,38 @@ class SettingsController extends Controller
                 'email'       => 'required',
                 'devliery_charge_inside_dhk'  => 'required',
                 'devliery_charge_outside_dhk' => 'required',
-
             ]);
+
             if ($validator->fails()) {
                 return response()->json(['errors' => $validator->errors()], 422);
             }
-            $data = array(
-                'name'              => !empty($request->name) ? $request->name : "",
-                'email'             => !empty($request->email) ? $request->email : "",
-                'address'           => !empty($request->address) ? $request->address : "",
-                'whatsApp'          => !empty($request->whatsApp) ? $request->whatsApp : "",
-                'description'       => !empty($request->description) ? $request->description : "",
-                'copyright'         => !empty($request->copyright) ? $request->copyright : "",
-                'currency'          => !empty($request->currency) ? $request->currency : "",
-                'fblink'            => !empty($request->fblink) ? $request->fblink : "",
-                'website'           => !empty($request->website) ? $request->website : "",
-                'telegram'          => !empty($request->telegram) ? $request->telegram : "",
-                'promotional_banner'=> !empty($request->promotional_banner) ? $request->promotional_banner : "",
 
-                'devliery_charge_inside_dhk' => !empty($request->devliery_charge_inside_dhk) ? $request->devliery_charge_inside_dhk : "",
-                'devliery_charge_outside_dhk' => !empty($request->devliery_charge_outside_dhk) ? $request->devliery_charge_outside_dhk : "",
-            );
+            $data = [
+                'name'        => $request->name ?? "",
+                'email'       => $request->email ?? "",
+                'address'     => $request->address ?? "",
+                'whatsApp'    => $request->whatsApp ?? "",
+                'description' => $request->description ?? "",
+                'copyright'   => $request->copyright ?? "",
+                'currency'    => $request->currency ?? "",
+                'fblink'      => $request->fblink ?? "",
+                'website'     => $request->website ?? "",
+                'telegram'    => $request->telegram ?? "",
 
-            //dd($data);
+                // Convert empty to 0 for integer column
+                'promotional_banner' => isset($request->promotional_banner) && $request->promotional_banner !== ''
+                    ? (int)$request->promotional_banner
+                    : 0,
+
+                'devliery_charge_inside_dhk'  => $request->devliery_charge_inside_dhk ?? "",
+                'devliery_charge_outside_dhk' => $request->devliery_charge_outside_dhk ?? "",
+            ];
+
             Setting::where('id', 1)->update($data);
 
-            $response = [
-                'message' => 'Successfull',
-            ];
-            return response()->json($response);
+            return response()->json([
+                'message' => 'Settings updated successfully',
+            ]);
         } else {
             return response()->json([
                 'message' => 'Unauthorized: You do not have permission to update settings',
