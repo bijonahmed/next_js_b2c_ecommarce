@@ -77,6 +77,7 @@ export default function InsideHeader() {
                   loading="lazy"
                   src="/frontend_theme/img/logo.png"
                   className="w-100"
+                  style={{ height: '60px'}}
                   alt="Logo"
                 />
               </Link>

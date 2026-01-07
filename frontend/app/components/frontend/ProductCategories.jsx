@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import useCategories from "../../hooks/useProductsCategories";
 import "../styles/loader.css"; // make sure loader CSS is imported
+import Link from "next/link";
 
 export default function ProductCategories() {
   const { categoryData, loading } = useCategories();
@@ -90,6 +91,12 @@ export default function ProductCategories() {
                     <li className="text-gray-400">No subcategories</li>
                   )}
                 </ul>
+                  <Link
+                className="ps-block__more-link"
+                href={`/product-categories/${parent.slug}`}
+              >
+                View All
+              </Link>
               </div>
 
               {/* Category Banner */}
