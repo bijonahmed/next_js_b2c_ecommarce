@@ -19,9 +19,11 @@ export default function ClientNavbar() {
   const router = useRouter();
   const pathname = usePathname();
   const { cart, wishlist, updateQty, removeFromCart } = useCart();
-  const { topBannerData } = useCategories();
+  const { topBannerData, promotionalStatus } = useCategories();
+
   const { query, setQuery, products, loading, clearSearch } =
     useProductSearch();
+
   const { roles, permissions } = useAuth();
   //const { roles,user } = useAuth?.() || {}; // optional chaining if AuthContext is optional
   const [isFocused, setIsFocused] = useState(false);
@@ -77,31 +79,40 @@ export default function ClientNavbar() {
       {pathname === "/" ? (
         <>
           {/* ---------- Top Banner Section ---------- */}
-          <div
-            className="ps-block--promotion-header bg--cover"
-            style={{
-              backgroundImage: `url(${topBannerData})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              width: "100%",
-            }}
-          >
-            <div className="container">
-              <div className="ps-block__left">
-                <h3>Our Products</h3>
-                <figure>
-                  <h4>Tools</h4>
-                  <p>High quality and reliable</p>
-                </figure>
+
+          {promotionalStatus == 1 && (
+            <>
+              {" "}
+              <div
+                className="ps-block--promotion-header bg--cover"
+                style={{
+                  backgroundImage: `url(${topBannerData})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  width: "100%",
+                  height: "50px",
+                }}
+              >
+                <div className="container d-none">
+                  <div className="ps-block__left">
+                    <h3>Our Products</h3>
+                    <figure>
+                      <h4>Tools</h4>
+                      <p>High quality and reliable</p>
+                    </figure>
+                  </div>
+                  <div className="ps-block__center">
+                    <p className="d-none">
+                      Check out our latest tools collection
+                    </p>
+                  </div>
+                  <a className="ps-btn ps-btn--sm" href="/">
+                    Buy Now
+                  </a>
+                </div>
               </div>
-              <div className="ps-block__center">
-                <p className="d-none">Check out our latest tools collection</p>
-              </div>
-              <a className="ps-btn ps-btn--sm" href="/">
-                Buy Now
-              </a>
-            </div>
-          </div>
+            </>
+          )}
 
           {/* ---------- Desktop Header ---------- */}
           <header
@@ -118,12 +129,12 @@ export default function ClientNavbar() {
                     <li>
                       <a href="#">Track Your Order</a>
                     </li>
-                    <li>
+                    <li className="d-none">
                       <div>
                         <a href="#">BDT</a>
                       </div>
                     </li>
-                    <li>
+                    <li className="d-none">
                       <div className="language">
                         <a href="#">
                           <img
@@ -310,7 +321,7 @@ export default function ClientNavbar() {
                             ) : (
                               <>
                                 <Link href="/customer-dashboard">
-                                 My Dashboard
+                                  My Dashboard
                                 </Link>
                                 <Link href="#" onClick={handleLogout}>
                                   Logout
@@ -396,31 +407,29 @@ export default function ClientNavbar() {
                 </div>
                 <div className="ps-block__right">
                   {token ? (
-                          <>
-                            {roles == "admin" ? (
-                              <>
-                                <Link href="/dashboard/">Dashboard</Link>
-                                <Link href="#" onClick={handleLogout}>
-                                  Logout
-                                </Link>
-                              </>
-                            ) : (
-                              <>
-                                <Link href="/customer-dashboard">
-                                 My Dashboard
-                                </Link>
-                                <Link href="#" onClick={handleLogout}>
-                                  Logout
-                                </Link>
-                              </>
-                            )}
-                          </>
-                        ) : (
-                          <>
-                            <Link href="/my-account">Login</Link>
-                            <Link href="/register">Register</Link>
-                          </>
-                        )}
+                    <>
+                      {roles == "admin" ? (
+                        <>
+                          <Link href="/dashboard/">Dashboard</Link>
+                          <Link href="#" onClick={handleLogout}>
+                            Logout
+                          </Link>
+                        </>
+                      ) : (
+                        <>
+                          <Link href="/customer-dashboard">My Dashboard</Link>
+                          <Link href="#" onClick={handleLogout}>
+                            Logout
+                          </Link>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Link href="/my-account">Login</Link>
+                      <Link href="/register">Register</Link>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

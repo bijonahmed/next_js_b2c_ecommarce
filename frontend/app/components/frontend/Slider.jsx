@@ -3,7 +3,7 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import "react-multi-carousel/lib/styles.css";
-import "../styles/slider.css";
+import "../styles/HomTopslider.css";
 import useCategories from "../../hooks/useCategories";
 
 const Carousel = dynamic(() => import("react-multi-carousel"), { ssr: false });
@@ -29,45 +29,39 @@ const responsive = {
 
 export default function FullWidthSlider() {
   const { sliderData, loading } = useCategories();
+
+  if (loading) {
+    return (
+      <div className="slider-loader">
+        <div className="spinner-border text-primary" role="status" />
+      </div>
+    );
+  }
+
+  if (!sliderData || sliderData.length === 0) return null;
+
   return (
-    <>
-      {loading ? (
-        // ✅ Show Bootstrap spinner when loading
-        <div
-          className="d-flex justify-content-center align-items-center"
-          style={{ height: "200px" }}
-        >
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+    <div className="slider-wrapper">
+      <Carousel
+        responsive={responsive}
+        infinite
+        autoPlay
+        autoPlaySpeed={3000}
+        showDots
+        arrows
+        swipeable
+      >
+        {sliderData.map((img, index) => (
+          <div key={index} className="slider-item">
+            <img
+              src={img.home_slider}
+              alt={`Slide ${index + 1}`}
+              className="slider-image"
+              loading="lazy"
+            />
           </div>
-        </div>
-      ) : sliderData?.length > 0 ? (
-        // ✅ Show slider if data exists
-        <div className="w-full">
-          <Carousel
-            responsive={responsive}
-            infinite
-            autoPlay
-            autoPlaySpeed={3000}
-            showDots
-            arrows
-            swipeable
-          >
-            {sliderData.map((img, index) => (
-              <div key={index} className="w-full">
-                <img
-                  src={img.home_slider} // ✅ dot notation
-                  alt={`Slide ${index + 1}`}
-                  className="w-full h-slider-image object-cover"
-                />
-              </div>
-            ))}
-          </Carousel>
-        </div>
-      ) : (
-        // ✅ Fallback if no data
-        <p>No slider images found</p>
-      )}
-    </>
+        ))}
+      </Carousel>
+    </div>
   );
 }

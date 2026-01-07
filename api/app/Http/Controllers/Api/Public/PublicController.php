@@ -56,9 +56,13 @@ class PublicController extends Controller
             });
             // Start with parent_id = 0 (top-level)
             $nestedCategories = $buildTree(0);
+            $settingData        = Setting::find(1);
+            $promotionalStatus  = !empty($settingData->promotional_banner) ? $settingData->promotional_banner : "";
+
             return response()->json([
                 'success'   => true,
                 'data'      => $nestedCategories,
+                'pro_status'  => $promotionalStatus,
                 'topBanner' => $topBanner,
                 'sliders' => $sliders,
             ], 200);
@@ -73,6 +77,34 @@ class PublicController extends Controller
                 'error' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function categoryFilter(Request $request)
+    {
+        $slug = $request->slug;
+        $checkCategories = ProductCategory::where('slug', $slug)->first();
+
+
+
+        $filterProducts = Product::where('subcategoryId', $checkCategories->id)
+            ->limit(6)
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id'    => $product->id,
+                    'name'  => $product->name,
+                    'slug'  => $product->slug,
+                    'price' => $product->price,
+                    'discount_price' => $product->discount_price,
+                    'thumbnail'      => $product->thumnail_img ? url($product->thumnail_img) : null,
+                ];
+            });
+
+
+        return response()->json([
+            'success' => true,
+            'product' => $filterProducts,
+        ]);
     }
     public function getsAllproductsBySubCategories(Request $request)
     {
@@ -266,10 +298,10 @@ class PublicController extends Controller
                 });
             };
             // Start recursion from parent_id = 0 (root)
-            $nestedCategories = $buildTree(0);
+            $nestedCategories   = $buildTree(0);
             return response()->json([
-                'success' => true,
-                'data' => $nestedCategories,
+                'success'     => true,
+                'data'        => $nestedCategories,
             ], 200);
         } catch (\Exception $e) {
             \Log::error('Category fetch failed: ' . $e->getMessage(), [

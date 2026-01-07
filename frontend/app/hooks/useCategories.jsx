@@ -6,6 +6,7 @@ export default function useCategories() {
   const [categoryData, setCategoryData] = useState([]);
   const [sliderData, setSlidersData] = useState([]);
   const [topBannerData, setTopBannerData] = useState("");
+    const [promotionalStatus, setPromotionalStatus] = useState("");
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchCategories = async () => {
@@ -18,6 +19,7 @@ export default function useCategories() {
         setCategoryData(result.data || []);
         setTopBannerData(result.topBanner || []);
         setSlidersData(result.sliders || []);
+         setPromotionalStatus(result.pro_status || "");
       } catch (err) {
         console.error("Fetch failed:", err);
       } finally {
@@ -27,5 +29,5 @@ export default function useCategories() {
     fetchCategories();
   }, []);
 
-  return { categoryData, topBannerData, sliderData, loading };
+  return { categoryData, topBannerData, sliderData, promotionalStatus, loading };
 }

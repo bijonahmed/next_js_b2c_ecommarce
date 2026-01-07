@@ -1,0 +1,31 @@
+/* Loader overlay for category */
+.category-loader-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.75); /* dark professional overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  border-radius: 0.25rem; /* optional: match block rounding */
+  flex-direction: column;
+}
+
+/* Spinner */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  border-width: 0.25rem;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+}
+
+/* Loader text */
+.loader-text {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+}

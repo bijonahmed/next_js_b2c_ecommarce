@@ -109,7 +109,7 @@ export default function SidebarSystem() {
             <div className="menu--product-categories">
               <div className="menu__toggle">
                 <i className="icon-menu" />
-                <span> Shop by Categories</span>
+                <span> Shop by Bir Brands</span>
               </div>
               {/* <pre>{JSON.stringify(categoryData, null, 2)}</pre> */}
 

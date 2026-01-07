@@ -42,7 +42,6 @@ class SettingsController extends Controller
             $validator = Validator::make($request->all(), [
                 'name'        => 'required',
                 'email'       => 'required',
-
                 'devliery_charge_inside_dhk'  => 'required',
                 'devliery_charge_outside_dhk' => 'required',
 
@@ -61,9 +60,10 @@ class SettingsController extends Controller
                 'fblink'            => !empty($request->fblink) ? $request->fblink : "",
                 'website'           => !empty($request->website) ? $request->website : "",
                 'telegram'          => !empty($request->telegram) ? $request->telegram : "",
+                'promotional_banner'=> !empty($request->promotional_banner) ? $request->promotional_banner : "",
 
                 'devliery_charge_inside_dhk' => !empty($request->devliery_charge_inside_dhk) ? $request->devliery_charge_inside_dhk : "",
-                'devliery_charge_outside_dhk'=> !empty($request->devliery_charge_outside_dhk) ? $request->devliery_charge_outside_dhk : "",
+                'devliery_charge_outside_dhk' => !empty($request->devliery_charge_outside_dhk) ? $request->devliery_charge_outside_dhk : "",
             );
 
             //dd($data);

@@ -17,6 +17,7 @@ class Setting extends Authenticatable
     protected $fillable = [
       'id',
       'name',
+      'promotional_banner',
       'devliery_charge_inside_dhk',
       'devliery_charge_outside_dhk'
     ];

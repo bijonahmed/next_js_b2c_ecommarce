@@ -123,12 +123,26 @@ export default function ProductPage() {
 
   // DataTable columns
   const columns = [
-    {
-      name: "Product Name",
-      selector: (row) => row.name,
-      sortable: true,
-    },
-
+  {
+    name: "Product Name",
+    selector: (row) => row.name,
+    sortable: true,
+    width: "650px",          // ✅ fixed width
+    wrap: true,             // text wrap allow
+    cell: (row) => (
+      <div
+        style={{
+          width: "650px",
+          whiteSpace: "normal",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+        title={row.name}     // hover full name
+      >
+        {row.name}
+      </div>
+    ),
+  },
     {
       name: "Category Name",
       selector: (row) => row.category_name,

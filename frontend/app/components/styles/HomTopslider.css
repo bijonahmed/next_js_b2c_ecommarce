@@ -1,0 +1,62 @@
+/* Wrapper */
+.slider-wrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Loader */
+.slider-loader {
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Slider item */
+.slider-item {
+  width: 100%;
+}
+
+/* Base image: mobile view (default < 640px) */
+.slider-image {
+  width: 100%;
+  height: 130px;       /* mobile height */
+  object-fit: fill;     /* ✅ show full image */
+}
+
+/* Mobile landscape / small tablet */
+@media (min-width: 640px) {
+  .slider-image {
+    height: 240px;
+    object-fit: cover;  /* desktop/tablet: fill slider nicely */
+  }
+}
+
+/* Tablet */
+@media (min-width: 768px) {
+  .slider-image {
+    height: 420px;
+    object-fit: cover;
+  }
+}
+
+/* Laptop */
+@media (min-width: 1024px) {
+  .slider-image {
+    height: 520px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1280px) {
+  .slider-image {
+    height: 350px;
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1536px) {
+  .slider-image {
+    height: 450px;
+  }
+}

@@ -115,8 +115,6 @@ export default function AdminSidebar() {
               },
             ],
           },
-
-
           {
             label: "Order Management",
             href: "#",
@@ -156,21 +154,13 @@ export default function AdminSidebar() {
             ],
           },
 
-
-
-
-
           {
             label: "System Management",
             href: "#",
             icon: "nav-icon bi bi-ui-checks-grid",
             children: [
-              { label: "Roles Manage", href: "/roles", icon: "bi-circle" },
-              {
-                label: "Permission Manage",
-                href: "/permission",
-                icon: "bi-circle",
-              },
+              //{ label: "Roles Manage", href: "/roles", icon: "bi-circle" },
+              //{ label: "Permission Manage", href: "/permission", icon: "bi-circle"},
               { label: "Website Setting", href: "/setting", icon: "bi-circle" },
             ],
           },

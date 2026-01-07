@@ -15,7 +15,7 @@ export default function TopNavbar() {
           <div className="menu--product-categories">
             <div className="menu__toggle">
               <i className="icon-menu"></i>
-              <span>Shop by Categories</span>
+              <span>Shop by Bir Brands</span>
             </div>
             <div className="menu__content">
               <ul className="menu--dropdown">
@@ -117,9 +117,9 @@ export default function TopNavbar() {
             <li>
               <Link href="/about-us">About Bir Group</Link>
             </li>
-            <li>
+            {/* <li>
               <Link href="/faq">Faq</Link>
-            </li>
+            </li> */}
             <li>
               <Link href="/contact">Contact</Link>
             </li>

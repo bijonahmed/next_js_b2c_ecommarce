@@ -240,7 +240,7 @@ export default function InsideHeader() {
                   onClick={toggleMenu}
                 >
                   <i className="icon-menu" />
-                  <span>Shop by Department</span>
+                  <span>Shop by Bir Brands</span>
                 </div>
                 {/* Dropdown Content */}
                 {menuOpen && (
@@ -349,10 +349,10 @@ export default function InsideHeader() {
                   <Link href="/about-us">About Bir Group</Link>
                   <span className="sub-toggle" />
                 </li>
-                <li>
+                {/* <li>
                   <Link href="/faq">Faq</Link>
                   <span className="sub-toggle" />
-                </li>
+                </li> */}
                 <li>
                   <Link href="/contact">Contact</Link>
                   <span className="sub-toggle" />

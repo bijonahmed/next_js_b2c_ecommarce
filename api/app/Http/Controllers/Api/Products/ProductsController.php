@@ -31,42 +31,54 @@ class ProductsController extends Controller
                 'message' => 'Unauthorized: You do not have permission to view product',
             ], 403);
         }
-        $page             = (int) $request->input('page', 1);
-        $pageSize         = (int) $request->input('pageSize', 50);
-        $searchQuery      = $request->input('searchQuery');
-        $supplierId       = (int) $request->input('supplierId');
-        $categoryId       = (int) $request->input('categoryId');
-        $subcategoryId    = (int) $request->input('subcategoryId');
-        $status           = (int) $request->input('status');
 
+        $page        = (int) $request->input('page', 1);
+        $pageSize    = (int) $request->input('pageSize', 50);
+        $searchQuery = $request->input('searchQuery');
+
+        // ❗ DO NOT cast here
+        $supplierId    = $request->input('supplierId');
+        $categoryId    = $request->input('categoryId');
+        $subcategoryId = $request->input('subcategoryId');
+        $status        = $request->input('status');
 
         if ($pageSize <= 0) {
             $pageSize = 50;
         }
-        $query = Product::leftJoin('supplier', 'supplier.id', '=', 'product.supplier_id')
+
+        $query = Product::from('product')
+            ->leftJoin('supplier', 'supplier.id', '=', 'product.supplier_id')
             ->select('product.*', 'supplier.name as supplierName')
             ->orderBy('product.id', 'desc');
+
         if (!empty($searchQuery)) {
             $query->where('product.name', 'like', '%' . $searchQuery . '%');
         }
+
         if (!empty($supplierId)) {
-            $query->where('product.supplier_id', $supplierId);
+            $query->where('product.supplier_id', (int) $supplierId);
         }
+
+        // ✅ FIXED CATEGORY FILTER
         if (!empty($categoryId)) {
-            $query->where('product.categoryId', $categoryId);
+            $query->where('product.categoryId', (int) $categoryId);
         }
+
+        // ✅ FIXED SUBCATEGORY FILTER
         if (!empty($subcategoryId)) {
-            $query->where('product.subcategoryId', $subcategoryId);
+            $query->where('product.subcategoryId', (int) $subcategoryId);
         }
-        if ($status !== null) {
+
+        // ✅ STATUS SAFE CHECK
+        if ($status !== null && $status !== '') {
             $query->where('product.status', (int) $status);
         }
 
-
-
         $paginator = $query->paginate($pageSize, ['*'], 'page', $page);
+
         $modifiedCollection = $paginator->getCollection()->map(function ($item) {
-            $chkCat = ProductCategory::where('id', $item->categoryId)->select('name')->first();
+            $chkCat = ProductCategory::select('name')->find($item->categoryId);
+
             return [
                 'id'                => $item->id,
                 'supplierName'      => $item->supplierName,
@@ -78,14 +90,15 @@ class ProductsController extends Controller
                 'status'            => $item->status,
             ];
         });
-        // Return the modified collection along with pagination metadata
+
         return response()->json([
-            'data'           => $modifiedCollection,
-            'current_page'   => $paginator->currentPage(),
-            'total_pages'    => $paginator->lastPage(),
-            'total_records'  => $paginator->total(),
+            'data'          => $modifiedCollection,
+            'current_page'  => $paginator->currentPage(),
+            'total_pages'   => $paginator->lastPage(),
+            'total_records' => $paginator->total(),
         ], 200);
     }
+
     public function search(Request $request)
     {
         $query = $request->get('query');
