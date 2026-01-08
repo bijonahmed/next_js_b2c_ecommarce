@@ -47,6 +47,16 @@ export default function UserAddPage() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // If categoryId is 13, ensure a file is uploaded
+    if (
+      formData.categoryId == 13 &&
+      (!formData.files || formData.files.length === 0)
+    ) {
+      alert("You must upload a file for this category!");
+      return; // Stop submission
+    }
+
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("meta_title", formData.meta_title);
@@ -71,7 +81,7 @@ export default function UserAddPage() {
           method: "POST",
           body: payload,
           headers: {
-           // "Content-Type": "application/json",
+            // "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import usePost from "../../hooks/usePostSearch";
 
-export default function PolicyPage({ categoryId }) {
+export default function FaqPostPage({ categoryId }) {
   const { postData } = usePost(categoryId);
 
   console.log("Post Data categoryId:", categoryId);

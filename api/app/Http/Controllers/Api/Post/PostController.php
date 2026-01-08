@@ -28,8 +28,8 @@ class PostController extends Controller
         $searchQuery = $request->searchQuery;
         // dd($selectedFilter);
         $status = $request->selectedFilter;
-        $query = PostModel::select('posts.*', 'post_category.name')
-            ->join('post_category', 'posts.categoryId', '=', 'post_category.id');
+        $query = PostModel::select('posts.*');
+          
         if ($searchQuery !== null) {
             $query->where('posts.name', 'like', '%' . $searchQuery . '%');
         }
@@ -41,11 +41,14 @@ class PostController extends Controller
                 $query->where('posts.status', 0); // Inactive
             }
         }
-        $paginator = $query->paginate($pageSize, ['*'], 'page', $page);
+        $paginator          = $query->paginate($pageSize, ['*'], 'page', $page);
         $modifiedCollection = $paginator->getCollection()->map(function ($item) {
+        $categoryName       = PostCategory::where('id',$item->categoryId)->first();
+
+
             return [
                 'id' => $item->id,
-                'category_name' => $item->name,
+                'category_name' => !empty($categoryName->name) ? $categoryName->name : "",
                 'name' => substr($item->name, 0, 250),
                 'status' => $item->status,
             ];
@@ -156,6 +159,8 @@ class PostController extends Controller
     public function update(Request $request)
     {
 
+       // dd($request->all());
+
         $user = Auth::user();
         if (! $user->can('edit posts')) {
             return response()->json([
@@ -165,7 +170,7 @@ class PostController extends Controller
 
         // dd($request->all());
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
+            'name'        => 'required',
             'categoryId' => 'required',
         ]);
         if ($validator->fails()) {
@@ -180,13 +185,13 @@ class PostController extends Controller
             'name' => $request->name,
             'slug' => $slug,
             'description_short' => ! empty($request->description_short) ? $request->description_short : '',
-            'description_full' => ! empty($request->description_full) ? $request->description_full : '',
-            'meta_title' => ! empty($request->meta_title) ? $request->meta_title : '',
-            'meta_description' => ! empty($request->meta_description) ? $request->meta_description : '',
-            'meta_keyword' => ! empty($request->meta_keyword) ? $request->meta_keyword : '',
-            'categoryId' => ! empty($request->categoryId) ? $request->categoryId : '',
-            'status' => ! empty($request->status) ? $request->status : '',
-            'entry_by' => $user_id,
+            'description_full'  => ! empty($request->description_full) ? $request->description_full : '',
+            'meta_title'        => ! empty($request->meta_title) ? $request->meta_title : '',
+            'meta_description'  => ! empty($request->meta_description) ? $request->meta_description : '',
+            'meta_keyword'      => ! empty($request->meta_keyword) ? $request->meta_keyword : '',
+            'categoryId'        => ! empty($request->categoryId) ? $request->categoryId : '',
+            'status'            =>  $request->status !== null ? $request->status : 1, // fix here,
+            'entry_by'          => $user_id,
         ];
         // dd($data);
         if (! empty($request->file('files'))) {
@@ -201,6 +206,7 @@ class PostController extends Controller
             $data['thumnail_img'] = $file_url;
         }
 
+      //  dd($data);
         $data['id'] = $request->id;
 
         $post = PostModel::find($request->id);

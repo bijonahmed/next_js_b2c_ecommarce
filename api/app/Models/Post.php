@@ -22,6 +22,7 @@ class Post extends Authenticatable
         'categoryId',
         'entry_by',
         'thumnail_img',
+        'created_at',
         'status'
     ];
 

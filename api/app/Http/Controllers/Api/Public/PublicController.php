@@ -439,6 +439,70 @@ class PublicController extends Controller
         ], 200);
     }
 
+
+    public function checkedPostRow($slug)
+    {
+        $post        = Post::where('slug', $slug)->first();
+
+        // Return a 404 response if not found
+        if (!$post) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Post not found.',
+            ], 404);
+        }
+
+
+        $data = [
+            'id'               => $post->id,
+            'name'             => $post->name,
+            'slug'             => $post->slug,
+            'description_short'=> $post->description_short,
+            'description_full' => $post->description_full,
+            'meta_title'       => $post->meta_title,
+            'meta_description' => $post->meta_description,
+            'meta_keyword'     => $post->meta_keyword,
+            'question'         => $post->question,
+            'answer'           => $post->answer,
+            'categoryId'       => $post->categoryId,
+            'entry_by'         => $post->entry_by,
+            'thumnail_img'     => $post->thumnail_img ? url($post->thumnail_img) : null,
+            'status'           => $post->status,
+            'created_at'       => $post->created_at,
+            'updated_at'       => $post->updated_at,
+        ];
+
+        return response()->json([
+            'success'               => true,
+            'data'                  => $data,
+        ], 200);
+    }
+
+    public function getsBlogPost(Request $request)
+    {
+        $category_id = $request->query('category_id');
+        $post        = Post::where('categoryId', $category_id)->get();
+
+        $get_prdoucts = $post->map(function ($data) {
+            return [
+                'id'              => $data->id,
+                'name'            => $data->name,
+                'slug'            => $data->slug,
+                'description_full' => $data->description_full,
+                'meta_title'      => $data->meta_title,
+                'meta_description' => $data->meta_description,
+                'meta_keyword'    => $data->meta_keyword,
+                'createdAt'       => date("d-M-Y", strtotime($data->created_at)),
+                'thumnail_img'    => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'          => 'BIR GROUP',
+            ];
+        });
+        return response()->json([
+            'success'               => true,
+            'data'                  => $get_prdoucts,
+        ], 200);
+    }
+
     public function getSetting(Request $request)
     {
         $post        = Setting::where('id', 1)->first();

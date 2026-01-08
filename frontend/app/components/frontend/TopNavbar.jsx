@@ -117,6 +117,9 @@ export default function TopNavbar() {
             <li>
               <Link href="/about-us">About Bir Group</Link>
             </li>
+             <li>
+              <Link href="/blog">Blog</Link>
+            </li>
             {/* <li>
               <Link href="/faq">Faq</Link>
             </li> */}

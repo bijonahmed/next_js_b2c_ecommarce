@@ -57,13 +57,16 @@ export default function EditUserForm({ id }) {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/posts/update`, {
-        method: "POST",
-        body: payload,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/posts/update`,
+        {
+          method: "POST",
+          body: payload,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await res.json();
 
@@ -112,7 +115,6 @@ export default function EditUserForm({ id }) {
           status: datarow.status ?? "",
           files: data?.images ?? "",
         });
-        
       } catch (err) {
         console.error(err);
       } finally {
@@ -281,6 +283,18 @@ export default function EditUserForm({ id }) {
                       />
                     </div>
 
+                    <div className="mb-3">
+                      <label className="form-label">Status</label>
+                      <select
+                        name="status"
+                        className="form-control"
+                        value={formData.status}
+                        onChange={handleChange}
+                      >
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                      </select>
+                    </div>
                     {/* UPLOAD */}
                     <div className="mb-3">
                       <label className="form-label">Upload Image</label>

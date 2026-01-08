@@ -39,6 +39,9 @@ Route::prefix('public')->group(function () {
     Route::get('/getsAllproductsBySubCategories', [PublicController::class, 'getsAllproductsBySubCategories']);
     Route::get('/checkProductDetails/{slug}', [PublicController::class, 'checkProductDetails']);
     Route::get('/getsPost', [PublicController::class, 'getsPost']);
+    Route::get('/checkedPostRow/{slug}', [PublicController::class, 'checkedPostRow']);
+    Route::get('/getsBlogPost', [PublicController::class, 'getsBlogPost']);
+
     Route::get('/getSetting', [PublicController::class, 'getSetting']);
     Route::get('/callback-hook', [PublicController::class, 'testApiCallbackHook']);
 });
