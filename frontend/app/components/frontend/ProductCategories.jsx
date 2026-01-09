@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import useCategories from "../../hooks/useProductsCategories";
-import "../styles/loader.css"; // make sure loader CSS is imported
+import "../styles/loader.css";
 import Link from "next/link";
 
 export default function ProductCategories() {
@@ -18,7 +18,7 @@ export default function ProductCategories() {
     try {
       setCategoryLoading((prev) => ({ ...prev, [parentId]: true }));
 
-      let url = `${process.env.NEXT_PUBLIC_API_BASE}/public/categoryFilter?slug=${slug}`;
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/public/categoryFilter?slug=${slug}`;
       const res = await fetch(url);
       const result = await res.json();
 
@@ -40,7 +40,10 @@ export default function ProductCategories() {
         [parentId]: [],
       }));
     } finally {
-      setCategoryLoading((prev) => ({ ...prev, [parentId]: false }));
+      setCategoryLoading((prev) => ({
+        ...prev,
+        [parentId]: false,
+      }));
     }
   };
 
@@ -66,7 +69,7 @@ export default function ProductCategories() {
                     <div
                       className="spinner-border text-white"
                       role="status"
-                    ></div>
+                    />
                     <p className="loader-text">Loading... Please wait</p>
                   </div>
                 </div>
@@ -84,16 +87,21 @@ export default function ProductCategories() {
                       <li key={child.id}>
                         <span
                           style={{ cursor: "pointer" }}
-                          onClick={() => fetchProducts(parent.id, child.slug)}
+                          onClick={() =>
+                            fetchProducts(parent.id, child.slug)
+                          }
                         >
                           {child.name}
                         </span>
                       </li>
                     ))
                   ) : (
-                    <li className="text-gray-400">No subcategories</li>
+                    <li className="text-gray-400">
+                      No subcategories
+                    </li>
                   )}
                 </ul>
+
                 <Link
                   className="ps-block__more-link"
                   href={`/product-categories/${parent.slug}`}
@@ -118,11 +126,11 @@ export default function ProductCategories() {
               {/* Products */}
               <div className="ps-block__product-box">
                 {products.map((product) => (
-                  <Link href={`/product-details/${product.slug}`}>
-                    <div
-                      key={product.id}
-                      className="ps-product ps-product--simple"
-                    >
+                  <Link
+                    key={product.id} // ✅ FIXED: key on Link
+                    href={`/product-details/${product.slug}`}
+                  >
+                    <div className="ps-product ps-product--simple">
                       <div
                         className={`image-wrapper ps-product__thumbnail ${
                           loaded ? "loaded" : ""
@@ -138,12 +146,17 @@ export default function ProductCategories() {
                           alt={product.name}
                         />
                       </div>
+
                       <div className="ps-product__container">
                         <div className="ps-product__content">
-                          <p className="ps-product__title">{product.name}</p>
+                          <p className="ps-product__title">
+                            {product.name}
+                          </p>
                           <p className="ps-product__price sale">
                             Tk.{product.discount_price ?? "0"}{" "}
-                            <del>Tk.{product.price ?? "0"}</del>
+                            <del>
+                              Tk.{product.price ?? "0"}
+                            </del>
                           </p>
                         </div>
                       </div>

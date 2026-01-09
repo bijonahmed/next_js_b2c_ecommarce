@@ -14,46 +14,43 @@ export default function NewsLetter() {
         {/* <pre>{JSON.stringify(products, null, 2)}</pre> */}
         <div className="row">
           {products?.map((product) => (
-  <div
-    key={product.id}
-    className="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12"
-  >
-    <Link
-      href={`/product-details/${product.slug}`}
-      className="text-decoration-none"
-    >
-      <div
-        className="ps-block--category"
-        data-mh="categories"
-        style={{ height: "231.567px", cursor: "pointer" }}
-      >
-        <div className="ps-block__thumbnail">
-          <img
-            loading="lazy"
-            src={product.thumnail_img}
-            alt={product.name}
-            style={{
-              width: "100%",
-              height: "140px",
-              objectFit: "contain",
-            }}
-          />
-        </div>
+            <div
+              key={product.id}
+              className="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12"
+            >
+              <Link
+                href={`/product-details/${product.slug}`}
+                className="text-decoration-none"
+              >
+                <div
+                  className="ps-block--category"
+                  data-mh="categories"
+                  style={{ height: "231.567px", cursor: "pointer" }}
+                >
+                  <div className="ps-block__thumbnail">
+                    <img
+                      loading="lazy"
+                      src={product.thumnail_img}
+                      alt={product.name}
+                      style={{
+                        width: "100%",
+                        height: "140px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
 
-        <div className="ps-block__content text-center">
-          <p
-            title={product.name}
-            className="text-dark"
-          >
-            {product.name.length > 35
-              ? product.name.slice(0, 35) + "..."
-              : product.name}
-          </p>
-        </div>
-      </div>
-    </Link>
-  </div>
-))}
+                  <div className="ps-block__content text-center">
+                    <p title={product.name} className="text-dark">
+                      {product.name.length > 35
+                        ? product.name.slice(0, 35) + "..."
+                        : product.name}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </div>
