@@ -77,7 +77,7 @@ export default function InsideHeader() {
                   loading="lazy"
                   src="/frontend_theme/img/logo.png"
                   className="w-100"
-                  style={{ height: '60px'}}
+                  style={{ height: "60px" }}
                   alt="Logo"
                 />
               </Link>
@@ -349,6 +349,9 @@ export default function InsideHeader() {
                 <li>
                   <Link href="/about-us">About Bir Group</Link>
                   <span className="sub-toggle" />
+                </li>
+                <li>
+                  <Link href="/blog">Blog</Link>
                 </li>
                 {/* <li>
                   <Link href="/faq">Faq</Link>

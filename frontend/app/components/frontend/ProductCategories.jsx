@@ -63,7 +63,10 @@ export default function ProductCategories() {
               {isLoading && (
                 <div className="category-loader-overlay">
                   <div className="text-center">
-                    <div className="spinner-border text-white" role="status"></div>
+                    <div
+                      className="spinner-border text-white"
+                      role="status"
+                    ></div>
                     <p className="loader-text">Loading... Please wait</p>
                   </div>
                 </div>
@@ -91,12 +94,12 @@ export default function ProductCategories() {
                     <li className="text-gray-400">No subcategories</li>
                   )}
                 </ul>
-                  <Link
-                className="ps-block__more-link"
-                href={`/product-categories/${parent.slug}`}
-              >
-                View All
-              </Link>
+                <Link
+                  className="ps-block__more-link"
+                  href={`/product-categories/${parent.slug}`}
+                >
+                  View All
+                </Link>
               </div>
 
               {/* Category Banner */}
@@ -115,32 +118,37 @@ export default function ProductCategories() {
               {/* Products */}
               <div className="ps-block__product-box">
                 {products.map((product) => (
-                  <div key={product.id} className="ps-product ps-product--simple">
+                  <Link href={`/product-details/${product.slug}`}>
                     <div
-                      className={`image-wrapper ps-product__thumbnail ${
-                        loaded ? "loaded" : ""
-                      }`}
+                      key={product.id}
+                      className="ps-product ps-product--simple"
                     >
-                      <img
-                        loading="lazy"
-                        src={
-                          product.thumbnail ||
-                          "/frontend_theme/img/products/clothing/1.jpg"
-                        }
-                        onLoad={() => setLoaded(true)}
-                        alt={product.name}
-                      />
-                    </div>
-                    <div className="ps-product__container">
-                      <div className="ps-product__content">
-                        <p className="ps-product__title">{product.name}</p>
-                        <p className="ps-product__price sale">
-                          Tk.{product.discount_price ?? "0"}{" "}
-                          <del>Tk.{product.price ?? "0"}</del>
-                        </p>
+                      <div
+                        className={`image-wrapper ps-product__thumbnail ${
+                          loaded ? "loaded" : ""
+                        }`}
+                      >
+                        <img
+                          loading="lazy"
+                          src={
+                            product.thumbnail ||
+                            "/frontend_theme/img/products/clothing/1.jpg"
+                          }
+                          onLoad={() => setLoaded(true)}
+                          alt={product.name}
+                        />
+                      </div>
+                      <div className="ps-product__container">
+                        <div className="ps-product__content">
+                          <p className="ps-product__title">{product.name}</p>
+                          <p className="ps-product__price sale">
+                            Tk.{product.discount_price ?? "0"}{" "}
+                            <del>Tk.{product.price ?? "0"}</del>
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>

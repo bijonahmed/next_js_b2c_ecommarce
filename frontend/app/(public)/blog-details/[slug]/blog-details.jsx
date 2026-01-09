@@ -13,6 +13,7 @@ export default function ProductDetailsClient({ slug }) {
   const [loading, setLoading] = useState(false);
 
   const [postData, setData] = useState("");
+  const [relatedPosts, setRelatedPost] = useState([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function ProductDetailsClient({ slug }) {
         const result = await res.json();
 
         setData(result.data || "");
+        setRelatedPost(result.relatedPost || []);
       } catch (err) {
         console.error("Fetch failed:", err);
       } finally {
@@ -35,7 +37,7 @@ export default function ProductDetailsClient({ slug }) {
   }, [slug]);
 
   return (
-    <div className="ps-page--simple bg-light min-vh-100 py-5">
+    <div className="ps-page--simple min-vh-100 py-5">
       {/* Breadcrumb */}
       <div className="ps-breadcrumb">
         <div className="container">
@@ -51,9 +53,9 @@ export default function ProductDetailsClient({ slug }) {
         </div>
       </div>
       <div className="container">
-        <div className="row g-4">
+        <div className="row">
           {/* Main Content */}
-          <div className="col-lg-10">
+          <div className="col-lg-9">
             <div className="card border-0 shadow-sm rounded-4">
               <div className="card-body">
                 {/* Title */}
@@ -64,8 +66,7 @@ export default function ProductDetailsClient({ slug }) {
                   <img
                     src={postData?.thumnail_img}
                     alt={postData?.name}
-                    className="img-fluid rounded-4  shadow-sm"
-                    style={{ transition: "transform 0.3s" }}
+                    className="img-fluid rounded-4 shadow-sm"
                   />
                 </div>
 
@@ -77,27 +78,57 @@ export default function ProductDetailsClient({ slug }) {
                         <img
                           src={img}
                           alt={`${postData?.name}-${idx}`}
-                          className="img-fluid rounded-4 border shadow-sm hover-shadow"
-                          style={{ transition: "transform 0.3s" }}
-                          onMouseOver={(e) =>
-                            (e.currentTarget.style.transform = "scale(1.05)")
-                          }
-                          onMouseOut={(e) =>
-                            (e.currentTarget.style.transform = "scale(1)")
-                          }
+                          className="img-fluid rounded-4 border shadow-sm"
                         />
                       </div>
                     ))}
                   </div>
                 )}
 
-                {/* Full Description */}
+                {/* Description */}
                 <div
                   className="mb-4"
+                  style={{ textAlign: "justify" }}
                   dangerouslySetInnerHTML={{
                     __html: postData?.description_full,
                   }}
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Sidebar – Related Posts */}
+          <div className="col-lg-3">
+            <div
+              className="card border-0 shadow-sm rounded-4 sticky-top"
+              style={{ top: "90px" }}
+            >
+              <div className="card-body">
+                <h5 className="fw-bold mb-3">Related Posts</h5>
+
+                {relatedPosts?.map((post, index) => (
+                  <div key={index} className="d-flex mb-3">
+                    <img
+                      src={post.thumnail_img}
+                      alt={post.name}
+                      className="rounded-3 me-2"
+                      width="60"
+                      height="60"
+                      style={{ objectFit: "cover" }}
+                    />
+                    <div>
+                      <Link
+                        href={`/blog-details/${post.slug}`}
+                        className="fw-semibold text-dark text-decoration-none"
+                      >
+                        {post.name}
+                      </Link>
+                      <small className="d-block text-muted d-none">
+                        {post.createdAt}
+                      </small>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

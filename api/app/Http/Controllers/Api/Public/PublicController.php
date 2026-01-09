@@ -442,7 +442,8 @@ class PublicController extends Controller
 
     public function checkedPostRow($slug)
     {
-        $post        = Post::where('slug', $slug)->first();
+        $post          = Post::where('slug', $slug)->first();
+        $relatedPost   = Post::where('status', 1)->where('categoryId',13)->limit(10)->get();
 
         // Return a 404 response if not found
         if (!$post) {
@@ -453,11 +454,30 @@ class PublicController extends Controller
         }
 
 
+
+        $relatPost = $relatedPost->map(function ($data) {
+            return [
+                'id'              => $data->id,
+                'name'            => $data->name,
+                'slug'            => $data->slug,
+                'description_full' => $data->description_full,
+                'meta_title'      => $data->meta_title,
+                'meta_description' => $data->meta_description,
+                'meta_keyword'    => $data->meta_keyword,
+                'createdAt'       => date("d-M-Y", strtotime($data->created_at)),
+                'thumnail_img'    => $data->thumnail_img ? url($data->thumnail_img) : null,
+                'vendor'          => 'BIR GROUP',
+            ];
+        });
+
+
+
+
         $data = [
             'id'               => $post->id,
             'name'             => $post->name,
             'slug'             => $post->slug,
-            'description_short'=> $post->description_short,
+            'description_short' => $post->description_short,
             'description_full' => $post->description_full,
             'meta_title'       => $post->meta_title,
             'meta_description' => $post->meta_description,
@@ -475,13 +495,14 @@ class PublicController extends Controller
         return response()->json([
             'success'               => true,
             'data'                  => $data,
+            'relatedPost'           => $relatPost,
         ], 200);
     }
 
     public function getsBlogPost(Request $request)
     {
         $category_id = $request->query('category_id');
-        $post        = Post::where('categoryId', $category_id)->get();
+        $post        = Post::where('categoryId', $category_id)->where('status', 1)->get();
 
         $get_prdoucts = $post->map(function ($data) {
             return [

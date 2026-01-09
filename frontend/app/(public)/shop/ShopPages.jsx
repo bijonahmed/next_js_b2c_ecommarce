@@ -45,7 +45,7 @@ export const metadata = {
   },
 };
 
-export default function AboutPage() {
+export default function ShopPage() {
   const [loaded, setLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState("grid"); // default view
   const { addToCart, addToWishlist, wishlist, cart } = useCart();

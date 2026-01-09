@@ -2,37 +2,59 @@
 "use client"; // Must be top
 
 import Link from "next/link";
+import useProducts from "../../hooks/getProducts";
 
 export default function NewsLetter() {
+  const { products, loading, hasMore, loadMore } = useProducts(8);
+
   return (
-    <div className="ps-newsletter">
-      <div className="container">
-        <form
-          className="ps-form--newsletter"
-          action="https://nouthemes.net/html/martfury/do_action"
-          method="post"
-        >
-          <div className="row">
-            <div className="col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12 ">
-              <div className="ps-form__left">
-                <h3>Newsletter</h3>
-                <p>Subcribe to get information about products and coupons</p>
-              </div>
-            </div>
-            <div className="col-xl-7 col-lg-12 col-md-12 col-sm-12 col-12 ">
-              <div className="ps-form__right">
-                <div className="form-group--nest">
-                  <input
-                    className="form-control"
-                    type="email"
-                    placeholder="Email address"
-                  />
-                  <button className="ps-btn">Subscribe</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </form>
+    <div className="ps-top-categories">
+      <div className="container mt-5">
+        <h3>New Arrivals</h3>
+        {/* <pre>{JSON.stringify(products, null, 2)}</pre> */}
+        <div className="row">
+          {products?.map((product) => (
+  <div
+    key={product.id}
+    className="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-12"
+  >
+    <Link
+      href={`/product-details/${product.slug}`}
+      className="text-decoration-none"
+    >
+      <div
+        className="ps-block--category"
+        data-mh="categories"
+        style={{ height: "231.567px", cursor: "pointer" }}
+      >
+        <div className="ps-block__thumbnail">
+          <img
+            loading="lazy"
+            src={product.thumnail_img}
+            alt={product.name}
+            style={{
+              width: "100%",
+              height: "140px",
+              objectFit: "contain",
+            }}
+          />
+        </div>
+
+        <div className="ps-block__content text-center">
+          <p
+            title={product.name}
+            className="text-dark"
+          >
+            {product.name.length > 35
+              ? product.name.slice(0, 35) + "..."
+              : product.name}
+          </p>
+        </div>
+      </div>
+    </Link>
+  </div>
+))}
+        </div>
       </div>
     </div>
   );

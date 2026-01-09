@@ -43,6 +43,7 @@ export default function SidebarSystem() {
     { name: "Home", link: "/" },
     { name: "Shop", link: "/shop" },
     { name: "About Bir Group", link: "/about-us" },
+    { name: "Blog", link: "/blog" },
     { name: "Faq", link: "/faq" },
     { name: "Contact", link: "#" },
   ];
