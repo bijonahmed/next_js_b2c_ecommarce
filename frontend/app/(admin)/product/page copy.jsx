@@ -1,7 +1,7 @@
-"use client";
+"use client"; // Required in Next.js App Router for client-side component
 
 import React, { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
 import toast, { Toaster } from "react-hot-toast";
@@ -11,9 +11,7 @@ import getSupllierList from "../../hooks/supplierList";
 
 export default function ProductPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { token, permissions } = useAuth();
-
   const perms = Array.isArray(permissions)
     ? permissions
     : permissions?.split(",") || [];
@@ -23,82 +21,44 @@ export default function ProductPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [supplierId, setSupplierFilter] = useState("");
+  const { categoryData } = useCategories();
+  const { suppliderData } = getSupllierList();
   const [selectedCategory, setMainCategory] = useState("");
   const [subcategoryId, setSubCategoryFilter] = useState("");
   const [subcategoryList, setSubCategories] = useState([]);
   const [total_records, setTotalRecords] = useState(0);
 
-  const { categoryData } = useCategories();
-  const { suppliderData } = getSupllierList();
+  const handleMainCategoryChange = async (e) => {
+    const selectedId = e.target.value;
+    setMainCategory(selectedId);
+    if (!selectedId) return;
 
-  /* ---------------- RESTORE FILTERS FROM URL ---------------- */
-  useEffect(() => {
-    const cat = searchParams.get("categoryId") || "";
-    const sub = searchParams.get("subcategoryId") || "";
-    const sup = searchParams.get("supplierId") || "";
-
-    setMainCategory(cat);
-    setSubCategoryFilter(sub);
-    setSupplierFilter(sup);
-
-    if (cat) {
-      fetchSubcategories(cat);
-    }
-  }, []);
-
-  /* ---------------- FETCH SUBCATEGORIES ---------------- */
-  const fetchSubcategories = async (categoryId) => {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE}/product-category/checkSubcategory`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ category_id: categoryId }),
-        }
-      );
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/product-category/checkSubcategory`;
+      console.log("URL:" + url);
 
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ category_id: selectedId }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
       const data = await res.json();
-      if (data?.data) {
+
+      if (data) {
         setSubCategories(data.data);
       }
     } catch (err) {
-      console.error("Subcategory fetch error:", err);
+      console.error("Fetch subcategories error:", err);
     }
   };
-  useEffect(() => {
-    const savedCategory = localStorage.getItem("categoryId") || "";
-    const savedSubcategory = localStorage.getItem("subcategoryId") || "";
-    const savedSupplier = localStorage.getItem("supplierId") || "";
 
-    setMainCategory(savedCategory);
-    setSubCategoryFilter(savedSubcategory);
-    setSupplierFilter(savedSupplier);
-
-    if (savedCategory) {
-      fetchSubcategories(savedCategory);
-    }
-  }, []);
-  /* ---------------- CATEGORY CHANGE ---------------- */
-  const handleMainCategoryChange = (e) => {
-    const selectedId = e.target.value;
-    setMainCategory(selectedId);
-    setSubCategoryFilter("");
-    setSubCategories([]);
-
-    // ✅ Save to localStorage
-    localStorage.setItem("categoryId", selectedId);
-    localStorage.removeItem("subcategoryId");
-
-    if (!selectedId) return;
-
-    fetchSubcategories(selectedId);
-  };
-
-  /* ---------------- FETCH PRODUCTS ---------------- */
   const fetchProducts = async (
     page = 1,
     perPageSize = 100,
@@ -106,46 +66,83 @@ export default function ProductPage() {
   ) => {
     try {
       const encodedQuery = encodeURIComponent(searchQuery);
-      const url = `${process.env.NEXT_PUBLIC_API_BASE}/product/index?page=${page}&pageSize=${perPageSize}&searchQuery=${encodedQuery}&supplierId=${supplierId}&status=${statusFilter}&categoryId=${selectedCategory}&subcategoryId=${subcategoryId}`;
-
+      const url = `${process.env.NEXT_PUBLIC_API_BASE}/product/index?page=${page}&pageSize=${perPageSize}
+                   &searchQuery=${encodedQuery}&supplierId=${supplierId}&status=${statusFilter}&categoryId=${selectedCategory}&subcategoryId=${subcategoryId}`;
+      //  console.log("URL:" + url);
       const res = await fetch(url, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
       const json = await res.json();
       setTotalRecords(json.total_records || 0);
 
-      return { data: json.data || [], total: json.total_records || 0 };
+      return {
+        data: json.data || [],
+        total: json.total_records || 0,
+      };
     } catch (err) {
-      console.error(err);
+      console.error("Fetch products error:", err);
       return { data: [], total: 0 };
     }
   };
+
+  // Delete handler
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this product?")) return;
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE}/product/delete/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const result = await res.json();
+      if (!res.ok) {
+        toast.error(result.message || "Delete failed");
+        return;
+      }
+      toast.error("Unauthorized: You do not have permission to delete");
+      // toast.success("Product deleted successfully");
+      //setData((prev) => prev.filter((row) => row.id !== id));
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong");
+    }
+  };
+
   // DataTable columns
   const columns = [
-    {
-      name: "Product Name",
-      selector: (row) => row.name,
-      sortable: true,
-      width: "650px", // ✅ fixed width
-      wrap: true, // text wrap allow
-      cell: (row) => (
-        <div
-          style={{
-            width: "650px",
-            whiteSpace: "normal",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-          title={row.name} // hover full name
-        >
-          {row.name}
-        </div>
-      ),
-    },
+  {
+    name: "Product Name",
+    selector: (row) => row.name,
+    sortable: true,
+    width: "650px",          // ✅ fixed width
+    wrap: true,             // text wrap allow
+    cell: (row) => (
+      <div
+        style={{
+          width: "650px",
+          whiteSpace: "normal",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+        }}
+        title={row.name}     // hover full name
+      >
+        {row.name}
+      </div>
+    ),
+  },
     {
       name: "Category Name",
       selector: (row) => row.category_name,
@@ -230,16 +227,16 @@ export default function ProductPage() {
       },
     },
   };
-  /* ---------------- PERMISSION ---------------- */
+  // Permission check
   if (!perms.includes("view posts")) {
     router.replace("/dashboard");
     return null;
   }
-
+  // Set page title
   useEffect(() => {
-    document.title = title;
-  }, []);
-
+    if (title) document.title = title;
+  }, [title]);
+  
   return (
     <main className="app-main" id="main" tabIndex={-1}>
       <Toaster position="top-right" />
@@ -279,7 +276,6 @@ export default function ProductPage() {
                   <div className="col-4 col-md-2 col-lg-2">
                     <select
                       className="form-select"
-                      value={selectedCategory} // ✅ MUST ADD
                       onChange={handleMainCategoryChange}
                     >
                       <option value="">-- Select Main Category --</option>
@@ -295,10 +291,7 @@ export default function ProductPage() {
                     <select
                       className="form-select"
                       value={subcategoryId}
-                      onChange={(e) => {
-                        setSubCategoryFilter(e.target.value);
-                        localStorage.setItem("subcategoryId", e.target.value);
-                      }}
+                      onChange={(e) => setSubCategoryFilter(e.target.value)}
                     >
                       <option value="">-- Select Subcatgory Category --</option>
                       {subcategoryList.map((cat) => (

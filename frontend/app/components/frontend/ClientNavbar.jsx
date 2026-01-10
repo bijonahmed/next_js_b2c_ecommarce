@@ -127,7 +127,7 @@ export default function ClientNavbar() {
                 <div className="header__right">
                   <ul className="header__top-links">
                     <li>
-                      <a href="#">Track Your Order</a>
+                      <Link href="/track-order">Track Your Order</Link>
                     </li>
                     <li className="d-none">
                       <div>
@@ -358,7 +358,7 @@ export default function ClientNavbar() {
           <div className="header__right">
             <ul className="navigation__extra">
               <li>
-                <a href="#">Track your order</a>
+                <Link href="/track-order">Track your order</Link>
               </li>
               <li>
                 <a href="#">BDT Dollar</a>

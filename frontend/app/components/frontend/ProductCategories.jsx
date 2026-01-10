@@ -66,10 +66,7 @@ export default function ProductCategories() {
               {isLoading && (
                 <div className="category-loader-overlay">
                   <div className="text-center">
-                    <div
-                      className="spinner-border text-white"
-                      role="status"
-                    />
+                    <div className="spinner-border text-white" role="status" />
                     <p className="loader-text">Loading... Please wait</p>
                   </div>
                 </div>
@@ -87,18 +84,14 @@ export default function ProductCategories() {
                       <li key={child.id}>
                         <span
                           style={{ cursor: "pointer" }}
-                          onClick={() =>
-                            fetchProducts(parent.id, child.slug)
-                          }
+                          onClick={() => fetchProducts(parent.id, child.slug)}
                         >
                           {child.name}
                         </span>
                       </li>
                     ))
                   ) : (
-                    <li className="text-gray-400">
-                      No subcategories
-                    </li>
+                    <li className="text-gray-400">No subcategories</li>
                   )}
                 </ul>
 
@@ -126,42 +119,36 @@ export default function ProductCategories() {
               {/* Products */}
               <div className="ps-block__product-box">
                 {products.map((product) => (
-                  <Link
-                    key={product.id} // ✅ FIXED: key on Link
-                    href={`/product-details/${product.slug}`}
-                  >
-                    <div className="ps-product ps-product--simple">
-                      <div
-                        className={`image-wrapper ps-product__thumbnail ${
-                          loaded ? "loaded" : ""
-                        }`}
-                      >
+                  <div className="ps-product ps-product--simple">
+                    <div
+                      className={`image-wrapper ps-product__thumbnail ${
+                        loaded ? "loaded" : ""
+                      }`}
+                    >
+                      <Link href={`/product-details/${product.slug}`}>
                         <img
                           loading="lazy"
                           src={
-                            product.thumbnail ||
-                            "/frontend_theme/img/products/clothing/1.jpg"
+                            product.thumbnail
+                              ? product.thumbnail
+                              : "/frontend_theme/img/products/clothing/1.jpg"
                           }
                           onLoad={() => setLoaded(true)}
                           alt={product.name}
                         />
-                      </div>
+                      </Link>
+                    </div>
 
-                      <div className="ps-product__container">
-                        <div className="ps-product__content">
-                          <p className="ps-product__title">
-                            {product.name}
-                          </p>
-                          <p className="ps-product__price sale">
-                            Tk.{product.discount_price ?? "0"}{" "}
-                            <del>
-                              Tk.{product.price ?? "0"}
-                            </del>
-                          </p>
-                        </div>
+                    <div className="ps-product__container">
+                      <div className="ps-product__content">
+                        <p className="ps-product__title">{product.name}</p>
+                        <p className="ps-product__price sale">
+                          Tk.{product.discount_price ?? "0"}{" "}
+                          <del>Tk.{product.price ?? "0"}</del>
+                        </p>
                       </div>
                     </div>
-                  </Link>
+                  </div>
                 ))}
               </div>
             </div>

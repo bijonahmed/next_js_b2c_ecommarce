@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Models\OrderHistory;
 use App\Models\Orders;
+use App\Models\OrderStatus;
 use App\Models\Post;
 use App\Models\Product;
 use App\Models\Roles;
@@ -443,7 +444,7 @@ class PublicController extends Controller
     public function checkedPostRow($slug)
     {
         $post          = Post::where('slug', $slug)->first();
-        $relatedPost   = Post::where('status', 1)->where('categoryId',13)->limit(10)->get();
+        $relatedPost   = Post::where('status', 1)->where('categoryId', 13)->limit(10)->get();
 
         // Return a 404 response if not found
         if (!$post) {
@@ -522,6 +523,32 @@ class PublicController extends Controller
             'success'               => true,
             'data'                  => $get_prdoucts,
         ], 200);
+    }
+
+
+    public function track($order_number)
+    {
+     //   dd($order_number);
+        $order = Orders::where('orderId', $order_number)->first();
+
+        
+
+        if (!$order) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order not found'
+            ], 404);
+        }
+
+
+        $checkOrderSts = OrderStatus:: where('id', $order->order_status)->first();
+        $orderstsName = !empty($checkOrderSts) ? $checkOrderSts->name : ""; 
+
+        return response()->json([
+            'success'       => true,
+            'order_id'      => $order->orderId,
+            'order_status'  => $orderstsName // Pending, Delivered, Processing
+        ]);
     }
 
     public function getSetting(Request $request)
