@@ -125,7 +125,7 @@ export default function ProductsSliders() {
                     <img
                       loading="lazy"
                       src={product.thumnail_img}
-                      alt={product.name}
+                      alt=""
                       className="img-fluid"
                       style={{
                         height: "100%",

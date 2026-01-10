@@ -364,25 +364,9 @@ export default function InsideHeader() {
               </ul>
               <ul className="navigation__extra">
                 <li>
-                  <a href="#">Tract your order</a>
+                  <Link href="/track-order">Tract your order</Link>
                 </li>
-                <li>
-                  <div>
-                    <a href="#">BDT</a>
-                  </div>
-                </li>
-                <li>
-                  <div className="language">
-                    <a href="#">
-                      <img
-                        loading="lazy"
-                        src="/frontend_theme/img/flag/en.png"
-                        alt="English"
-                      />
-                      English
-                    </a>
-                  </div>
-                </li>
+               
               </ul>
             </div>
           </div>

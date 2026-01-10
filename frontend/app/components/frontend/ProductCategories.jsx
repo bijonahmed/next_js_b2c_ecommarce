@@ -59,18 +59,26 @@ export default function ProductCategories() {
 
           return (
             <div
-              key={parent.id}
+              key={parent.id} // ✅ parent key
               className="ps-block--products-of-category mb-10 relative"
             >
-              {/* Category Loader Overlay */}
-              {isLoading && (
-                <div className="category-loader-overlay">
-                  <div className="text-center">
-                    <div className="spinner-border text-white" role="status" />
-                    <p className="loader-text">Loading... Please wait</p>
-                  </div>
-                </div>
-              )}
+              {/* Loader at top center 
+        {isLoading && (
+          <div className="d-flex justify-content-center my-3">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        )}
+*/}
+             {isLoading && (
+  <div className="fullscreen-loader-overlay">
+    <div className="spinner-border" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+    <p className="loader-text">Loading... Please wait</p>
+  </div>
+)}
 
               {/* Category header */}
               <div className="ps-block__categories">
@@ -81,7 +89,7 @@ export default function ProductCategories() {
                       ? parent.children.slice(0, 20)
                       : parent.children.slice(0, 10)
                     ).map((child) => (
-                      <li key={child.id}>
+                      <li key={`${parent.id}-${child.id}`}>
                         <span
                           style={{ cursor: "pointer" }}
                           onClick={() => fetchProducts(parent.id, child.slug)}
@@ -91,7 +99,12 @@ export default function ProductCategories() {
                       </li>
                     ))
                   ) : (
-                    <li className="text-gray-400">No subcategories</li>
+                    <li
+                      key={`no-subcategories-${parent.id}`}
+                      className="text-gray-400"
+                    >
+                      No subcategories
+                    </li>
                   )}
                 </ul>
 
@@ -119,7 +132,10 @@ export default function ProductCategories() {
               {/* Products */}
               <div className="ps-block__product-box">
                 {products.map((product) => (
-                  <div className="ps-product ps-product--simple">
+                  <div
+                    key={`${parent.id}-${product.id}`} // ✅ fixed key
+                    className="ps-product ps-product--simple"
+                  >
                     <div
                       className={`image-wrapper ps-product__thumbnail ${
                         loaded ? "loaded" : ""
